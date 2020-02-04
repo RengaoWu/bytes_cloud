@@ -1,90 +1,75 @@
-// 提供五套可选主题色
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+class Common {
+  factory Common() => _getInstance();
 
-import 'model/model.dart';
+  static Common get instance => _getInstance();
+  static Common _instance; // 单例对象
 
-const _themes = <MaterialColor>[
-    Colors.blue,
-    Colors.cyan,
-    Colors.teal,
-    Colors.green,
-    Colors.red,
-];
+  static Common _getInstance() {
+    if (_instance == null) {
+      _instance = Common._internal();
+    }
+    return _instance;
+  }
 
-class Global {
-    static SharedPreferences _prefs;
-    static Profile profile = Profile();
-    // 网络缓存对象
-    // static NetCache netCache = NetCache();
+  Common._internal();
 
-    // 可选的主题列表
-    static List<MaterialColor> get themes => _themes;
+  String sDCardDir;
 
-    // 是否为release版
-    static bool get isRelease => bool.fromEnvironment("dart.vm.product");
+  String getFileSize(int fileSize) {
+    String str = '';
 
-    //初始化全局信息，会在APP启动时执行
-    static Future init() async {
-        _prefs = await SharedPreferences.getInstance();
-        var _profile = _prefs.getString("profile");
-        if (_profile != null) {
-            try {
-                profile = Profile();
-            } catch (e) {
-                print(e);
-            }
-        }
-
-//        // 如果没有缓存策略，设置默认缓存策略
-//        profile.cache = profile.cache ?? CacheConfig()
-//            ..enable = true
-//            ..maxAge = 3600
-//            ..maxCount = 100;
-
-        //初始化网络请求相关配置
-        //Git.init();
+    if (fileSize < 1024) {
+      str = '${fileSize.toStringAsFixed(2)}B';
+    } else if (1024 <= fileSize && fileSize < 1048576) {
+      str = '${(fileSize / 1024).toStringAsFixed(2)}KB';
+    } else if (1048576 <= fileSize && fileSize < 1073741824) {
+      str = '${(fileSize / 1024 / 1024).toStringAsFixed(2)}MB';
     }
 
-    // 持久化Profile信息
-    static saveProfile() => _prefs.setString("profile", "");
-}
+    return str;
+  }
 
-class ProfileChangeNotifier extends ChangeNotifier {
-    Profile get _profile => Global.profile;
+  String selectIcon(String ext) {
+    String iconImg = 'assets/images/unknown.png';
 
-    @override
-    void notifyListeners() {
-        Global.saveProfile(); //保存Profile变更
-        super.notifyListeners(); //通知依赖的Widget更新
+    switch (ext) {
+      case '.ppt':
+      case '.pptx':
+        iconImg = 'assets/images/ppt.png';
+        break;
+      case '.doc':
+      case '.docx':
+        iconImg = 'assets/images/word.png';
+        break;
+      case '.xls':
+      case '.xlsx':
+        iconImg = 'assets/images/excel.png';
+        break;
+      case '.jpg':
+      case '.jpeg':
+      case '.png':
+        iconImg = 'assets/images/image.png';
+        break;
+      case '.txt':
+        iconImg = 'assets/images/txt.png';
+        break;
+      case '.mp3':
+        iconImg = 'assets/images/mp3.png';
+        break;
+      case '.mp4':
+        iconImg = 'assets/images/video.png';
+        break;
+      case '.rar':
+      case '.zip':
+        iconImg = 'assets/images/zip.png';
+        break;
+      case '.psd':
+        iconImg = 'assets/images/psd.png';
+        break;
+      default:
+        iconImg = 'assets/images/file.png';
+        break;
     }
-}
-
-class UserModel extends ProfileChangeNotifier {
-    User get user => _profile.user;
-
-    // APP是否登录(如果有用户信息，则证明登录过)
-    bool get isLogin => user != null;
-
-    //用户信息发生变化，更新用户信息并通知依赖它的子孙Widgets更新
-    set user(User user) {
-        if (user?.login != _profile.user?.login) {
-            _profile.lastLogin = _profile.user?.login;
-            _profile.user = user;
-            notifyListeners();
-        }
-    }
-}
-
-class ThemeModel extends ProfileChangeNotifier {
-    // 获取当前主题，如果为设置主题，则默认使用蓝色主题
-    ColorSwatch get theme => Global.themes.firstWhere((e) => e.value == _profile.theme, orElse: () => Colors.blue);
-
-    // 主题改变后，通知其依赖项，新主题会立即生效
-    set theme(ColorSwatch color) {
-        if (color != theme) {
-            _profile.theme = color[500].value;
-            notifyListeners();
-        }
-    }
+    return iconImg;
+  }
 }

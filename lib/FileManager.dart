@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bytes_cloud/EventBusUtil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -15,21 +16,36 @@ import 'common.dart';
 /// 返回上一层，返回上一层目录路径 [dir.parent.path]
 class FileManager extends StatefulWidget {
   @override
-  _FileManagerState createState() => _FileManagerState();
+  _FileManagerState createState() {
+    print("FileManager createState");
+    return _FileManagerState();
+  }
 }
 
 class _FileManagerState extends State<FileManager> {
-  List<FileSystemEntity> files = [];
   MethodChannel _channel = MethodChannel('openFileChannel');
-  Directory parentDir;
   ScrollController controller = ScrollController();
-  List<double> position = [];
+
+  static Directory parentDir;
+  List<FileSystemEntity> files = [];
+  static List<double> position = []; // 栈中位置
 
   @override
   void initState() {
+    print("FileManager init");
     super.initState();
-    parentDir = Directory(Common().sDCardDir);
-    initPathFiles(Common().sDCardDir);
+
+    //parentDir = Directory(Common().sDCardDir);
+    //initPathFiles(Common().sDCardDir);
+    if (parentDir == null) {
+      print("FileManager parentDir == null");
+      parentDir = Directory(Common().sDCardDir);
+      initPathFiles(parentDir.path);
+    } else {
+      print("FileManager parentDir != null");
+      initPathFiles(parentDir.path);
+      jumpToPosition(false);
+    }
   }
 
   Future<bool> onWillPop() async {
@@ -44,25 +60,11 @@ class _FileManagerState extends State<FileManager> {
 
   @override
   Widget build(BuildContext context) {
+    print("FileManager build");
     return WillPopScope(
+      // WillPopScope 拦截back操作，当不在根目录时候，返回上一级目录
       onWillPop: onWillPop,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            parentDir?.path == Common().sDCardDir
-                ? 'SD Card'
-                : p.basename(parentDir.path),
-            style: TextStyle(color: Colors.black),
-          ),
-          centerTitle: true,
-          backgroundColor: Color(0xffeeeeee),
-          elevation: 0.0,
-          leading: parentDir?.path == Common().sDCardDir
-              ? Container()
-              : IconButton(
-                  icon: Icon(Icons.chevron_left, color: Colors.black),
-                  onPressed: onWillPop),
-        ),
         body: files.length == 0
             ? Center(child: Text('The folder is empty'))
             : Scrollbar(
@@ -168,6 +170,7 @@ class _FileManagerState extends State<FileManager> {
         position.add(controller.offset);
         initPathFiles(file.path);
         jumpToPosition(true);
+        GlobalEventBus().event.fire(FilePathEvent(file.path));
       },
       onLongPress: () {
         showModalBottomSheet(
@@ -224,8 +227,12 @@ class _FileManagerState extends State<FileManager> {
       controller.jumpTo(0.0);
     else {
       try {
-        await Future.delayed(Duration(milliseconds: 1));
+        print("FileManager 1 " +
+            DateTime.now().millisecondsSinceEpoch.toString());
+        await Future.delayed(Duration(milliseconds: 100)); // 不添加这个下面代码无法生效
         controller?.jumpTo(position[position.length - 1]);
+        print("FileManager 2 " +
+            DateTime.now().millisecondsSinceEpoch.toString());
       } catch (e) {}
       position.removeLast();
     }
@@ -339,7 +346,7 @@ class _FileManagerState extends State<FileManager> {
     );
   }
 
-  // 排序
+  // 排序，文件夹在前面、文件在后面，按照字母排序
   void sortFiles() {
     List<FileSystemEntity> _files = [];
     List<FileSystemEntity> _folder = [];
@@ -366,5 +373,18 @@ class _FileManagerState extends State<FileManager> {
   Future openFile(String path) async {
     final Map<String, dynamic> args = <String, dynamic>{'path': path};
     await _channel.invokeMethod('openFile', args);
+  }
+
+  @override
+  void deactivate() {
+    print('FileManager deactivate');
+    position.add(controller.offset);
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    print("FileManager dispose");
+    super.dispose();
   }
 }

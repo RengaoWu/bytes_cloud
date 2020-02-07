@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'CloudPage.dart';
+import 'SelfPage.dart';
 
 class HomeRoute extends StatefulWidget {
   @override
@@ -22,9 +23,12 @@ class HomeRouteState extends State<HomeRoute>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new TabBarView(
-          controller: tabController,
-          children: <Widget>[RecentRoute(), CloudRoute(), PhotoRoute(), SelfRoute()]),
+      body: new TabBarView(controller: tabController, children: <Widget>[
+        RecentRoute(),
+        CloudRoute(),
+        PhotoRoute(),
+        SelfRoute()
+      ]),
       bottomNavigationBar: new Material(
         child: new TabBar(
             controller: tabController,
@@ -71,7 +75,9 @@ class RecentRouteState extends State<RecentRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.file_download), onPressed: () => { print("on press hhh")}),
+        leading: IconButton(
+            icon: Icon(Icons.file_download),
+            onPressed: () => {print("on press hhh")}),
         centerTitle: true,
         title: Text('Recent'),
       ),
@@ -99,28 +105,6 @@ class PhotoRouteState extends State<PhotoRoute> {
       ),
       body: Center(
         child: Text('Photo'),
-      ),
-    );
-  }
-}
-
-class SelfRoute extends StatefulWidget{
-  @override
-  State<StatefulWidget> createState() {
-    return SelfRouteState();
-  }
-}
-
-class SelfRouteState extends State<SelfRoute>{
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Personal'),
-      ),
-      body: Center(
-        child: Text('Personal'),
       ),
     );
   }

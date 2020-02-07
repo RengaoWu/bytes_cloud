@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Common {
   factory Common() => _getInstance();
 
@@ -71,5 +73,25 @@ class Common {
         break;
     }
     return iconImg;
+  }
+
+  Future saveStr(String key, String value) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString(key, value);
+  }
+
+  Future saveStrList(String key, List<String> values) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setStringList(key, values);
+  }
+
+  Future readStr(String key) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String account = preferences.get(key);
+  }
+
+  Future removeStr(String key) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.remove(key);
   }
 }

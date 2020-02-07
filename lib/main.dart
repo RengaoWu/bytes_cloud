@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/FileManager.dart';
+import 'package:bytes_cloud/HomeRout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: HomeRoute(),
-      home: FileManager(),
+      home: HomeRoute(),
     );
   }
 }

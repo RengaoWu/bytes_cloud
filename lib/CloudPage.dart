@@ -1,6 +1,8 @@
+import 'package:bytes_cloud/FileManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'EventBusUtil.dart';
 import 'SearchRoute.dart';
 
 class CloudRoute extends StatefulWidget {
@@ -11,16 +13,29 @@ class CloudRoute extends StatefulWidget {
 }
 
 class CloudRouteState extends State<CloudRoute> {
+  static const String prefix = "SD:";
+  static String path = "";
+  @override
+  void initState() {
+    path = prefix;
+    super.initState();
+    GlobalEventBus().event.on<FilePathEvent>().listen((event) {
+      setState(() {
+        path = prefix + event.path;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          centerTitle: true,
-          title: Text('Cloud'),
+          title: Text('$path'),
         ),
         body: Column(
           children: <Widget>[
             getSearchWidget(),
+            Expanded(child: getFileListWidget())
           ],
         ));
   }
@@ -62,6 +77,6 @@ class CloudRouteState extends State<CloudRoute> {
   }
 
   Widget getFileListWidget() {
-    return null;
+    return FileManager();
   }
 }

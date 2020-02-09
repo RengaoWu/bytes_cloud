@@ -20,9 +20,12 @@ class CloudRouteState extends State<CloudRoute> {
     path = prefix;
     super.initState();
     GlobalEventBus().event.on<FilePathEvent>().listen((event) {
-      setState(() {
-        path = prefix + event.path;
-      });
+      if (mounted) {
+        setState(() {
+          path = prefix + event.path;
+          print("CloudPage " + path);
+        });
+      }
     });
   }
 
@@ -78,5 +81,10 @@ class CloudRouteState extends State<CloudRoute> {
 
   Widget getFileListWidget() {
     return FileManager();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

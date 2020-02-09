@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:bytes_cloud/EventBusUtil.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,36 +23,30 @@ class FileManager extends StatefulWidget {
   }
 }
 
-class _FileManagerState extends State<FileManager> {
+// AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
+class _FileManagerState extends State<FileManager>
+    with AutomaticKeepAliveClientMixin {
   MethodChannel _channel = MethodChannel('openFileChannel');
   ScrollController controller = ScrollController();
 
-  static Directory parentDir;
+  Directory parentDir;
   List<FileSystemEntity> files = [];
-  static List<double> position = []; // 栈中位置
+  List<double> position = []; // 栈中位置
 
   @override
   void initState() {
     print("FileManager init");
     super.initState();
 
-    //parentDir = Directory(Common().sDCardDir);
-    //initPathFiles(Common().sDCardDir);
-    if (parentDir == null) {
-      print("FileManager parentDir == null");
-      parentDir = Directory(Common().sDCardDir);
-      initPathFiles(parentDir.path);
-    } else {
-      print("FileManager parentDir != null");
-      initPathFiles(parentDir.path);
-      jumpToPosition(false);
-    }
+    parentDir = Directory(Common().sDCardDir);
+    initPathFiles(Common().sDCardDir);
   }
 
   Future<bool> onWillPop() async {
     if (parentDir.path != Common().sDCardDir) {
       initPathFiles(parentDir.parent.path);
       jumpToPosition(false);
+      GlobalEventBus().event.fire(FilePathEvent(parentDir.parent.path));
     } else {
       SystemNavigator.pop();
     }
@@ -168,6 +163,7 @@ class _FileManagerState extends State<FileManager> {
         // 点进一个文件夹，记录进去之前的offset
         // 返回上一层跳回这个offset，再清除该offset
         position.add(controller.offset);
+        print("FileManager ${position.toString()}");
         initPathFiles(file.path);
         jumpToPosition(true);
         GlobalEventBus().event.fire(FilePathEvent(file.path));
@@ -223,13 +219,14 @@ class _FileManagerState extends State<FileManager> {
   }
 
   void jumpToPosition(bool isEnter) async {
+    print("FileManager jumpToPosition ${isEnter}");
     if (isEnter)
       controller.jumpTo(0.0);
     else {
       try {
         print("FileManager 1 " +
             DateTime.now().millisecondsSinceEpoch.toString());
-        await Future.delayed(Duration(milliseconds: 100)); // 不添加这个下面代码无法生效
+        await Future.delayed(Duration(milliseconds: 10)); // 不添加这个下面代码无法生效
         controller?.jumpTo(position[position.length - 1]);
         print("FileManager 2 " +
             DateTime.now().millisecondsSinceEpoch.toString());
@@ -240,6 +237,7 @@ class _FileManagerState extends State<FileManager> {
 
   // 初始化该路径下的文件、文件夹
   void initPathFiles(String path) {
+    print("FileManager initPathFiles ${path}");
     try {
       setState(() {
         parentDir = Directory(path);
@@ -348,6 +346,7 @@ class _FileManagerState extends State<FileManager> {
 
   // 排序，文件夹在前面、文件在后面，按照字母排序
   void sortFiles() {
+    print("FileManager sortFiles");
     List<FileSystemEntity> _files = [];
     List<FileSystemEntity> _folder = [];
 
@@ -378,7 +377,6 @@ class _FileManagerState extends State<FileManager> {
   @override
   void deactivate() {
     print('FileManager deactivate');
-    position.add(controller.offset);
     super.deactivate();
   }
 
@@ -387,4 +385,7 @@ class _FileManagerState extends State<FileManager> {
     print("FileManager dispose");
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

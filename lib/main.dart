@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bytes_cloud/FileManager.dart';
 import 'package:bytes_cloud/HomeRout.dart';
+import 'package:bytes_cloud/test/ViewPageTest.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       ),
       // home: HomeRoute(),
       home: HomeRoute(),
+      // home: BgWidget(),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'CloudPage.dart';
+import 'PhotoPage.dart';
 import 'SelfPage.dart';
 
 class HomeRoute extends StatefulWidget {
@@ -83,28 +84,6 @@ class RecentRouteState extends State<RecentRoute> {
       ),
       body: Center(
         child: Text('Recnet'),
-      ),
-    );
-  }
-}
-
-class PhotoRoute extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return PhotoRouteState();
-  }
-}
-
-class PhotoRouteState extends State<PhotoRoute> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Photo'),
-      ),
-      body: Center(
-        child: Text('Photo'),
       ),
     );
   }

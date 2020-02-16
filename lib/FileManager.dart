@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:bytes_cloud/EventBusUtil.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,6 +54,7 @@ class _FileManagerState extends State<FileManager>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print("FileManager build");
     return WillPopScope(
       // WillPopScope 拦截back操作，当不在根目录时候，返回上一级目录

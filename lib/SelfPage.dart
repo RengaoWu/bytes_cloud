@@ -1,4 +1,4 @@
-import 'package:circle_progress/circle_progress.dart';
+import 'package:bytes_cloud/MarkDownPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,12 +30,26 @@ class SelfRouteState extends State<SelfRoute>
       physics: ScrollPhysics(),
       shrinkWrap: true,
       children: <Widget>[
-        getTextItemWidget(Icons.bookmark, "", () => {print("")}),
-        getTextItemWidget(Icons.share, "", () => {print("")}),
-        getTextItemWidget(Icons.delete_outline, "", () => {print("")}),
-        getTextItemWidget(Icons.settings, "", () => {print("")}),
-        getTextItemWidget(Icons.email, "", () => {print("")}),
-        getTextItemWidget(Icons.more_horiz, "", () => {print("")}),
+        getTextItemWidget(
+            Icons.bookmark,
+            "笔记",
+            () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => new MarkDownListPage()))
+                }), // 笔记
+        getTextItemWidget(Icons.group, "共享", () => {print("")}),
+
+        getTextItemWidget(Icons.star, "收藏", () => {print("")}),
+        getTextItemWidget(Icons.share, "分享", () => {print("")}), // 分享
+        getTextItemWidget(
+            Icons.delete_outline, "回收站", () => {print("")}), // 回收站
+        getTextItemWidget(
+            Icons.file_download, "已下载", () => {print("")}), // 已下载文件
+
+        getTextItemWidget(Icons.settings, "设置", () => {print("")}),
+        getTextItemWidget(Icons.email, "反馈", () => {print("")}),
       ],
     );
   }
@@ -124,10 +138,20 @@ class SelfRouteState extends State<SelfRoute>
   Widget getTextItemWidget(IconData icon, String title, void call()) {
     return InkWell(
       child: Card(
-        child: Icon(
-          icon,
-          size: 24,
-          color: Colors.blue,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+              size: 24,
+              color: Colors.blue,
+            ),
+            Text(
+              "$title",
+              style: TextStyle(fontSize: 14),
+            )
+          ],
         ),
       ),
       onTap: call,

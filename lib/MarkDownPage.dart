@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
+import 'package:bytes_cloud/widgets/Widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -74,22 +75,12 @@ class MarkDownListPageState extends State<MarkDownListPage> {
             return UI.divider(padding: 8);
           },
           itemBuilder: (BuildContext context, int index) {
-            return Padding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-              child: InkWell(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(FileUtil.getFileName(files[index].path)),
-                    Text("2018年12月12日"),
-                  ],
-                ),
-                onTap: () => Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) =>
-                            new MarkDownPage(files[index].path))),
-              ),
+            return BaseListItem(
+              title: FileUtil.getFileName(files[index].path),
+              subTitle: "2018年12月12日",
+              hiddenBtnMsg: '删除文件',
+              click: () => UI.newPage(context, MarkDownPage(files[index].path)),
+              longPress: () {},
             );
           }),
       floatingActionButton: FloatingActionButton(

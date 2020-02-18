@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class UI {
+  static newPage(BuildContext context, Widget widget) => Navigator.push(
+      context, new MaterialPageRoute(builder: (context) => widget));
+
   static Widget divider(
       {color = Colors.grey, double padding = 0, width = 0.5}) {
     return Padding(

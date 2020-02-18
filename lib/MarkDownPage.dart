@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/utils/FileUtils.dart';
-import 'package:bytes_cloud/utils/WidgetUtils.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -19,7 +19,11 @@ class MarkDownListPageState extends State<MarkDownListPage> {
   @override
   void initState() {
     super.initState();
-    Future.wait([FileUtils.listFiles("notebook")]).then((value) {
+    initFileList();
+  }
+
+  initFileList() {
+    Future.wait([FileUtil.listFiles("notebook")]).then((value) {
       setState(() {
         files = value[0].cast<FileSystemEntity>();
       });
@@ -59,6 +63,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
 
   @override
   Widget build(BuildContext context) {
+    initFileList(); // resume 刷新列表
     return Scaffold(
       appBar: AppBar(
         title: Text("笔记"),
@@ -66,7 +71,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
       body: ListView.separated(
           itemCount: files == null ? 0 : files.length,
           separatorBuilder: (BuildContext context, int index) {
-            return WidgetUtils.getDivider(padding: 8);
+            return UI.divider(padding: 8);
           },
           itemBuilder: (BuildContext context, int index) {
             return Padding(
@@ -75,7 +80,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(FileUtils.getFileName(files[index].path)),
+                    Text(FileUtil.getFileName(files[index].path)),
                     Text("2018年12月12日"),
                   ],
                 ),
@@ -92,8 +97,8 @@ class MarkDownListPageState extends State<MarkDownListPage> {
         onPressed: () {
           Future.wait([showInputDialog()]).then((onValue) {
             if (onValue[0] == null) return;
-            FileUtils.createFile('notebook', onValue[0]);
-            Future.wait([FileUtils.listFiles('notebook')]).then((onValue) => {
+            FileUtil.createFile('notebook', onValue[0]);
+            Future.wait([FileUtil.listFiles('notebook')]).then((onValue) => {
                   setState(() {
                     files = onValue[0];
                   })
@@ -119,15 +124,15 @@ class MarkDownPageState extends State<MarkDownPage> {
   bool read = true;
   String filePath;
   String fileName;
-  String testMDString;
+  String testMDString = "";
   TextEditingController controller = TextEditingController();
   MarkDownPageState(this.filePath) {
-    fileName = FileUtils.getFileName(filePath);
+    fileName = FileUtil.getFileName(filePath);
   }
   @override
   void initState() {
     super.initState();
-    Future.wait([FileUtils.readFromFile(filePath)]).then((onValue) {
+    Future.wait([FileUtil.readFromFile(filePath)]).then((onValue) {
       setState(() {
         testMDString = onValue[0];
         controller.text = testMDString;
@@ -135,57 +140,8 @@ class MarkDownPageState extends State<MarkDownPage> {
     });
   }
 
-  void showDeleteDialog() {
-    showDialog<Null>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text('删除文件'),
-            //可滑动
-            content: Text("你确定删除$fileName文件吗?"),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('确定'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                },
-              ),
-              new FlatButton(
-                child: new Text('取消'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-  void showShareDialog() {
-    showDialog<Null>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text('分享文件'),
-            //可滑动
-            content: Text("http://hhhhhh.txt"),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('复制URL'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
   void saveFile() {
-    FileUtils.writeToFile(path: filePath, content: controller.value.text);
+    FileUtil.writeToFile(path: filePath, content: controller.value.text);
   }
 
   @override
@@ -194,9 +150,34 @@ class MarkDownPageState extends State<MarkDownPage> {
       appBar: AppBar(
         title: Text(this.fileName),
         actions: <Widget>[
-          getAppbarBtn(Icons.delete_outline, showDeleteDialog),
-          getAppbarBtn(Icons.share, showShareDialog),
-          getAppbarBtn(Icons.save, saveFile)
+          UI.appbarBtn(Icons.delete_outline,
+              call: (context) => UI.showMessageDialog(
+                      context: context,
+                      title: '删除',
+                      content: Text('你确定删除$fileName文件吗?'),
+                      map: {
+                        '确定': () {
+                          FileUtil.deleteFile(filePath);
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        '取消': () {
+                          Navigator.of(context).pop();
+                        }
+                      })),
+          UI.appbarBtn(Icons.share,
+              call: (context) => UI.showMessageDialog(
+                      context: context,
+                      title: '分享',
+                      content: Text('fileName'),
+                      map: {
+                        '复制URL': () => {print('已复制')}
+                      })),
+          UI.appbarBtn(Icons.save, call: (context) {
+            saveFile();
+            Scaffold.of(context).showSnackBar(SnackBar(content: Text("保存成功")));
+          } //Builder extends StatelessWidget
+              )
         ],
       ),
       body: read
@@ -220,16 +201,5 @@ class MarkDownPageState extends State<MarkDownPage> {
         },
       ),
     );
-  }
-
-  Widget getAppbarBtn(IconData icon, void call()) {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-        child: IconButton(
-          onPressed: () {
-            call();
-          },
-          icon: new Icon(icon),
-        ));
   }
 }

@@ -3,29 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 
-class FileUtils {
-//  static Directory tempDir;
-//  static Directory appDir;
-//  static FileUtils _instance;
-//
-//  // 工厂模式
-//  factory FileUtils() => _getInstance();
-//  static FileUtils get instance => _getInstance();
-//  FileUtils._internal() {
-//    init();
-//  }
-//  static FileUtils _getInstance() {
-//    if (_instance == null) {
-//      _instance = new FileUtils._internal();
-//    }
-//    return _instance;
-//  }
-//
-//  init() async {
-//    tempDir = await getTemporaryDirectory();
-//    appDir = await getApplicationDocumentsDirectory();
-//  }
-
+class FileUtil {
   static String getFileName(String path) =>
       path.substring(path.lastIndexOf('/') + 1);
 
@@ -68,5 +46,10 @@ class FileUtils {
     if (!file.existsSync()) {
       file.createSync();
     }
+  }
+
+  static void deleteFile(String path) {
+    File file = File(path);
+    if (file.existsSync()) file.deleteSync();
   }
 }

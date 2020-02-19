@@ -64,7 +64,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
 
   @override
   Widget build(BuildContext context) {
-    initFileList(); // resume 刷新列表
+    // initFileList(); // resume 刷新列表, 错误的做法会导致列表不停的刷新
     return Scaffold(
       appBar: AppBar(
         title: Text("笔记"),
@@ -75,25 +75,31 @@ class MarkDownListPageState extends State<MarkDownListPage> {
             return UI.divider(padding: 8);
           },
           itemBuilder: (BuildContext context, int index) {
-            return BaseListItem(
-              title: FileUtil.getFileName(files[index].path),
-              subTitle: "2018年12月12日",
-              hiddenBtnMsg: '删除文件',
-              click: () => UI.newPage(context, MarkDownPage(files[index].path)),
-              longPress: () {},
+            return ShareDataWidget(
+              data: BaseHolder(
+                  FileUtil.getFileName(files[index].path), '2018年12月12日'),
+              child: BaseListItem(
+                // title: FileUtil.getFileName(files[index].path),
+                // subTitle: "2018年12月12日",
+                hiddenMsg: '删除文件',
+                click: () =>
+                    UI.newPage(context, MarkDownPage(files[index].path)),
+                hiddenCall: () {
+                  FileUtil.deleteFile(files[index].path);
+                  setState(() => files.removeAt(index));
+                },
+              ),
             );
           }),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.title),
         onPressed: () {
           Future.wait([showInputDialog()]).then((onValue) {
-            if (onValue[0] == null) return;
-            FileUtil.createFile('notebook', onValue[0]);
-            Future.wait([FileUtil.listFiles('notebook')]).then((onValue) => {
-                  setState(() {
-                    files = onValue[0];
-                  })
-                });
+            Future.wait([FileUtil.createFile('notebook', onValue[0])])
+                .then((onValue) {
+              if (onValue[0] == null) return;
+              setState(() => files.add(onValue[0]));
+            });
           });
         },
       ),

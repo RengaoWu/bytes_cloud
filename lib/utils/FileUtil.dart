@@ -40,12 +40,15 @@ class FileUtil {
     return currentDir.listSync();
   }
 
-  static void createFile(String path, String fileName) async {
+  static Future<FileSystemEntity> createFile(
+      String path, String fileName) async {
     Directory dir = await getApplicationDocumentsDirectory();
     File file = new File(dir.path + '/' + path + '/' + fileName);
     if (!file.existsSync()) {
       file.createSync();
+      return file;
     }
+    return null;
   }
 
   static void deleteFile(String path) {

@@ -2,18 +2,19 @@ import 'dart:io';
 
 import 'package:bytes_cloud/FileManager.dart';
 import 'package:bytes_cloud/HomeRout.dart';
+import 'package:bytes_cloud/SplashRoute.dart';
 import 'package:bytes_cloud/test/SliverAppBar.dart';
 import 'package:bytes_cloud/test/ViewPageTest.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'CloudPage.dart';
 import 'common.dart';
-
-// void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: HomeRoute(),
-      home: HomeRoute(),
+      // home: HomeRoute(),
+      home: LoginRoute(),
       // home: BgWidget(),
     );
   }
@@ -50,9 +52,13 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   // Permission check
-  // [initializeDateFormatting("zh-CN", "")
-  Future.wait([initializeDateFormatting("zh-CN", ""), getPermission()])
-      .then((result) {
+  Future.wait([
+    initializeDateFormatting("zh-CN", ""),
+    getPermission(),
+    SPUtil.getSp()
+  ]).then((result) {
+    SPUtil.sp = result[2] as SharedPreferences;
+    print('hhhh init');
     runApp(MyApp());
   });
 }

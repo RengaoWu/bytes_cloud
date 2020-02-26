@@ -29,6 +29,39 @@ class UI {
     });
   }
 
+  static showProgressDialog(
+      {@required BuildContext context,
+      Future future,
+      String title,
+      void successCall(String data),
+      void failCall(String errMsg)}) {
+    showDialog<Null>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(
+            child: FutureBuilder(
+              future: future,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                // 请求已结束
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    failCall(snapshot.error);
+                  } else {
+                    successCall(snapshot.data);
+                  }
+                  Navigator.pop(context);
+                  return CircularProgressIndicator();
+                } else {
+                  // 请求未结束，显示loading
+                  return CircularProgressIndicator();
+                }
+              },
+            ),
+          );
+        });
+  }
+
   static showMessageDialog(
       {@required BuildContext context,
       String title,
@@ -48,5 +81,21 @@ class UI {
             actions: actions,
           );
         });
+  }
+
+  Widget CheckboxTitle(
+      {IconData icon, String text, bool value, Function call}) {
+    return InkWell(
+        onTap: () {},
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Row(
+            children: <Widget>[
+              Icon(icon),
+              Checkbox(value: value, onChanged: call),
+              Text(text),
+            ],
+          ),
+        ));
   }
 }

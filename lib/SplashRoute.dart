@@ -1,26 +1,57 @@
+import 'package:bytes_cloud/utils/SPUtil.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SplashRoute extends StatefulWidget {
+class LoginRoute extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return SplashRouteState();
+    return LoginRouteState();
   }
 }
 
-class SplashRouteState extends State<SplashRoute> {
+class LoginRouteState extends State<LoginRoute> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  bool _pwdShow = false;
+  SharedPreferences sp;
+  bool _pwdVisible = false;
   GlobalKey globalKey = new GlobalKey<FormState>();
-  bool _nameAutoFocus = true;
+  bool _isSavePw = true;
+  bool _isAutoLogin = true;
+
+  String _user = "";
+  String _pwd = "";
+
+  @override
+  void initState() {
+    super.initState();
+    initData();
+    autoLogin();
+  }
+
+  initData() {
+    _isSavePw = SPUtil.getBool('_isSavePw', true);
+    _isAutoLogin = SPUtil.getBool('_isAutoLogin', true);
+    _user = SPUtil.getString('_user', "");
+    _pwd = SPUtil.getString('_pwd', "");
+    setState(() {
+      _nameController.text = _user;
+      _passwordController.text = _pwd;
+    });
+  }
+
+  autoLogin() {
+    if (_isAutoLogin) _onLogin();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(_user);
     return Scaffold(
-      appBar: AppBar(title: Text("login"),),
+      resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(16, 128, 16, 16),
         child: Form(
           autovalidate: true,
           key: globalKey,
@@ -35,13 +66,11 @@ class SplashRouteState extends State<SplashRoute> {
 
               // 账号
               TextFormField(
-                autofocus: _nameAutoFocus,
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: "user name" ,
-                  hintText: "phone number or e-mail",
-                  prefixIcon: Icon(Icons.person)
-                ),
+                    labelText: "用户名",
+                    hintText: "手机号/邮箱",
+                    prefixIcon: Icon(Icons.person)),
                 validator: (v) {
                   return v.trim().isNotEmpty ? null : v.trim();
                 },
@@ -50,24 +79,63 @@ class SplashRouteState extends State<SplashRoute> {
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: "password",
-                  hintText: "password",
+                  labelText: "密码",
+                  hintText: "密码",
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
-                    icon: Icon(_pwdShow ? Icons.visibility : Icons.visibility_off),
-                    onPressed: (){
+                    icon: Icon(
+                        _pwdVisible ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
                       setState(() {
-                        _pwdShow = !_pwdShow;
+                        _pwdVisible = !_pwdVisible;
                       });
                     },
                   ),
                 ),
-                obscureText: _pwdShow,
+                obscureText: !_pwdVisible,
                 validator: (v) {
                   return v.trim().isNotEmpty ? null : v.trim();
                 },
-              ), 
+              ),
               // 登陆按钮
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        Checkbox(
+                          value: _isSavePw,
+                          activeColor: Colors.blue,
+                          onChanged: (bool val) {
+                            setState(() {
+                              _isSavePw = !_isSavePw;
+                            });
+                          },
+                        ),
+                        Text('保存密码')
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        Checkbox(
+                          value: _isAutoLogin,
+                          activeColor: Colors.blue,
+                          onChanged: (bool val) {
+                            setState(() {
+                              _isAutoLogin = !_isAutoLogin;
+                              if (_isAutoLogin && _isSavePw == false)
+                                _isSavePw = true;
+                            });
+                          },
+                        ),
+                        Text('自动登陆')
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               Padding(
                 padding: EdgeInsets.only(top: 24),
                 child: ConstrainedBox(
@@ -76,7 +144,7 @@ class SplashRouteState extends State<SplashRoute> {
                     color: Theme.of(context).primaryColor,
                     onPressed: _onLogin,
                     textColor: Colors.white,
-                    child: Text("Login"),
+                    child: Text("登陆"),
                   ),
                 ),
               )
@@ -87,9 +155,38 @@ class SplashRouteState extends State<SplashRoute> {
     );
   }
 
+  /// 登陆
   void _onLogin() async {
-    if((globalKey.currentState as FormState).validate()){
-      print("login .....");
+    if (!(globalKey.currentState as FormState).validate()) return;
+    SPUtil.setBool("_isSavePw", _isSavePw);
+    SPUtil.setBool("_isAutoLogin", _isAutoLogin);
+
+    if (_isSavePw) {
+      SPUtil.setString("_user", _nameController.value.text);
+      SPUtil.setString("_pwd", _passwordController.value.text);
     }
+
+    // login
+    UI.showProgressDialog(
+        context: context,
+        future: getToken(),
+        title: '登陆',
+        successCall: saveToken,
+        failCall: (String errMsg) {
+          print('token fail $errMsg');
+        });
+  }
+
+  getToken() async {
+    return Future.delayed(Duration(seconds: 2), () {
+      //return Future.error('error');
+      return "123456";
+    }).catchError((onError) {
+      return Future.error('error');
+    });
+  }
+
+  saveToken(String token) {
+    print("token succ $token");
   }
 }

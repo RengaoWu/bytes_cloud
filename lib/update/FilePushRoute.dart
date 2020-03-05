@@ -1,5 +1,6 @@
-import 'package:bytes_cloud/test/ch8.dart';
+import 'package:bytes_cloud/update/DocPushRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -43,12 +44,18 @@ class FilePushRouteState extends State<FilePushRoute> {
     );
   }
 
+  callDocSelector() {
+    UI.newPage(context, DocPushRoute());
+  }
+
+  callZipSelector() {}
+
   fileTypeGridView() {
     return Wrap(
       spacing: 8.0, // 主轴(水平)方向间距
       alignment: WrapAlignment.center, //沿主轴方向居中
       children: <Widget>[
-        iconTextBtn(Image.asset(Constants.NOTE), '文档', null),
+        iconTextBtn(Image.asset(Constants.NOTE), '文档', callDocSelector),
         iconTextBtn(Image.asset(Constants.ZIP), '压缩包', null),
         iconTextBtn(Image.asset(Constants.MP3), '音乐', null),
         iconTextBtn(Image.asset(Constants.DOWNLOADED), '下载', null),
@@ -60,7 +67,10 @@ class FilePushRouteState extends State<FilePushRoute> {
 
   iconTextBtn(Widget icon, String text, Function call) {
     return UnconstrainedBox(
+        child: InkWell(
+      onTap: call,
       child: Chip(
+        label: Text(text),
         avatar: CircleAvatar(
           child: Padding(
             child: icon,
@@ -69,8 +79,7 @@ class FilePushRouteState extends State<FilePushRoute> {
           backgroundColor: Color.fromARGB(0x00, 0xff, 0xff, 0xff),
         ),
         backgroundColor: Color.fromARGB(0x66, 0xAA, 0xFF, 0xFF),
-        label: Text(text),
       ),
-    );
+    ));
   }
 }

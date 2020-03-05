@@ -50,7 +50,6 @@ class PhotoPushRouteState extends State<PhotoPushRoute> {
       selectedAssets: images,
       cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
       materialOptions: MaterialOptions(
-        //actionBarColor: Colors.purple.value.toString(),
         actionBarTitle: "选取图片",
         allViewTitle: "所有照片",
         useDetailsView: true,

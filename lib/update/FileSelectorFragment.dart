@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bytes_cloud/test/ch8.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,12 +34,13 @@ class _FilesFragmentState extends State<FileSelectorFragment>
   Directory parentDir;
   List<FileSystemEntity> files = [];
   List<double> position = []; // 栈中位置
+  StreamSubscription _eventBusOn;
 
   @override
   void initState() {
     super.initState();
     // 监听用户点击上传按钮的动作
-    GlobalEventBus().event.on<FilesPushEvent>().listen((event) {
+    _eventBusOn = GlobalEventBus().event.on<FilesPushEvent>().listen((event) {
       String content = '';
       if (selectedFiles.length == 0) {
         content = '没有选择任何文件';
@@ -245,4 +247,10 @@ class _FilesFragmentState extends State<FileSelectorFragment>
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void deactivate() {
+    _eventBusOn.cancel();
+    super.deactivate();
+  }
 }

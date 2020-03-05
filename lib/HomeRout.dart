@@ -98,12 +98,12 @@ class RecentRouteState extends State<RecentRoute> {
     );
   }
 
-  callUpdatePhotoPage() {
+  callPhotoSelectorPage() {
     Navigator.pop(context);
     UI.newPage(context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
   }
 
-  callUpdateFilepage() {
+  callFileSelectorPage() {
     Navigator.pop(context);
     UI.newPage(context, FilePushRoute());
   }
@@ -111,8 +111,8 @@ class RecentRouteState extends State<RecentRoute> {
   gridView() => GridView.count(
         crossAxisCount: 4,
         children: <Widget>[
-          UI.iconTxtBtn(Constants.PHOTO, "图片", callUpdatePhotoPage),
-          UI.iconTxtBtn(Constants.FILE, "文件", callUpdateFilepage),
+          UI.iconTxtBtn(Constants.PHOTO, "图片", callPhotoSelectorPage),
+          UI.iconTxtBtn(Constants.FILE, "文件", callFileSelectorPage),
           UI.iconTxtBtn(Constants.DOC, "文档", () => {print("")}),
           UI.iconTxtBtn(Constants.FOLDER, "新建文件夹", () => {print("")}),
           UI.iconTxtBtn(Constants.NOTE, "写笔记", () => {print("")}),

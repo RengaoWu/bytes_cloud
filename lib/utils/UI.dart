@@ -30,9 +30,9 @@ class UI {
     });
   }
 
-  static showProgressDialog(
+  static showProgressDialog<T>(
       {@required BuildContext context,
-      Future future,
+      Future<T> future,
       String title,
       void successCall(String data),
       void failCall(String errMsg)}) {

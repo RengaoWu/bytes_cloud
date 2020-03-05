@@ -30,4 +30,9 @@ class Constants {
   static final String FACEBACK = 'assets/images/faceback.png';
   static final String DOWNLOADED = 'assets/images/downloaded.png';
   static final String CHANGE_USER = 'assets/images/change_user.png';
+  static final String QQ = 'assets/images/QQ.png';
+  static final String WECHAT = 'assets/images/wechat.png';
+  static final String NULL = 'assets/images/null.png';
+
+  static final int COLOR_DIVIDER = 0xffe5e5e5;
 }

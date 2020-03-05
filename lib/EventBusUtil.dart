@@ -5,6 +5,8 @@ class FilePathEvent {
   FilePathEvent(this.path);
 }
 
+class FilesPushEvent {}
+
 class GlobalEventBus {
   EventBus event;
   factory GlobalEventBus() => _getInstance();

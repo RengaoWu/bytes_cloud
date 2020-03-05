@@ -6,6 +6,7 @@ import 'package:bytes_cloud/SplashRoute.dart';
 import 'package:bytes_cloud/test/HttpTest.dart';
 import 'package:bytes_cloud/test/SliverAppBar.dart';
 import 'package:bytes_cloud/test/ViewPageTest.dart';
+import 'package:bytes_cloud/update/PhotoPushRoute.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
       ),
       home: HomeRoute(),
+//      home: PhotoPushRoute(
+//        type: 1,
+//      ),
       // home: HttpTestRoute(),
       // home: LoginRoute(),
       // home: BgWidget(),

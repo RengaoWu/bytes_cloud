@@ -99,7 +99,7 @@ class RecentRouteState extends State<RecentRoute> {
 
   callUpdatePhotoPage() {
     Navigator.pop(context);
-    UI.newPage(context, PhotoPushRoute());
+    UI.newPage(context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
   }
 
   gridView() => GridView.count(

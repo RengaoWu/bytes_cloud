@@ -23,6 +23,8 @@ dependencies:
   provider: ^4.0.4
   sqflite: ^1.2.0
   dio: 3.0.9 #latest version
+  multi_image_picker: ^4.6.2
+
 
 dev_dependencies:
   flutter_test:

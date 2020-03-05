@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bytes_cloud/FileManager.dart';
 import 'package:bytes_cloud/HomeRout.dart';
 import 'package:bytes_cloud/SplashRoute.dart';
+import 'package:bytes_cloud/test/HttpTest.dart';
 import 'package:bytes_cloud/test/SliverAppBar.dart';
 import 'package:bytes_cloud/test/ViewPageTest.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -22,11 +23,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
       ),
-      // home: HomeRoute(),
-      // home: HomeRoute(),
-      home: LoginRoute(),
+      home: HomeRoute(),
+      // home: HttpTestRoute(),
+      // home: LoginRoute(),
       // home: BgWidget(),
     );
   }

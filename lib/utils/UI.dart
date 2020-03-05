@@ -1,17 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'Constants.dart';
 
 class UI {
   static newPage(BuildContext context, Widget widget) => Navigator.push(
       context, new MaterialPageRoute(builder: (context) => widget));
 
   static Widget divider(
-      {color = Colors.grey, double padding = 0, width = 0.5}) {
+      {color = Colors.grey, double padding = 0, double width = 0.5}) {
     return Padding(
         padding: EdgeInsets.fromLTRB(padding, 0, padding, 0),
         child: DecoratedBox(
           decoration:
-              BoxDecoration(border: Border.all(color: color, width: 0.5)),
+              BoxDecoration(border: Border.all(color: color, width: width)),
         ));
   }
 
@@ -64,13 +65,16 @@ class UI {
 
   static showMessageDialog(
       {@required BuildContext context,
-      String title,
+      String title = '',
       Widget content,
       Map<String, Function> map}) {
     List<Widget> actions = [];
-    map.forEach((w, c) {
-      actions.add(FlatButton(onPressed: c, child: Text(w)));
-    });
+    if (map != null) {
+      map.forEach((w, c) {
+        actions.add(FlatButton(onPressed: c, child: Text(w)));
+      });
+    }
+
     showDialog<Null>(
         context: context,
         barrierDismissible: false,
@@ -83,19 +87,59 @@ class UI {
         });
   }
 
-  Widget CheckboxTitle(
-      {IconData icon, String text, bool value, Function call}) {
+  static Widget iconTxtBtn(String image, String title, void call()) {
     return InkWell(
-        onTap: () {},
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Row(
-            children: <Widget>[
-              Icon(icon),
-              Checkbox(value: value, onChanged: call),
-              Text(text),
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(
+            width: 24,
+            height: 40,
+            child: Image.asset(image),
           ),
-        ));
+          Text(
+            "$title",
+            style: TextStyle(fontSize: 14),
+          )
+        ],
+      ),
+      onTap: call,
+    );
   }
+
+  static bottomSheet(
+          {@required BuildContext context,
+          @required Widget content,
+          double height = 400,
+          double radius = 10}) =>
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return SizedBox(
+                height: height,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      height: height,
+                      width: double.infinity,
+                      color: Colors.black54,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(radius),
+                            topRight: Radius.circular(radius),
+                          )),
+                    ),
+                    Container(
+                      child: Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(top: 24.0),
+                          child: content),
+                    ),
+                  ],
+                ));
+          });
 }

@@ -110,7 +110,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
 class MarkDownPage extends StatefulWidget {
   String title;
 
-  MarkDownPage(this.title) {}
+  MarkDownPage(this.title);
   @override
   State<StatefulWidget> createState() {
     return MarkDownPageState(title);

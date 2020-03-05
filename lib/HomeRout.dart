@@ -1,3 +1,6 @@
+import 'package:bytes_cloud/update/PhotoPushRoute.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -37,19 +40,19 @@ class HomeRouteState extends State<HomeRoute>
             unselectedLabelColor: Colors.black26,
             tabs: <Widget>[
               new Tab(
-                text: 'Recnet',
+                text: '最近',
                 icon: new Icon(Icons.recent_actors),
               ),
               new Tab(
-                text: "File",
+                text: '文件',
                 icon: new Icon(Icons.cloud),
               ),
               new Tab(
-                text: "Photo",
+                text: '图片',
                 icon: new Icon(Icons.photo),
               ),
               new Tab(
-                text: 'Self',
+                text: '我的',
                 icon: new Icon(Icons.person),
               )
             ]),
@@ -77,8 +80,14 @@ class RecentRouteState extends State<RecentRoute> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            icon: Icon(Icons.file_download),
-            onPressed: () => {print("on press hhh")}),
+            icon: Icon(Icons.widgets),
+            onPressed: () => {
+                  UI.bottomSheet(
+                      context: context,
+                      content: gridView(),
+                      height: 240,
+                      radius: 8)
+                }),
         centerTitle: true,
         title: Text('Recent'),
       ),
@@ -87,4 +96,22 @@ class RecentRouteState extends State<RecentRoute> {
       ),
     );
   }
+
+  callUpdatePhotoPage() {
+    Navigator.pop(context);
+    UI.newPage(context, PhotoPushRoute());
+  }
+
+  gridView() => GridView.count(
+        crossAxisCount: 4,
+        children: <Widget>[
+          UI.iconTxtBtn(Constants.PHOTO, "图片", callUpdatePhotoPage),
+          UI.iconTxtBtn(Constants.FILE, "文件", () => {print("")}),
+          UI.iconTxtBtn(Constants.DOC, "文档", () => {print("")}),
+          UI.iconTxtBtn(Constants.FOLDER, "新建文件夹", () => {print("")}),
+          UI.iconTxtBtn(Constants.NOTE, "写笔记", () => {print("")}),
+          UI.iconTxtBtn(Constants.MCF, "语言速记", () => {print("")}),
+          UI.iconTxtBtn(Constants.SCAN, "智能扫描", () => {print("")}),
+        ],
+      );
 }

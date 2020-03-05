@@ -22,6 +22,7 @@ dependencies:
   flutter_markdown: ^0.3.3
   provider: ^4.0.4
   sqflite: ^1.2.0
+  dio: 3.0.9 #latest version
 
 dev_dependencies:
   flutter_test:
@@ -31,7 +32,7 @@ flutter:
   uses-material-design: true
   assets:
     - images/logo.png
-    # files
+    # 不要包含中文
     - assets/images/folder.png
     - assets/images/image.png
     - assets/images/ppt.png
@@ -44,6 +45,21 @@ flutter:
     - assets/images/video.png
     - assets/images/psd.png
     - assets/images/unknown.png
-    - assets/images/image.jpg
+    - assets/images/photo.png
+    - assets/images/audio.png
+    - assets/images/audio2.png
+    - assets/images/scan.png
+    - assets/images/file2.png
+    - assets/images/folder2.png
+    - assets/images/doc.png
+    - assets/images/note.png
+    - assets/images/group.png
+    - assets/images/mark.png
+    - assets/images/setting.png
+    - assets/images/share.png
+    - assets/images/trash.png
+    - assets/images/faceback.png
+    - assets/images/downloaded.png
+    - assets/images/change_user.png
 
 

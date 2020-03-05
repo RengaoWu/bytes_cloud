@@ -1,4 +1,6 @@
 import 'package:bytes_cloud/MarkDownPage.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,17 +14,20 @@ class SelfRoute extends StatefulWidget {
 class SelfRouteState extends State<SelfRoute>
     with AutomaticKeepAliveClientMixin {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContextcontext) {
     return Scaffold(
-        appBar: null,
         body: ListView(
-          children: <Widget>[
-            getAvatorWidget(), // 头像
-            getVolumeWidget(),
-            getGridView(),
-          ],
-        ));
+      shrinkWrap: true,
+      children: <Widget>[
+        getAvatorWidget(), // 头像
+        //getVolumeWidget(),
+        getGridView(),
+      ],
+    ));
   }
+
+  callMarkDownPage() => Navigator.push(
+      context, MaterialPageRoute(builder: (context) => new MarkDownListPage()));
 
   Widget getGridView() {
     return GridView.count(
@@ -30,92 +35,91 @@ class SelfRouteState extends State<SelfRoute>
       physics: ScrollPhysics(),
       shrinkWrap: true,
       children: <Widget>[
-        getTextItemWidget(
-            Icons.bookmark,
-            "笔记",
-            () => {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => new MarkDownListPage()))
-                }), // 笔记
-        getTextItemWidget(Icons.group, "共享", () => {print("")}),
+        UI.iconTxtBtn(Constants.NOTE, "笔记", callMarkDownPage), // 笔记
+        UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
+        UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
+        UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享
+        UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}), // 回收站
+        UI.iconTxtBtn(Constants.DOWNLOADED, "已下载", () => {print("")}), // 已下载文件
 
-        getTextItemWidget(Icons.star, "收藏", () => {print("")}),
-        getTextItemWidget(Icons.share, "分享", () => {print("")}), // 分享
-        getTextItemWidget(
-            Icons.delete_outline, "回收站", () => {print("")}), // 回收站
-        getTextItemWidget(
-            Icons.file_download, "已下载", () => {print("")}), // 已下载文件
-
-        getTextItemWidget(Icons.settings, "设置", () => {print("")}),
-        getTextItemWidget(Icons.email, "反馈", () => {print("")}),
+        UI.iconTxtBtn(Constants.SETTING, "设置", () => {print("")}),
+        UI.iconTxtBtn(Constants.FACEBACK, "反馈", () => {print("")}),
       ],
     );
   }
 
   Widget getAvatorWidget() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
-      child: Card(
-        child: Row(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Image(
-                image: NetworkImage(
-                    "http://b-ssl.duitang.com/uploads/item/201409/25/20140925103211_w3edR.jpeg"),
-                width: 60,
-                height: 60,
-              ),
-            ),
-            Row(
-              children: <Widget>[
-                Text(
-                  "白茶清欢",
-                  style: TextStyle(fontSize: 24, color: Colors.black),
+      padding: EdgeInsets.fromLTRB(0, 32, 0, 8),
+      child: Row(
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.all(16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: Image(
+                  image: NetworkImage(
+                      "http://b-ssl.duitang.com/uploads/item/201409/25/20140925103211_w3edR.jpeg"),
+                  width: 80,
+                  height: 80,
                 ),
-                Icon(
-                  Icons.autorenew,
-                  color: Colors.grey,
-                )
-              ],
-            )
-          ],
-        ),
+              )),
+          Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Text(
+                  "白茶清欢",
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  SizedBox(
+                    child: Image.asset(Constants.CHANGE_USER),
+                    height: 16,
+                  ),
+                  Text(
+                    '切换账号',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  )
+                ],
+              )
+            ],
+          )
+        ],
       ),
     );
   }
 
-  Widget getVolumeWidget() {
-    return Card(
-        child: Padding(
-      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-      child: DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            color: Colors.white,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 4),
-                child: Text(
-                  "存储空间 3/10 GB",
-                  style: TextStyle(fontSize: 16, color: Colors.lightGreen),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                child: LinearProgressIndicator(
-                  value: 0.3,
-                ),
-              ),
-            ],
-          )),
-    ));
-  }
+//  Widget getVolumeWidget() {
+//    return Padding(
+//      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+//      child: DecoratedBox(
+//          decoration: BoxDecoration(
+//            shape: BoxShape.rectangle,
+//            color: Colors.white,
+//          ),
+//          child: Column(
+//            crossAxisAlignment: CrossAxisAlignment.start,
+//            children: <Widget>[
+//              Padding(
+//                padding: EdgeInsets.fromLTRB(8, 8, 8, 4),
+//                child: Text(
+//                  "存储空间 3/10 GB",
+//                  style: TextStyle(fontSize: 16, color: Colors.lightGreen),
+//                ),
+//              ),
+//              Padding(
+//                padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+//                child: LinearProgressIndicator(
+//                  value: 0.3,
+//                ),
+//              ),
+//            ],
+//          )),
+//    );
+//  }
 
   Widget getCircleVolumeWidget(void call()) {
     return InkWell(
@@ -131,29 +135,6 @@ class SelfRouteState extends State<SelfRoute>
           ),
         ),
       )),
-      onTap: call,
-    );
-  }
-
-  Widget getTextItemWidget(IconData icon, String title, void call()) {
-    return InkWell(
-      child: Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              icon,
-              size: 24,
-              color: Colors.blue,
-            ),
-            Text(
-              "$title",
-              style: TextStyle(fontSize: 14),
-            )
-          ],
-        ),
-      ),
       onTap: call,
     );
   }

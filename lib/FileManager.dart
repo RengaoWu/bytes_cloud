@@ -14,16 +14,16 @@ import 'common.dart';
 /// 点击一个文件夹，传入文件夹的路径，显示该文件夹下的文件和文件夹
 /// 点击一个文件，打开
 /// 返回上一层，返回上一层目录路径 [dir.parent.path]
-class FileManager extends StatefulWidget {
+class FilesFragment extends StatefulWidget {
   @override
-  _FileManagerState createState() {
+  _FilesFragmentState createState() {
     print("FileManager createState");
-    return _FileManagerState();
+    return _FilesFragmentState();
   }
 }
 
 // AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
-class _FileManagerState extends State<FileManager>
+class _FilesFragmentState extends State<FilesFragment>
     with AutomaticKeepAliveClientMixin {
   MethodChannel _channel = MethodChannel('openFileChannel');
   ScrollController controller = ScrollController();
@@ -219,7 +219,7 @@ class _FileManagerState extends State<FileManager>
   }
 
   void jumpToPosition(bool isEnter) async {
-    print("FileManager jumpToPosition ${isEnter}");
+    print("FileManager jumpToPosition $isEnter");
     if (isEnter)
       controller.jumpTo(0.0);
     else {
@@ -237,7 +237,7 @@ class _FileManagerState extends State<FileManager>
 
   // 初始化该路径下的文件、文件夹
   void initPathFiles(String path) {
-    print("FileManager initPathFiles ${path}");
+    print("FileManager initPathFiles $path");
     try {
       setState(() {
         parentDir = Directory(path);

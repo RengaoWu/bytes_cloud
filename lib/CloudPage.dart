@@ -80,7 +80,7 @@ class CloudRouteState extends State<CloudRoute> {
   }
 
   Widget getFileListWidget() {
-    return FileManager();
+    return FilesFragment();
   }
 
   @override

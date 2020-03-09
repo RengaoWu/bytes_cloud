@@ -1,4 +1,21 @@
 class Constants {
+  // Channel
+  static final String FILE_CHANNEL = 'FileChannel';
+
+  // File type
+  static final String TYPE_ALL = '全部';
+  static final String TYPE_DOC = 'DOC';
+  static final String TYPE_XLS = 'XLS';
+  static final String TYPE_PPT = 'PPT';
+  static final String TYPE_TXT = 'TXT';
+  static final String TYPE_PDF = 'PDF';
+  static final String TYPE_ZIP = 'ZIP';
+  static final String TYPE_RAR = 'RAR';
+  static final String TYPE_7Z = '7Z';
+  static final String TYPE_MP3 = 'MP3';
+  static final String TYPE_WAV = 'WAV';
+  static final String TYPE_MP4 = 'MP4';
+
   /// {@link pubspec.yaml}
   static final String LOGO = 'images/logo.png';
   // static final String FOLDER = 'assets/images/folder.png';

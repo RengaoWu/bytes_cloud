@@ -90,10 +90,10 @@ class RecentRouteState extends State<RecentRoute> {
                       radius: 8)
                 }),
         centerTitle: true,
-        title: Text('Recent'),
+        title: Text('最近'),
       ),
       body: Center(
-        child: Text('Recnet'),
+        child: Text('最近'),
       ),
     );
   }

@@ -87,6 +87,20 @@ class UI {
         });
   }
 
+  static Widget borderDeco(
+      Widget child, bool left, bool top, bool right, bool bottom) {
+    return DecoratedBox(
+      child: child,
+      decoration: BoxDecoration(
+          border: Border(
+        left: left ? BorderSide(width: 0.5) : BorderSide.none,
+        top: top ? BorderSide(width: 0.5) : BorderSide.none,
+        right: right ? BorderSide(width: 0.5) : BorderSide.none,
+        bottom: bottom ? BorderSide(width: 0.5) : BorderSide.none,
+      )),
+    );
+  }
+
   static Widget iconTxtBtn(String image, String title, void call()) {
     return InkWell(
       child: Column(

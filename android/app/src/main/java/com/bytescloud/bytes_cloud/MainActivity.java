@@ -10,17 +10,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -29,8 +33,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
-    private static final String TAG = "MainActivity";
-    private static final String METHOD_CHANNEL = "openFileChannel";
+    private static final String TAG = "MainActivity1";
+    private static final String METHOD_CHANNEL = "FileChannel";
     private static final Handler ui = new Handler();
 
     @Override
@@ -59,20 +63,35 @@ public class MainActivity extends FlutterActivity {
 
     private void handleGetAllFiles(MethodCall call, MethodChannel.Result result) {
         new Thread(() -> {
-            String path = call.argument("path");
-            List<String> list = getAllFiles(path);
-            JSONArray array = new JSONArray();
-            for (String s : list) {
-                if (s.endsWith(".ppt") || s.endsWith(".pptx") ||
-                        s.endsWith(".doc") || s.endsWith(".docx") ||
-                        s.endsWith(".xls") || s.endsWith(".xlsx") ||
-                        s.endsWith(".txt") || s.endsWith(".zip") ||
-                        s.endsWith(".rar") || s.endsWith(".pdf")
-                ) {
-                    array.put(s);
+            try {
+                String path = call.argument("path");
+                String ext = call.argument("extension");
+                if (ext == null) {
+                    Log.d(TAG, "extension is null");
+                    throw new Exception("extension is null");
                 }
+                JSONArray extension = new JSONArray(ext);
+                Set<String> set = new HashSet<>();
+                for (int i = 0; i < extension.length(); i++) {
+                    set.add(extension.optString(i));
+                }
+                Log.d(TAG, "extension " + extension.length());
+                List<String> files = getAllFiles(path);
+                JSONArray array = new JSONArray();
+                for (String f : files) {
+                    int index = f.lastIndexOf(".");
+                    if (index <= 0) continue; // -1 or 0e
+                    String end = f.substring(index);
+                    if (TextUtils.isEmpty(end)) continue;
+                    if (set.contains(end)) {
+                        array.put(f);
+                    }
+                }
+                ui.post(() -> result.success(array.toString()));
+            } catch (Exception e) {
+                e.printStackTrace();
+                ui.post(() -> result.success(new JSONArray().toString()));
             }
-            ui.post(() -> result.success(array.toString()));
         }).start();
     }
 

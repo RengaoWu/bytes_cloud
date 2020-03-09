@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bytes_cloud/EventBusUtil.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -25,7 +26,7 @@ class FilesFragment extends StatefulWidget {
 // AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
 class _FilesFragmentState extends State<FilesFragment>
     with AutomaticKeepAliveClientMixin {
-  MethodChannel _channel = MethodChannel('openFileChannel');
+  MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
   ScrollController controller = ScrollController();
 
   Directory parentDir;

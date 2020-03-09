@@ -26,7 +26,7 @@ class FileSelectorFragment extends StatefulWidget {
 // AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
 class _FilesFragmentState extends State<FileSelectorFragment>
     with AutomaticKeepAliveClientMixin {
-  MethodChannel _channel = MethodChannel('openFileChannel');
+  MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
   ScrollController controller = ScrollController();
   Set<String> selectedFiles = Set();
   int filesSize = 0;

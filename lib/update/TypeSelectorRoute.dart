@@ -3,68 +3,71 @@ import 'dart:io';
 
 import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileTypeUtils.dart';
+import 'package:bytes_cloud/utils/Json.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 
-@Deprecated('link TypeSelectorRoute')
-class DocPushRoute extends StatefulWidget {
+class TypeSelectorRoute extends StatefulWidget {
+  String arg_type;
+  TypeSelectorRoute(this.arg_type);
   @override
   State<StatefulWidget> createState() {
-    return DocPushRouteState();
+    return TypeSelectorRouteState(arg_type);
   }
 }
 
-@Deprecated('link TypeSelectorRoute')
-class DocPushRouteState extends State<DocPushRoute> {
+class TypeSelectorRouteState extends State<TypeSelectorRoute> {
+  String arg_type;
+
   MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
+
   List<String> selectedFiles = [];
   int filesSize = 0;
-  BuildContext buildContext;
 
   Future<String> getAllFile(String path) async {
-    final Map<String, dynamic> args = <String, dynamic>{'path': path};
-    return await _channel.invokeMethod('getAllFiles', args);
+    try {
+      final Map<String, dynamic> args = <String, dynamic>{'path': path};
+      args['extension'] = JsonUtil.toJson(extensionName2Type.keys.toList());
+      return await _channel.invokeMethod('getAllFiles', args);
+    } catch (err) {
+      print(err);
+    }
   }
 
-  List<FileSystemEntity> allFiles = new List<FileSystemEntity>();
+  String currentType = Constants.TYPE_ALL;
+  List<FileSystemEntity> allFiles = [];
+  Map<String, Widget> type2Icon = {};
+  Map<String, String> extensionName2Type = {};
 
-  String currentType = '全部';
-  Map<String, Widget> type2Icon = {
-    '全部': Text('A'),
-    'DOC': Image.asset(Constants.DOC),
-    'XLS': Image.asset(Constants.EXCEL),
-    'PPT': Image.asset(Constants.PPT),
-    'PDF': Image.asset(Constants.PSD),
-    'TXT': Image.asset(Constants.TXT)
-  };
+  // initState 初始化
+  Map<String, List<FileSystemEntity>> type2Files = {};
 
-  Map<String, List<FileSystemEntity>> type2Files = {
-    '全部': [],
-    'DOC': [],
-    'XLS': [],
-    'PPT': [],
-    'PDF': [],
-    'TXT': [],
-  };
+  filterTypeFiles() {
+    allFiles.forEach((file) {
+      String extension = file.path.substring(file.path.lastIndexOf('.'));
+      if (extension != null && extensionName2Type.keys.contains(extension)) {
+        type2Files[extensionName2Type[extension]].add(file);
+      }
+    });
+  }
+
+  TypeSelectorRouteState(this.arg_type);
+  initData() {
+    // // convert
+    FileTypeUtils.convert(arg_type, type2Icon, extensionName2Type);
+    type2Icon.keys.forEach((key) {
+      type2Files[key] = [];
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    buildContext = context;
-  }
-
-  call(BuildContext context) {
-    String content = '';
-    if (selectedFiles.length == 0) {
-      content = '没有选择任何文件';
-    } else {
-      content =
-          '开始上传，总共${selectedFiles.length}个文件，共${Common().getFileSize(filesSize)}';
-    }
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
+    initData();
   }
 
   @override
@@ -83,7 +86,7 @@ class DocPushRouteState extends State<DocPushRoute> {
               return IconButton(
                 icon: Icon(Icons.file_upload),
                 onPressed: () {
-                  call(context);
+                  pushToCloud(context);
                 },
               );
             },
@@ -104,6 +107,17 @@ class DocPushRouteState extends State<DocPushRoute> {
         ],
       ),
     );
+  }
+
+  pushToCloud(BuildContext context) {
+    String content = '';
+    if (selectedFiles.length == 0) {
+      content = '没有选择任何文件';
+    } else {
+      content =
+          '开始上传，总共${selectedFiles.length}个文件，共${Common().getFileSize(filesSize)}';
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
   }
 
   loadFilesFuture() {
@@ -140,7 +154,6 @@ class DocPushRouteState extends State<DocPushRoute> {
   Widget _buildFileItem(FileSystemEntity file) {
     String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
         .format(file.statSync().modified.toLocal());
-
     return InkWell(
       child: Container(
         decoration: BoxDecoration(
@@ -182,22 +195,6 @@ class DocPushRouteState extends State<DocPushRoute> {
     });
   }
 
-  filterTypeFiles() {
-    allFiles.forEach((file) {
-      if (file.path.endsWith('.doc') || file.path.endsWith('.docx')) {
-        type2Files['DOC'].add(file);
-      } else if (file.path.endsWith('.xls') || file.path.endsWith('.xlsx')) {
-        type2Files['XLS'].add(file);
-      } else if (file.path.endsWith('.ppt') || file.path.endsWith('.pptx')) {
-        type2Files['PPT'].add(file);
-      } else if (file.path.endsWith('.pdf')) {
-        type2Files['PDF'].add(file);
-      } else if (file.path.endsWith('.txt')) {
-        type2Files['TXT'].add(file);
-      }
-    });
-  }
-
   fileTypeGridView() {
     List<Widget> children = [];
     type2Icon.forEach((type, widget) {
@@ -211,23 +208,18 @@ class DocPushRouteState extends State<DocPushRoute> {
   }
 
   iconTextBtn(Widget icon, String type, Function call) {
-    return UnconstrainedBox(
-      child: Chip(
-        avatar: CircleAvatar(
-          child: InkWell(
-              onTap: () => call(type),
-              child: Padding(
-                child: icon,
-                padding: EdgeInsets.all(4),
-              )),
-          backgroundColor: Color.fromARGB(0x00, 0xff, 0xff, 0xff),
-        ),
-        backgroundColor: Color.fromARGB(0x66, 0xAA, 0xFF, 0xFF),
-        label: InkWell(
-          child: Text(type),
-          onTap: () => call(type),
-        ),
-      ),
-    );
+    return InkWell(
+        onTap: () => call(type),
+        child: Chip(
+          avatar: CircleAvatar(
+            child: Padding(
+              child: icon,
+              padding: EdgeInsets.all(4),
+            ),
+            backgroundColor: Color.fromARGB(0x00, 0xff, 0xff, 0xff),
+          ),
+          backgroundColor: Color.fromARGB(0x66, 0xAA, 0xFF, 0xFF),
+          label: Text(type),
+        ));
   }
 }

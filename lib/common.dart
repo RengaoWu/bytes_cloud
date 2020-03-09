@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Common {
@@ -16,6 +19,22 @@ class Common {
   Common._internal();
 
   String sDCardDir;
+  String get sDownloadDir =>
+      sDCardDir + '/Download'; // android 'Download', ios null
+  String get sWxDir => sDCardDir + '/Tencent/MicroMsg/Download';
+
+  String get sQQDir => sDCardDir + '/Tencent';
+  String get sQQFileRecDir => sQQDir + '/QQfile_recv'; // 文件
+  String get sQQFileImageRecDir => sQQDir + '/QQfile_images'; // 聊天图片
+  String get sQQFileCollRecDir => sQQDir + '/QQfile_colleaction'; //收藏
+  String get sQQFavDir => sQQDir + '/QQ_Favorite'; //表情
+
+  List<FileSystemEntity> get qqFiles => [
+        Directory(sQQFileRecDir),
+        Directory(sQQFileImageRecDir),
+        Directory(sQQFileCollRecDir),
+        Directory(sQQFavDir),
+      ];
 
   String getFileSize(int fileSize) {
     String str = '';
@@ -32,44 +51,68 @@ class Common {
   }
 
   String selectIcon(String ext) {
-    String iconImg = 'assets/images/unknown.png';
+    String iconImg = Constants.UNKNOW;
 
     switch (ext) {
       case '.ppt':
       case '.pptx':
-        iconImg = 'assets/images/ppt.png';
+        iconImg = Constants.PPT;
         break;
       case '.doc':
       case '.docx':
-        iconImg = 'assets/images/word.png';
+        iconImg = Constants.DOC;
         break;
       case '.xls':
       case '.xlsx':
-        iconImg = 'assets/images/excel.png';
+        iconImg = Constants.EXCEL;
         break;
       case '.jpg':
       case '.jpeg':
       case '.png':
-        iconImg = 'assets/images/image.png';
+        iconImg = Constants.IMAGE;
         break;
       case '.txt':
-        iconImg = 'assets/images/txt.png';
+        iconImg = Constants.TXT;
         break;
       case '.mp3':
-        iconImg = 'assets/images/mp3.png';
+        iconImg = Constants.MP3;
+        break;
+      case '.wav':
+        iconImg = Constants.WAV;
+        break;
+      case '.flac':
+        iconImg = Constants.FLAC;
+        break;
+      case '.aac':
+        iconImg = Constants.AAC;
         break;
       case '.mp4':
-        iconImg = 'assets/images/video.png';
+        iconImg = Constants.MP4;
+        break;
+      case '.avi':
+        iconImg = Constants.AVI;
+        break;
+      case '.flv':
+        iconImg = Constants.FLV;
+        break;
+      case '3gp':
+        iconImg = Constants.GP3;
         break;
       case '.rar':
+        iconImg = Constants.RAR;
+        break;
       case '.zip':
-        iconImg = 'assets/images/zip.png';
+        iconImg = Constants.ZIP;
+        break;
+      case '.7z':
+        iconImg = Constants.Z7;
         break;
       case '.psd':
-        iconImg = 'assets/images/psd.png';
+      case '.pdf':
+        iconImg = Constants.PSD;
         break;
       default:
-        iconImg = 'assets/images/file.png';
+        iconImg = Constants.FILE;
         break;
     }
     return iconImg;

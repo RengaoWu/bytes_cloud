@@ -1,4 +1,4 @@
-import 'package:bytes_cloud/update/FilePushRoute.dart';
+import 'package:bytes_cloud/update/NativeFileRoute.dart';
 import 'package:bytes_cloud/update/PhotoPushRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -105,14 +105,14 @@ class RecentRouteState extends State<RecentRoute> {
 
   callFileSelectorPage() {
     Navigator.pop(context);
-    UI.newPage(context, FilePushRoute());
+    UI.newPage(context, NativeFileRoute());
   }
 
   gridView() => GridView.count(
         crossAxisCount: 4,
         children: <Widget>[
           UI.iconTxtBtn(Constants.PHOTO, "图片", callPhotoSelectorPage),
-          UI.iconTxtBtn(Constants.FILE, "文件", callFileSelectorPage),
+          UI.iconTxtBtn(Constants.FILE2, "文件", callFileSelectorPage),
           UI.iconTxtBtn(Constants.DOC, "文档", () => {print("")}),
           UI.iconTxtBtn(Constants.FOLDER, "新建文件夹", () => {print("")}),
           UI.iconTxtBtn(Constants.NOTE, "写笔记", () => {print("")}),

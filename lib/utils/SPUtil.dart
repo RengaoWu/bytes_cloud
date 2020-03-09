@@ -39,4 +39,13 @@ class SPUtil {
     int value = sp.getInt(key);
     return value == null ? def : value;
   }
+
+  static setArray(String key, List<String> value) {
+    sp.setStringList(key, value);
+  }
+
+  static getArray(String key, List<String> def) {
+    if (!sp.containsKey(key)) return def;
+    return sp.getStringList(key);
+  }
 }

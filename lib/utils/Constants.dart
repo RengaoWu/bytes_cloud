@@ -15,6 +15,8 @@ class Constants {
   static final String TYPE_MP3 = 'MP3';
   static final String TYPE_WAV = 'WAV';
   static final String TYPE_MP4 = 'MP4';
+  static final String TYPE_FLAC = 'FLAC';
+  static final String TYPE_AAC = 'AAC';
 
   /// {@link pubspec.yaml}
   static final String LOGO = 'images/logo.png';
@@ -25,17 +27,30 @@ class Constants {
   static final String EXCEL = 'assets/images/excel.png';
   static final String TXT = 'assets/images/txt.png';
   // static final String FILE = 'assets/images/file.png';
-  static final String ZIP = 'assets/images/zip.png';
-  static final String MP3 = 'assets/images/mp3.png';
+  static final String COMPRESSFILE = 'assets/images/compress_file.png';
+  static final String MUSIC = 'assets/images/music.png';
   static final String VIDEO = 'assets/images/video.png';
   static final String PSD = 'assets/images/psd.png';
   static final String UNKNOW = 'assets/images/unknown.png';
+  // file type
+  static final String GP3 = 'assets/images/3gp.png';
+  static final String AAC = 'assets/images/aac.png';
+  static final String AVI = 'assets/images/avi.png';
+  static final String FLV = 'assets/images/flv.png';
+  static final String MP3 = 'assets/images/mp3.png';
+  static final String MP4 = 'assets/images/mp4.png';
+  static final String WAV = 'assets/images/wav.png';
+  static final String FLAC = 'assets/images/flac.png';
+  static final String ZIP = 'assets/images/zip.png';
+  static final String RAR = 'assets/images/rar.png';
+  static final String Z7 = 'assets/images/7z.png';
 
   static final String PHOTO = 'assets/images/photo.png';
   static final String MCF = 'assets/images/audio.png';
   static final String AUDIO = 'assets/images/audio2.png';
   static final String SCAN = 'assets/images/scan.png';
-  static final String FILE = 'assets/images/file2.png';
+  static final String FILE = 'assets/images/file.png';
+  static final String FILE2 = 'assets/images/file2.png';
   static final String FOLDER = 'assets/images/folder2.png';
   static final String DOC = 'assets/images/doc.png';
   static final String NOTE = 'assets/images/note.png';

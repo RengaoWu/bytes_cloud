@@ -42,8 +42,8 @@ flutter:
     - assets/images/excel.png
     - assets/images/txt.png
     - assets/images/file.png
-    - assets/images/zip.png
-    - assets/images/mp3.png
+    - assets/images/compress_file.png
+    - assets/images/music.png
     - assets/images/video.png
     - assets/images/psd.png
     - assets/images/unknown.png
@@ -66,6 +66,19 @@ flutter:
     - assets/images/QQ.png
     - assets/images/wechat.png
     - assets/images/null.png
+    - assets/images/3gp.png
+    - assets/images/aac.png
+    - assets/images/avi.png
+    - assets/images/flv.png
+    - assets/images/mp3.png
+    - assets/images/mp4.png
+    - assets/images/wav.png
+    - assets/images/rar.png
+    - assets/images/zip.png
+    - assets/images/7z.png
+    - assets/images/flac.png
+
+
 
 
 

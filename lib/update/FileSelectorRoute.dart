@@ -162,7 +162,11 @@ class TypeSelectorRouteState extends State<TypeSelectorRoute> {
                   width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
         ),
         child: ListTile(
-            leading: Image.asset(Common().selectIcon(p.extension(file.path))),
+            leading: Image.asset(
+              Common().selectIcon(p.extension(file.path)),
+              width: 40,
+              height: 40,
+            ),
             title: Text(file.path.substring(file.parent.path.length + 1)),
             subtitle: Text(
                 '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',

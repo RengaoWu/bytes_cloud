@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bytes_cloud/test/ch8.dart';
+import 'package:bytes_cloud/update/NativeFileRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -17,9 +16,16 @@ import '../common.dart';
 /// 点击一个文件，打开
 /// 返回上一层，返回上一层目录路径 [dir.parent.path]
 class FileSelectorFragment extends StatefulWidget {
+  String path;
+  FileSelectorFragment(this.path);
+  _FilesFragmentState state;
+
+  String get currentDir => state.parentDir.path; // 选择器当前的目录
+
   @override
   _FilesFragmentState createState() {
-    return _FilesFragmentState();
+    state = _FilesFragmentState(path);
+    return state;
   }
 }
 
@@ -30,11 +36,22 @@ class _FilesFragmentState extends State<FileSelectorFragment>
   ScrollController controller = ScrollController();
   Set<String> selectedFiles = Set();
   int filesSize = 0;
+  String root;
 
   Directory parentDir;
   List<FileSystemEntity> files = [];
   List<double> position = []; // 栈中位置
   StreamSubscription _eventBusOn;
+
+  _FilesFragmentState(String path) {
+    root = path;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    initPathFiles(ShareDataWidget.of(context).data);
+  }
 
   @override
   void initState() {
@@ -50,12 +67,21 @@ class _FilesFragmentState extends State<FileSelectorFragment>
       }
       Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
     });
-    parentDir = Directory(Common().sDCardDir);
-    initPathFiles(Common().sDCardDir);
+    initPathFiles(root);
+  }
+
+  // 初始化该路径下的文件、文件夹
+  void initPathFiles(String path) {
+    setState(() {
+      root = path;
+      parentDir = Directory(path);
+      sortFiles();
+    });
   }
 
   Future<bool> onWillPop() async {
-    if (parentDir.path != Common().sDCardDir) {
+    if (!isRoot()) {
+      position.removeLast();
       initPathFiles(parentDir.parent.path);
       jumpToPosition(false);
     } else {
@@ -116,7 +142,11 @@ class _FilesFragmentState extends State<FileSelectorFragment>
                   width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
         ),
         child: ListTile(
-            leading: Image.asset(Common().selectIcon(p.extension(file.path))),
+            leading: Image.asset(
+              Common().selectIcon(p.extension(file.path)),
+              width: 40,
+              height: 40,
+            ),
             title: Text(file.path.substring(file.parent.path.length + 1)),
             subtitle: Text(
                 '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
@@ -143,8 +173,13 @@ class _FilesFragmentState extends State<FileSelectorFragment>
   }
 
   Widget _buildFolderItem(FileSystemEntity file) {
-    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
-        .format(file.statSync().modified.toLocal());
+    String modifiedTime;
+    try {
+      modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+          .format(file.statSync().modified.toLocal());
+    } catch (e) {
+      modifiedTime = '';
+    }
 
     return InkWell(
       child: Container(
@@ -204,16 +239,7 @@ class _FilesFragmentState extends State<FileSelectorFragment>
         await Future.delayed(Duration(milliseconds: 10)); // 不添加这个下面代码无法生效
         controller?.jumpTo(position[position.length - 1]);
       } catch (e) {}
-      position.removeLast();
     }
-  }
-
-  // 初始化该路径下的文件、文件夹
-  void initPathFiles(String path) {
-    setState(() {
-      parentDir = Directory(path);
-      sortFiles();
-    });
   }
 
   // 排序，文件夹在前面、文件在后面，按照字母排序
@@ -231,6 +257,8 @@ class _FilesFragmentState extends State<FileSelectorFragment>
       else
         _folder.add(v);
     }
+
+    fileFilter(_folder); // 只显示关键文件
 
     _files.sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
     _folder
@@ -253,4 +281,16 @@ class _FilesFragmentState extends State<FileSelectorFragment>
     _eventBusOn.cancel();
     super.deactivate();
   }
+
+  // QQ 下的文件过滤一下
+  void fileFilter(List<FileSystemEntity> _folder) {
+    if (root == Common().sQQDir && isRoot()) {
+      _folder.clear();
+      Common().qqFiles.forEach((f) {
+        if (f.existsSync()) _folder.add(f);
+      });
+    }
+  }
+
+  bool isRoot() => position.length == 0;
 }

@@ -156,4 +156,24 @@ class UI {
                   ],
                 ));
           });
+
+  static iconTextBtn(Widget icon, String text, Function call) {
+    return UnconstrainedBox(
+        child: InkWell(
+      onTap: () => call(text),
+      child: Chip(
+        label: Text(text),
+        avatar: icon == null
+            ? null
+            : CircleAvatar(
+                child: Padding(
+                  child: icon,
+                  padding: EdgeInsets.all(4),
+                ),
+                backgroundColor: Color.fromARGB(0x00, 0xff, 0xff, 0xff),
+              ),
+        backgroundColor: Color.fromARGB(0x66, 0xAA, 0xFF, 0xFF),
+      ),
+    ));
+  }
 }

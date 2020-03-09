@@ -44,27 +44,32 @@ class FileTypeUtils {
     '.txt': Constants.TYPE_TXT,
   };
 
-  // 文档类型
+  // 压缩文件
   static Map<String, Widget> zipType2Icon = {
     Constants.TYPE_ALL: Text('A'),
-    Constants.TYPE_ZIP: Image.asset(Constants.DOC),
-    Constants.TYPE_RAR: Image.asset(Constants.EXCEL),
-    Constants.TYPE_7Z: Image.asset(Constants.PPT),
+    Constants.TYPE_ZIP: Image.asset(Constants.ZIP),
+    Constants.TYPE_RAR: Image.asset(Constants.RAR),
+    Constants.TYPE_7Z: Image.asset(Constants.Z7),
   };
+
   static Map<String, String> zipExtension2Type = {
     '.zip': Constants.TYPE_ZIP,
     '.rar': Constants.TYPE_RAR,
     '.7z': Constants.TYPE_7Z,
   };
 
-  // MUSIC类型
+  // 音频
   static Map<String, Widget> musicType2Icon = {
     Constants.TYPE_ALL: Text('A'),
     Constants.TYPE_MP3: Image.asset(Constants.MP3),
-    Constants.TYPE_WAV: Image.asset(Constants.EXCEL),
+    Constants.TYPE_WAV: Image.asset(Constants.WAV),
+    Constants.TYPE_FLAC: Image.asset(Constants.FLAC),
+    Constants.TYPE_AAC: Image.asset(Constants.AAC),
   };
   static Map<String, String> musicExtension2Type = {
     '.mp3': Constants.TYPE_MP3,
     '.wav': Constants.TYPE_WAV,
+    '.flac': Constants.TYPE_FLAC,
+    '.aac': Constants.TYPE_AAC,
   };
 }

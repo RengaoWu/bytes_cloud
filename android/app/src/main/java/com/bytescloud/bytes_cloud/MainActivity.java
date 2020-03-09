@@ -54,12 +54,51 @@ public class MainActivity extends FlutterActivity {
                         result.success("");
                     } else if (methodCall.method.equals("getAllFiles")) {
                         handleGetAllFiles(methodCall, result);
-                    } else {
+                    } else if (methodCall.method.equals("searchFile")){
+                        handleSearchFiles(methodCall, result);
+                    }else {
                         result.notImplemented();
                     }
                 }
         );
     }
+
+    private void handleSearchFiles(MethodCall call, MethodChannel.Result result) {
+//        new Thread(() -> {
+//            try {
+//                String path = call.argument("key");
+//                List<String> files = getAllFiles(path);
+//
+//                JSONArray array = new JSONArray();
+//                for (String f : files) {
+//                    int index = f.lastIndexOf(".");
+//                    if (index <= 0) continue; // -1 or 0e
+//                    String end = f.substring(index);
+//                    if (TextUtils.isEmpty(end)) continue;
+//                    if (set.contains(end)) {
+//                        array.put(f);
+//                    }
+//                }
+//                ui.post(() -> result.success(array.toString()));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                ui.post(() -> result.success(new JSONArray().toString()));
+//            }
+//        }).start();
+    }
+//
+//    private void searchFiles(String path, String key, List<String> names, List<String> paths) {
+//        File[] files = new File(path).listFiles();
+//        if (files != null) {
+//            for (File f : files) {
+//                if (f.isDirectory()) {
+//                    .addAll(searchFiles(f.getPath(), key));
+//                } else {
+//                    if (f.getName().contains("key")) names.add(f.getAbsolutePath());
+//                }
+//            }
+//        }
+//    }
 
     private void handleGetAllFiles(MethodCall call, MethodChannel.Result result) {
         new Thread(() -> {

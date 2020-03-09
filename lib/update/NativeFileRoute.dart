@@ -63,7 +63,7 @@ class NativeFileRouteState extends State<NativeFileRoute> {
   }
 
   callNativeFileSearch() {
-    UI.newPage(context, FileSearchPage(fragment.currentDir));
+    UI.newPage(context, FileSearchPage());
   }
 
   fileTypeGridView() {

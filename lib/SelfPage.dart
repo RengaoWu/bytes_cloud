@@ -36,12 +36,10 @@ class SelfRouteState extends State<SelfRoute>
       shrinkWrap: true,
       children: <Widget>[
         UI.iconTxtBtn(Constants.NOTE, "笔记", callMarkDownPage), // 笔记
-        UI.borderDeco(UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
-            true, false, true, false),
+        UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
         UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
         UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享
-        UI.borderDeco(UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
-            true, true, true, true), // 回收站
+        UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
         UI.iconTxtBtn(Constants.DOWNLOADED, "已下载", () => {print("")}), // 已下载文件
         UI.iconTxtBtn(Constants.SETTING, "设置", () => {print("")}),
         UI.iconTxtBtn(Constants.FACEBACK, "反馈", () => {print("")}),

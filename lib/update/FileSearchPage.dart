@@ -1,27 +1,31 @@
+import 'dart:io';
+import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FileSearchPage extends StatefulWidget {
   String root;
-  FileSearchPage(this.root);
+  FileSearchPage();
   @override
-  State<StatefulWidget> createState() => new _FileSearchPageState(root);
+  State<StatefulWidget> createState() => new _FileSearchPageState();
 }
 
 class _FileSearchPageState extends State<FileSearchPage> {
-  String root;
+  //String root;
   String key;
   List<String> historyKeys = [];
   final controller = TextEditingController();
   MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
 
-  _FileSearchPageState(this.root);
+  _FileSearchPageState();
 
   @override
   void initState() {
@@ -30,7 +34,7 @@ class _FileSearchPageState extends State<FileSearchPage> {
   }
 
   initDate() {
-    historyKeys = SPUtil.getArray('search_history', ['1', '2']);
+    historyKeys = SPUtil.getArray('search_history', []);
   }
 
   Widget build(BuildContext context) {
@@ -39,28 +43,59 @@ class _FileSearchPageState extends State<FileSearchPage> {
         children: <Widget>[
           searchBar(),
           historySearch(),
-          FutureBuilder(
-              future: startSearch(key),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.connectionState == ConnectionState.done) {
-                  return Text(snapshot.data);
-                } else {
-                  return Text('Error');
-                }
-              })
+          key == null
+              ? SizedBox()
+              : FutureBuilder(
+                  future: startSearch(key),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: CircularProgressIndicator()),
+                      );
+                    } else if (snapshot.connectionState ==
+                        ConnectionState.done) {
+                      SPUtil.setArray('search_history', historyKeys);
+                      return Text(snapshot.data);
+                    } else {
+                      return Text('Empty');
+                    }
+                  })
         ],
       ),
     );
   }
 
   // 不采用_channel
-  Future<String> startSearch(String key) {
-//    final Map<String, dynamic> args = <String, dynamic>{'key': key};
-//    _channel.invokeListMethod('searchFile', args);
+  static startSearch(String key) async {
+    List<String> res =
+        await compute(wapperGetFiles, {'key': key, 'root': Common().sDCardDir});
+    return res.length.toString();
+  }
+
+  static List<String> wapperGetFiles(Map<String, String> args) {
+    List<String> res = [];
+    String key = args['key'];
+    String root = args['root'];
+    getFiles(key, Directory(root), res);
+    return res;
+  }
+
+  static getFiles(String key, Directory root, res) {
+    List<FileSystemEntity> files = root.listSync();
+    files.forEach((f) {
+      print(f.path);
+      var type = f.statSync().type;
+      if (type == FileSystemEntityType.directory) {
+        getFiles(key, f, res);
+      } else if (type == FileSystemEntityType.file) {
+        if (f.path.contains(key)) {
+          res.add(f.path);
+        }
+      }
+    });
   }
 
   historySearch() {

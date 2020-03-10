@@ -22,7 +22,8 @@ class NativeRoute extends StatefulWidget {
   }
 }
 
-class NativeRouteState extends State<NativeRoute> {
+class NativeRouteState extends State<NativeRoute>
+    with AutomaticKeepAliveClientMixin {
   final controller = TextEditingController();
   @override
   void initState() {
@@ -35,8 +36,32 @@ class NativeRouteState extends State<NativeRoute> {
     // 用ListView
     return Scaffold(
         body: ListView(
-      children: <Widget>[searchBar(), gridView(), UI.divider(width: 2)],
+      physics: ScrollPhysics(),
+      children: <Widget>[
+        searchBar(),
+        gridView(),
+        UI.divider(width: 1, padding: 16),
+        nativeFileSystem(),
+        UI.divider(padding: 16),
+      ],
     ));
+  }
+
+  nativeFileSystem() {
+    return ListTile(
+      leading: Image.asset(
+        Constants.PHONE,
+        width: 40,
+        height: 40,
+      ),
+      title: boldText('内部存储'),
+      subtitle: Text(
+        '已使用 12.81/64GB',
+        style: TextStyle(fontSize: 12),
+      ),
+      trailing: Icon(Icons.arrow_right),
+      onTap: callFileSelectorPage,
+    );
   }
 
   callPhotoSelectorPage() => UI.newPage(
@@ -57,7 +82,7 @@ class NativeRouteState extends State<NativeRoute> {
   callMarkDownPage() => UI.newPage(context, MarkDownListPage());
 
   gridView() => Padding(
-        padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+        padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: GridView.count(
           crossAxisCount: 4,
           physics: ScrollPhysics(),
@@ -95,9 +120,8 @@ class NativeRouteState extends State<NativeRoute> {
                     Icons.search,
                     color: Colors.grey,
                   ),
-                  Text(
+                  boldText(
                     'Search',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
               ),
@@ -121,7 +145,7 @@ class NativeRouteState extends State<NativeRoute> {
           child: Container(
             height: 60.0,
             child: new Padding(
-                padding: const EdgeInsets.all(6.0),
+                padding: const EdgeInsets.all(4.0),
                 child: new Card(
                     child: new Container(
                   child: new Row(
@@ -170,4 +194,7 @@ class NativeRouteState extends State<NativeRoute> {
   void dispose() {
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

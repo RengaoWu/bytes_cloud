@@ -32,6 +32,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts :
+    - family : NotoSansSC
+      fonts:
+        - asset: assets/fonts/NotoSansSC-Regular.otf
+        - asset: assets/fonts/NotoSansSC-Bold.otf
+          weight: 700
+
   assets:
     - images/logo.png
     # 不要包含中文
@@ -61,7 +68,7 @@ flutter:
     - assets/images/share.png
     - assets/images/trash.png
     - assets/images/faceback.png
-    - assets/images/downloaded.png
+    - assets/images/download.png
     - assets/images/change_user.png
     - assets/images/QQ.png
     - assets/images/wechat.png
@@ -77,6 +84,11 @@ flutter:
     - assets/images/zip.png
     - assets/images/7z.png
     - assets/images/flac.png
+    - assets/images/phone.png
+    - assets/images/screamshot.png
+    - assets/images/camera.png
+
+
 
 
 

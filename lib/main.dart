@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.purple,
+        fontFamily: 'NotoSansSC',
       ),
       home: HomeRoute(),
 //      home: PhotoPushRoute(
@@ -63,7 +64,6 @@ void main() async {
     SPUtil.getSp()
   ]).then((result) {
     SPUtil.sp = result[2] as SharedPreferences;
-    print('hhhh init');
     runApp(MyApp());
   });
 }

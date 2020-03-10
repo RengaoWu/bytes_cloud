@@ -1,6 +1,17 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../common.dart';
 import 'Constants.dart';
+
+boldText(String text) {
+  return Text(
+    text,
+    style: TextStyle(fontWeight: FontWeight.bold),
+  );
+}
 
 class UI {
   static newPage(BuildContext context, Widget widget) => Navigator.push(
@@ -112,9 +123,8 @@ class UI {
             height: 40,
             child: Image.asset(image),
           ),
-          Text(
+          boldText(
             "$title",
-            style: TextStyle(fontSize: 14),
           )
         ],
       ),
@@ -157,10 +167,12 @@ class UI {
                 ));
           });
 
-  static iconTextBtn(Widget icon, String text, Function call) {
+  static iconTextBtn(Widget icon, String text, Function call,
+      {Function longPressCall}) {
     return UnconstrainedBox(
         child: InkWell(
       onTap: () => call(text),
+      onLongPress: () => longPressCall(text),
       child: Chip(
         label: Text(text),
         avatar: icon == null
@@ -175,5 +187,37 @@ class UI {
         backgroundColor: Color.fromARGB(0x66, 0xAA, 0xFF, 0xFF),
       ),
     ));
+  }
+
+  static Widget buildFileItem(
+      {FileSystemEntity file,
+      bool isCheck,
+      Function onChanged,
+      Function onTap}) {
+    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+        .format(file.statSync().modified.toLocal());
+
+    return InkWell(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+                  width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
+        ),
+        child: ListTile(
+            leading: Common().selectIcon(file.path, true),
+            title: Text(file.path.substring(file.parent.path.length + 1)),
+            subtitle: Text(
+                '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
+                style: TextStyle(fontSize: 12.0)),
+            trailing: Checkbox(
+              value: isCheck,
+              onChanged: (bool value) {
+                onChanged(value);
+              },
+            )),
+      ),
+      onTap: onTap,
+    );
   }
 }

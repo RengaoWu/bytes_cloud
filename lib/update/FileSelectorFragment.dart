@@ -101,8 +101,8 @@ class _FilesFragmentState extends State<FileSelectorFragment>
             Padding(
                 padding: EdgeInsets.all(4),
                 child: Center(
-                  child:
-                      Text('上传到ByteCloud，总共${Common().getFileSize(filesSize)}'),
+                  child: Text(
+                      '总共 ${selectedFiles.length} 项，总共 ${Common().getFileSize(filesSize)}'),
                 ))
           ],
         ),

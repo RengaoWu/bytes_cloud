@@ -60,11 +60,14 @@ class Constants {
   static final String SHARE = 'assets/images/share.png';
   static final String TRASH = 'assets/images/trash.png';
   static final String FACEBACK = 'assets/images/faceback.png';
-  static final String DOWNLOADED = 'assets/images/downloaded.png';
+  static final String DOWNLOADED = 'assets/images/download.png';
   static final String CHANGE_USER = 'assets/images/change_user.png';
   static final String QQ = 'assets/images/QQ.png';
   static final String WECHAT = 'assets/images/wechat.png';
   static final String NULL = 'assets/images/null.png';
+  static final String PHONE = 'assets/images/phone.png';
+  static final String SCREAMSHOT = 'assets/images/screamshot.png';
+  static final String CAMERA = 'assets/images/camera.png';
 
   static final int COLOR_DIVIDER = 0xffe5e5e5;
 }

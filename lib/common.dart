@@ -26,11 +26,14 @@ class Common {
   String get sWxDir => sDCardDir + '/Tencent/MicroMsg/Download';
 
   String get sQQDir => sDCardDir + '/Tencent';
-
   String get sQQFileRecDir => sQQDir + '/QQfile_recv'; // 文件
   String get sQQFileImageRecDir => sQQDir + '/QQfile_images'; // 聊天图片
   String get sQQFileCollRecDir => sQQDir + '/QQfile_colleaction'; //收藏
   String get sQQFavDir => sQQDir + '/QQ_Favorite'; //表情
+
+  String get sScreamShotDir =>
+      sDCardDir + '/Pictures/Screenshots'; // 华为手机[截图] /DCIM/Screenshots
+  String get sCameraDir => sDCardDir + '/DCIM/Camera'; // 相机
 
   List<FileSystemEntity> get qqFiles => [
         Directory(sQQFileRecDir),

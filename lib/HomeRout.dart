@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'NativeRoute.dart';
 import 'PhotoPage.dart';
+import 'RecentRoute.dart';
 import 'SelfPage.dart';
 import 'common.dart';
 
@@ -67,68 +68,4 @@ class HomeRouteState extends State<HomeRoute>
     super.dispose();
     tabController.dispose();
   }
-}
-
-class RecentRoute extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return RecentRouteState();
-  }
-}
-
-class RecentRouteState extends State<RecentRoute> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.widgets),
-            onPressed: () => {
-                  UI.bottomSheet(
-                      context: context,
-                      content: gridView(),
-                      height: 240,
-                      radius: 8)
-                }),
-        centerTitle: true,
-        title: Text('最近'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 0, 0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '快捷访问',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-          ),
-          gridView()
-        ],
-      ),
-    );
-  }
-
-  callDownloadSelector() => UI.newPage(
-      context,
-      NativeFileSelectorRoute(
-          {'root': Common().sDownloadDir, 'rootName': '下载'}));
-  callWxSelector() => UI.newPage(context,
-      NativeFileSelectorRoute({'root': Common().sWxDir, 'rootName': '微信'}));
-  callQQSelector() => UI.newPage(context,
-      NativeFileSelectorRoute({'root': Common().sQQDir, 'rootName': 'QQ'}));
-
-  gridView() => GridView.count(
-        shrinkWrap: true,
-        crossAxisCount: 5,
-        children: <Widget>[
-          // 快捷访问
-          UI.iconTxtBtn(Constants.DOWNLOADED, '下载', callDownloadSelector),
-          UI.iconTxtBtn(Constants.WECHAT, '微信', callWxSelector),
-          UI.iconTxtBtn(Constants.QQ, 'QQ', callQQSelector),
-          UI.iconTxtBtn(Constants.PHOTO, '截图', null),
-        ],
-      );
 }

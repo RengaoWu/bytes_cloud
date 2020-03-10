@@ -25,15 +25,15 @@ List<FileSystemEntity> getAllFiles(List<String> ext, Directory dir) {
   return list;
 }
 
-List<String> wapperGetFiles(Map<String, String> args) {
-  List<String> res = [];
+List<FileSystemEntity> wapperGetFiles(Map<String, String> args) {
+  List<FileSystemEntity> res = [];
   String key = args['key'];
   String root = args['root'];
   getFiles(key, Directory(root), res);
   return res;
 }
 
-getFiles(String key, Directory root, res) {
+getFiles(String key, Directory root, List<FileSystemEntity> res) {
   List<FileSystemEntity> files = root.listSync();
   files.forEach((f) {
     print(f.path);
@@ -42,7 +42,7 @@ getFiles(String key, Directory root, res) {
       getFiles(key, f, res);
     } else if (type == FileSystemEntityType.file) {
       if (f.path.contains(key)) {
-        res.add(f.path);
+        res.add(f);
       }
     }
   });

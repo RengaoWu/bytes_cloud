@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeUtils.dart';
 import 'package:bytes_cloud/utils/Json.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -22,17 +24,16 @@ class TypeSelectorRoute extends StatefulWidget {
 
 class TypeSelectorRouteState extends State<TypeSelectorRoute> {
   String arg_type;
-
-  MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
-
   List<String> selectedFiles = [];
   int filesSize = 0;
 
-  Future<String> getAllFile(String path) async {
+  Future<List<FileSystemEntity>> getAllFile(String path) async {
     try {
-      final Map<String, dynamic> args = <String, dynamic>{'path': path};
-      args['extension'] = JsonUtil.toJson(extensionName2Type.keys.toList());
-      return await _channel.invokeMethod('getAllFiles', args);
+      Map<String, dynamic> args = {
+        'ext': extensionName2Type.keys.toList(),
+        'path': path
+      };
+      return await compute(wapperGetAllFiles, args);
     } catch (err) {
       print(err);
     }
@@ -130,8 +131,7 @@ class TypeSelectorRouteState extends State<TypeSelectorRoute> {
             child: CircularProgressIndicator(),
           ));
         } else {
-          List files = json.decode(snapshot.data);
-          files.forEach((path) => allFiles.add(File(path)));
+          allFiles.addAll(snapshot.data);
           type2Files[currentType].addAll(allFiles);
           filterTypeFiles();
           return fileList();
@@ -162,11 +162,7 @@ class TypeSelectorRouteState extends State<TypeSelectorRoute> {
                   width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
         ),
         child: ListTile(
-            leading: Image.asset(
-              Common().selectIcon(p.extension(file.path)),
-              width: 40,
-              height: 40,
-            ),
+            leading: Common().selectIcon(file.path, true),
             title: Text(file.path.substring(file.parent.path.length + 1)),
             subtitle: Text(
                 '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',

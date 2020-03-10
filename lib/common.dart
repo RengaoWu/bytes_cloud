@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as p;
 
 class Common {
   factory Common() => _getInstance();
@@ -50,7 +52,9 @@ class Common {
     return str;
   }
 
-  String selectIcon(String ext) {
+  Widget selectIcon(String path, bool preview) {
+    int resFlag = 0; // 图片 1
+    String ext = p.extension(path);
     String iconImg = Constants.UNKNOW;
 
     switch (ext) {
@@ -69,7 +73,8 @@ class Common {
       case '.jpg':
       case '.jpeg':
       case '.png':
-        iconImg = Constants.IMAGE;
+        iconImg = preview ? path : Constants.IMAGE;
+        resFlag = preview ? 1 : resFlag;
         break;
       case '.txt':
         iconImg = Constants.TXT;
@@ -115,7 +120,21 @@ class Common {
         iconImg = Constants.FILE;
         break;
     }
-    return iconImg;
+    if (resFlag == 1) {
+      return ClipRect(
+        child: Image.file(
+          File(path),
+          width: 40,
+          height: 40,
+        ),
+      );
+    } else {
+      return Image.asset(
+        iconImg,
+        width: 40,
+        height: 40,
+      );
+    }
   }
 
   Future saveStr(String key, String value) async {

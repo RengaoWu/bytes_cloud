@@ -83,7 +83,6 @@ class _FilesFragmentState extends State<FilesFragment>
   Widget _buildFileItem(FileSystemEntity file) {
     String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
         .format(file.statSync().modified.toLocal());
-
     return InkWell(
       child: Container(
         decoration: BoxDecoration(
@@ -91,7 +90,7 @@ class _FilesFragmentState extends State<FilesFragment>
               Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
         ),
         child: ListTile(
-          leading: Image.asset(Common().selectIcon(p.extension(file.path))),
+          leading: Common().selectIcon(file.path, true),
           title: Text(file.path.substring(file.parent.path.length + 1)),
           subtitle: Text(
               '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',

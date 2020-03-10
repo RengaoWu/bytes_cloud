@@ -5,9 +5,8 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:intl/intl.dart';
 
 import '../EventBusUtil.dart';
 import '../common.dart';
@@ -32,7 +31,6 @@ class FileSelectorFragment extends StatefulWidget {
 // AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
 class _FilesFragmentState extends State<FileSelectorFragment>
     with AutomaticKeepAliveClientMixin {
-  MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
   ScrollController controller = ScrollController();
   Set<String> selectedFiles = Set();
   int filesSize = 0;
@@ -142,11 +140,7 @@ class _FilesFragmentState extends State<FileSelectorFragment>
                   width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
         ),
         child: ListTile(
-            leading: Image.asset(
-              Common().selectIcon(p.extension(file.path)),
-              width: 40,
-              height: 40,
-            ),
+            leading: Common().selectIcon(file.path, true),
             title: Text(file.path.substring(file.parent.path.length + 1)),
             subtitle: Text(
                 '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
@@ -268,10 +262,7 @@ class _FilesFragmentState extends State<FileSelectorFragment>
     files.addAll(_files);
   }
 
-  Future openFile(String path) async {
-    final Map<String, dynamic> args = <String, dynamic>{'path': path};
-    await _channel.invokeMethod('openFile', args);
-  }
+  Future openFile(String path) async {}
 
   @override
   bool get wantKeepAlive => true;

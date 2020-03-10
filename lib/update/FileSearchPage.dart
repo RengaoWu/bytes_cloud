@@ -1,15 +1,13 @@
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:bytes_cloud/common.dart';
-import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class FileSearchPage extends StatefulWidget {
   String root;
@@ -23,7 +21,6 @@ class _FileSearchPageState extends State<FileSearchPage> {
   String key;
   List<String> historyKeys = [];
   final controller = TextEditingController();
-  MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
 
   _FileSearchPageState();
 
@@ -73,29 +70,6 @@ class _FileSearchPageState extends State<FileSearchPage> {
     List<String> res =
         await compute(wapperGetFiles, {'key': key, 'root': Common().sDCardDir});
     return res.length.toString();
-  }
-
-  static List<String> wapperGetFiles(Map<String, String> args) {
-    List<String> res = [];
-    String key = args['key'];
-    String root = args['root'];
-    getFiles(key, Directory(root), res);
-    return res;
-  }
-
-  static getFiles(String key, Directory root, res) {
-    List<FileSystemEntity> files = root.listSync();
-    files.forEach((f) {
-      print(f.path);
-      var type = f.statSync().type;
-      if (type == FileSystemEntityType.directory) {
-        getFiles(key, f, res);
-      } else if (type == FileSystemEntityType.file) {
-        if (f.path.contains(key)) {
-          res.add(f.path);
-        }
-      }
-    });
   }
 
   historySearch() {

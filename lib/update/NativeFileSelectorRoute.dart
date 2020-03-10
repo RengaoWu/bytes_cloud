@@ -13,18 +13,30 @@ import '../EventBusUtil.dart';
 import 'FileSearchPage.dart';
 import 'FileSelectorFragment.dart';
 
-class NativeFileRoute extends StatefulWidget {
+class NativeFileSelectorRoute extends StatefulWidget {
+  Map<String, dynamic> args;
+  NativeFileSelectorRoute(this.args);
   @override
   State<StatefulWidget> createState() {
-    return NativeFileRouteState();
+    return NativeFileSelectorRouteState(args);
   }
 }
 
-class NativeFileRouteState extends State<NativeFileRoute> {
-  String root = Common().sDCardDir;
-  String rootName = '根目录';
+class NativeFileSelectorRouteState extends State<NativeFileSelectorRoute> {
+  Map<String, dynamic> args;
+  String root ;
+  String rootName;
 
   FileSelectorFragment fragment;
+  NativeFileSelectorRouteState(this.args);
+
+  @override
+  void initState() {
+    super.initState();
+    root = args['root'];
+    rootName = args['rootName'];
+  }
+
   @override
   Widget build(BuildContext context) {
     fragment = FileSelectorFragment(root);
@@ -48,7 +60,6 @@ class NativeFileRouteState extends State<NativeFileRoute> {
       ),
       body: Column(
         children: <Widget>[
-          fileTypeGridView(),
           ShareDataWidget(
             root,
             Expanded(child: fragment),
@@ -63,65 +74,7 @@ class NativeFileRouteState extends State<NativeFileRoute> {
   }
 
   callNativeFileSearch() {
-    UI.newPage(context, FileSearchPage());
-  }
-
-  fileTypeGridView() {
-    return Wrap(
-      spacing: 8.0, // 主轴(水平)方向间距
-      alignment: WrapAlignment.center, //沿主轴方向居中
-      children: <Widget>[
-        iconTextBtn(Text('A'), '根目录', callRootSelector),
-        iconTextBtn(Image.asset(Constants.NOTE), '文档', callDocTypeSelector),
-        iconTextBtn(
-            Image.asset(Constants.COMPRESSFILE), '压缩包', callZipTypeSelector),
-        iconTextBtn(Image.asset(Constants.MUSIC), '音乐', callMusicSelector),
-        iconTextBtn(
-            Image.asset(Constants.DOWNLOADED), '下载', callDownloadSelector),
-        iconTextBtn(Image.asset(Constants.WECHAT), '微信', callWxSelector),
-        iconTextBtn(Image.asset(Constants.QQ), 'QQ', callQQSelector),
-      ],
-    );
-  }
-
-  callRootSelector() {
-    setState(() {
-      root = Common().sDCardDir;
-      rootName = '根目录';
-    });
-  }
-
-  callDocTypeSelector() {
-    UI.newPage(context, TypeSelectorRoute(FileTypeUtils.ARG_DOC));
-  }
-
-  callZipTypeSelector() {
-    UI.newPage(context, TypeSelectorRoute(FileTypeUtils.ARG_ZIP));
-  }
-
-  callMusicSelector() {
-    UI.newPage(context, TypeSelectorRoute(FileTypeUtils.ARG_MUSIC));
-  }
-
-  callDownloadSelector() {
-    setState(() {
-      root = Common().sDownloadDir;
-      rootName = '下载';
-    });
-  }
-
-  callWxSelector() {
-    setState(() {
-      root = Common().sWxDir;
-      rootName = '微信';
-    });
-  }
-
-  callQQSelector() {
-    setState(() {
-      root = Common().sQQDir;
-      rootName = 'QQ';
-    });
+    UI.newPage(context, FileSearchPage({'key': '', 'root': root}));
   }
 
   iconTextBtn(Widget icon, String text, Function call) {

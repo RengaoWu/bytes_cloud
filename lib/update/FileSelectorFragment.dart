@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bytes_cloud/update/NativeFileRoute.dart';
+import 'package:bytes_cloud/update/NativeFileSelectorRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

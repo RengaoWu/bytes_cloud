@@ -1,13 +1,14 @@
-import 'package:bytes_cloud/update/NativeFileRoute.dart';
+import 'package:bytes_cloud/update/NativeFileSelectorRoute.dart';
 import 'package:bytes_cloud/update/PhotoPushRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'CloudPage.dart';
+import 'NativeRoute.dart';
 import 'PhotoPage.dart';
 import 'SelfPage.dart';
+import 'common.dart';
 
 class HomeRoute extends StatefulWidget {
   @override
@@ -30,8 +31,8 @@ class HomeRouteState extends State<HomeRoute>
     return Scaffold(
       body: new TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),
-        CloudRoute(),
-        PhotoRoute(),
+        NativeRoute(),
+        RemoteRoute(),
         SelfRoute()
       ]),
       bottomNavigationBar: new Material(
@@ -45,11 +46,11 @@ class HomeRouteState extends State<HomeRoute>
                 icon: new Icon(Icons.recent_actors),
               ),
               new Tab(
-                text: '文件',
+                text: '分类',
                 icon: new Icon(Icons.cloud),
               ),
               new Tab(
-                text: '图片',
+                text: '云盘',
                 icon: new Icon(Icons.photo),
               ),
               new Tab(
@@ -92,32 +93,42 @@ class RecentRouteState extends State<RecentRoute> {
         centerTitle: true,
         title: Text('最近'),
       ),
-      body: Center(
-        child: Text('最近'),
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 0, 0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '快捷访问',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ),
+          gridView()
+        ],
       ),
     );
   }
 
-  callPhotoSelectorPage() {
-    Navigator.pop(context);
-    UI.newPage(context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
-  }
-
-  callFileSelectorPage() {
-    Navigator.pop(context);
-    UI.newPage(context, NativeFileRoute());
-  }
+  callDownloadSelector() => UI.newPage(
+      context,
+      NativeFileSelectorRoute(
+          {'root': Common().sDownloadDir, 'rootName': '下载'}));
+  callWxSelector() => UI.newPage(context,
+      NativeFileSelectorRoute({'root': Common().sWxDir, 'rootName': '微信'}));
+  callQQSelector() => UI.newPage(context,
+      NativeFileSelectorRoute({'root': Common().sQQDir, 'rootName': 'QQ'}));
 
   gridView() => GridView.count(
-        crossAxisCount: 4,
+        shrinkWrap: true,
+        crossAxisCount: 5,
         children: <Widget>[
-          UI.iconTxtBtn(Constants.PHOTO, "图片", callPhotoSelectorPage),
-          UI.iconTxtBtn(Constants.FILE2, "文件", callFileSelectorPage),
-          UI.iconTxtBtn(Constants.DOC, "文档", () => {print("")}),
-          UI.iconTxtBtn(Constants.FOLDER, "新建文件夹", () => {print("")}),
-          UI.iconTxtBtn(Constants.NOTE, "写笔记", () => {print("")}),
-          UI.iconTxtBtn(Constants.MCF, "语言速记", () => {print("")}),
-          UI.iconTxtBtn(Constants.SCAN, "智能扫描", () => {print("")}),
+          // 快捷访问
+          UI.iconTxtBtn(Constants.DOWNLOADED, '下载', callDownloadSelector),
+          UI.iconTxtBtn(Constants.WECHAT, '微信', callWxSelector),
+          UI.iconTxtBtn(Constants.QQ, 'QQ', callQQSelector),
+          UI.iconTxtBtn(Constants.PHOTO, '截图', null),
         ],
       );
 }

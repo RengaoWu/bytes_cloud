@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class PhotoRoute extends StatefulWidget {
+class RemoteRoute extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return PhotoRouteState();
+    return RemoteRouteState();
   }
 }
 
-class PhotoRouteState extends State<PhotoRoute>
+class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController tabController;
   List<String> tabs = ["Time", "Location", "Album"];

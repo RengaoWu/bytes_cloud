@@ -10,19 +10,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FileSearchPage extends StatefulWidget {
-  String root;
-  FileSearchPage();
+  Map<String, dynamic> args;
+  FileSearchPage(this.args);
   @override
-  State<StatefulWidget> createState() => new _FileSearchPageState();
+  State<StatefulWidget> createState() => new _FileSearchPageState(this.args);
 }
 
 class _FileSearchPageState extends State<FileSearchPage> {
-  //String root;
+  String root;
   String key;
   List<String> historyKeys = [];
   final controller = TextEditingController();
+  Map<String, dynamic> args;
 
-  _FileSearchPageState();
+  _FileSearchPageState(this.args);
 
   @override
   void initState() {
@@ -31,7 +32,10 @@ class _FileSearchPageState extends State<FileSearchPage> {
   }
 
   initDate() {
+    key = args['key'];
+    root = args['root'];
     historyKeys = SPUtil.getArray('search_history', []);
+    controller.value = TextEditingValue(text: key);
   }
 
   Widget build(BuildContext context) {

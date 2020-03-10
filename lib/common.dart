@@ -26,6 +26,7 @@ class Common {
   String get sWxDir => sDCardDir + '/Tencent/MicroMsg/Download';
 
   String get sQQDir => sDCardDir + '/Tencent';
+
   String get sQQFileRecDir => sQQDir + '/QQfile_recv'; // 文件
   String get sQQFileImageRecDir => sQQDir + '/QQfile_images'; // 聊天图片
   String get sQQFileCollRecDir => sQQDir + '/QQfile_colleaction'; //收藏

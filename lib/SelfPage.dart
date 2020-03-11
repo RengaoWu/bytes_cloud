@@ -56,11 +56,12 @@ class SelfRouteState extends State<SelfRoute>
               padding: EdgeInsets.all(16),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(40),
-                child: Image(
-                  image: NetworkImage(
-                      "http://b-ssl.duitang.com/uploads/item/201409/25/20140925103211_w3edR.jpeg"),
+                child: Image.network(
+                  "http://b-ssl.duitang.com/uploads/item/201409/25/20140925103211_w3edR.jpeg",
                   width: 80,
                   height: 80,
+                  cacheHeight: 80,
+                  cacheWidth: 80,
                 ),
               )),
           Column(

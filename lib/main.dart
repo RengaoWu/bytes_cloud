@@ -1,13 +1,6 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/FileManager.dart';
 import 'package:bytes_cloud/HomeRout.dart';
-import 'package:bytes_cloud/SplashRoute.dart';
-import 'package:bytes_cloud/test/HttpTest.dart';
-import 'package:bytes_cloud/test/SliverAppBar.dart';
-import 'package:bytes_cloud/test/ViewPageTest.dart';
-import 'package:bytes_cloud/update/PhotoPushRoute.dart';
-import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -40,7 +33,9 @@ class MyApp extends StatelessWidget {
 
 void main() async {
   Future<void> getSDCardDir() async {
-    Common().sDCardDir = (await getExternalStorageDirectory()).path;
+    // /storage/emulated/0/Android/data/com.bytescloud.bytes_cloud/files
+    // Common().sDCardDir = (await getExternalStorageDirectory());
+    Common().sDCardDir = '/storage/emulated/0/';
   }
 
   Future<void> getPermission() async {

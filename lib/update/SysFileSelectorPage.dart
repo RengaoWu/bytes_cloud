@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
+import 'package:bytes_cloud/widgets/PhotoGalleryPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +34,6 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
   Directory parentDir;
   List<FileSystemEntity> files = [];
   List<double> position = []; // 栈中位置
-  StreamSubscription _eventBusOn;
 
   _FilesFragmentState(Map args) {
     root = args['root'];
@@ -143,12 +143,15 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
                   file: files[index],
                   isCheck: selectedFiles.contains(files[index].path),
                   onChanged: onChange,
-                  onTap: null);
+                  onTap: onTap);
             else
               return _buildFolderItem(files[index]);
           },
         ),
       );
+  onTap(FileSystemEntity file) {
+    UI.newPage(context, PhotoGalleryPage({'files': files, 'current': file}));
+  }
 
   onChange(bool value, FileSystemEntity file) {
     setState(() {
@@ -265,7 +268,6 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
 
   @override
   void deactivate() {
-    _eventBusOn.cancel();
     super.deactivate();
   }
 

@@ -217,7 +217,9 @@ class UI {
               },
             )),
       ),
-      onTap: onTap,
+      onTap: () {
+        onTap(file);
+      },
     );
   }
 }

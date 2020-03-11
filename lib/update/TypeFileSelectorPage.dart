@@ -5,6 +5,7 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeUtils.dart';
 import 'package:bytes_cloud/utils/UI.dart';
+import 'package:bytes_cloud/widgets/PhotoGalleryPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -147,7 +148,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
                   file: allFiles[index],
                   isCheck: selectedFiles.contains(allFiles[index].path),
                   onChanged: onChange,
-                  onTap: null);
+                  onTap: onTap);
             }));
   }
 
@@ -161,6 +162,10 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
         filesSize -= file.statSync().size;
       }
     });
+  }
+
+  onTap(FileSystemEntity file) {
+    UI.newPage(context, PhotoGalleryPage({'files': allFiles}));
   }
 
   notifyCurrentType(String type) {

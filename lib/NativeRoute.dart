@@ -3,9 +3,9 @@ import 'dart:ui';
 import 'package:bytes_cloud/FileManager.dart';
 import 'package:bytes_cloud/MarkDownPage.dart';
 import 'package:bytes_cloud/common.dart';
-import 'package:bytes_cloud/update/FileSearchPage.dart';
-import 'package:bytes_cloud/update/FileSelectorRoute.dart';
-import 'package:bytes_cloud/update/NativeFileSelectorRoute.dart';
+import 'package:bytes_cloud/update/SearchFilePage.dart';
+import 'package:bytes_cloud/update/TypeFileSelectorPage.dart';
+import 'package:bytes_cloud/update/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/update/PhotoPushRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileTypeUtils.dart';
@@ -68,16 +68,16 @@ class NativeRouteState extends State<NativeRoute>
       context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
 
   callFileSelectorPage() => UI.newPage(context,
-      NativeFileSelectorRoute({'root': Common().sDCardDir, 'rootName': '根目录'}));
+      SysFileSelectorPage({'root': Common().sDCardDir, 'rootName': '根目录'}));
 
   callDocTypeSelector() =>
-      UI.newPage(context, TypeSelectorRoute(FileTypeUtils.ARG_DOC));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_DOC));
 
   callZipTypeSelector() =>
-      UI.newPage(context, TypeSelectorRoute(FileTypeUtils.ARG_ZIP));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_ZIP));
 
   callMusicSelector() =>
-      UI.newPage(context, TypeSelectorRoute(FileTypeUtils.ARG_MUSIC));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_MUSIC));
 
   callMarkDownPage() => UI.newPage(context, MarkDownListPage());
 
@@ -168,7 +168,7 @@ class NativeRouteState extends State<NativeRoute>
                           onSubmitted: (String k) {
                             UI.newPage(
                                 context,
-                                FileSearchPage(
+                                SearchFilePage(
                                     {'key': k, 'root': Common().sDCardDir}));
                           },
                           // onChanged: onSearchTextChanged,

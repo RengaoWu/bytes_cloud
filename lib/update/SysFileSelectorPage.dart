@@ -1,70 +1,48 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'package:bytes_cloud/update/NativeFileSelectorRoute.dart';
+import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:path/path.dart' as p;
 import 'package:intl/intl.dart';
 
-import '../EventBusUtil.dart';
-import '../common.dart';
+import 'SearchFilePage.dart';
+import 'package:path/path.dart' as p;
 
-/// 点击一个文件夹，传入文件夹的路径，显示该文件夹下的文件和文件夹
-/// 点击一个文件，打开
-/// 返回上一层，返回上一层目录路径 [dir.parent.path]
-class FileSelectorFragment extends StatefulWidget {
-  String path;
-  FileSelectorFragment(this.path);
-  _FilesFragmentState state;
-
-  String get currentDir => state.parentDir.path; // 选择器当前的目录
+class SysFileSelectorPage extends StatefulWidget {
+  final Map<String, dynamic> args;
+  SysFileSelectorPage(this.args);
 
   @override
   _FilesFragmentState createState() {
-    state = _FilesFragmentState(path);
-    return state;
+    return _FilesFragmentState(args);
   }
 }
 
 // AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
-class _FilesFragmentState extends State<FileSelectorFragment>
+class _FilesFragmentState extends State<SysFileSelectorPage>
     with AutomaticKeepAliveClientMixin {
   ScrollController controller = ScrollController();
   Set<String> selectedFiles = Set();
   int filesSize = 0;
   String root;
+  String rootName;
 
   Directory parentDir;
   List<FileSystemEntity> files = [];
   List<double> position = []; // 栈中位置
   StreamSubscription _eventBusOn;
 
-  _FilesFragmentState(String path) {
-    root = path;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    initPathFiles(ShareDataWidget.of(context).data);
+  _FilesFragmentState(Map args) {
+    root = args['root'];
+    rootName = args['rootName'];
   }
 
   @override
   void initState() {
     super.initState();
-    // 监听用户点击上传按钮的动作
-    _eventBusOn = GlobalEventBus().event.on<FilesPushEvent>().listen((event) {
-      String content = '';
-      if (selectedFiles.length == 0) {
-        content = '没有选择任何文件';
-      } else {
-        content =
-            '开始上传，总共${selectedFiles.length}个文件，共${Common().getFileSize(filesSize)}';
-      }
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
-    });
     initPathFiles(root);
   }
 
@@ -95,6 +73,26 @@ class _FilesFragmentState extends State<FileSelectorFragment>
       // WillPopScope 拦截back操作，当不在根目录时候，返回上一级目录
       onWillPop: onWillPop,
       child: Scaffold(
+        appBar: AppBar(
+          leading: InkWell(
+            child: Icon(Icons.arrow_left),
+            onTap: () => Navigator.pop(context),
+          ),
+          title: Text(rootName),
+          centerTitle: true,
+          actions: <Widget>[
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: Icon(Icons.file_upload),
+                  onPressed: () {
+                    pushToCloud(context);
+                  },
+                );
+              },
+            )
+          ],
+        ),
         body: Column(
           children: <Widget>[
             Expanded(child: files.length == 0 ? _emptyView() : _listView()),
@@ -106,8 +104,27 @@ class _FilesFragmentState extends State<FileSelectorFragment>
                 ))
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.search),
+          onPressed: callNativeFileSearch,
+        ),
       ),
     );
+  }
+
+  pushToCloud(BuildContext context) {
+    String content = '';
+    if (selectedFiles.length == 0) {
+      content = '没有选择任何文件';
+    } else {
+      content =
+          '开始上传，总共${selectedFiles.length}个文件，共${Common().getFileSize(filesSize)}';
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
+  }
+
+  callNativeFileSearch() {
+    UI.newPage(context, SearchFilePage({'key': '', 'root': root}));
   }
 
   _emptyView() =>
@@ -121,49 +138,28 @@ class _FilesFragmentState extends State<FileSelectorFragment>
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
             if (FileSystemEntity.isFileSync(files[index].path))
-              return _buildFileItem(files[index]);
+              //return _buildFileItem(files[index]);
+              return UI.buildFileItem(
+                  file: files[index],
+                  isCheck: selectedFiles.contains(files[index].path),
+                  onChanged: onChange,
+                  onTap: null);
             else
               return _buildFolderItem(files[index]);
           },
         ),
       );
 
-  Widget _buildFileItem(FileSystemEntity file) {
-    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
-        .format(file.statSync().modified.toLocal());
-
-    return InkWell(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
-        ),
-        child: ListTile(
-            leading: Common().selectIcon(file.path, true),
-            title: Text(file.path.substring(file.parent.path.length + 1)),
-            subtitle: Text(
-                '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
-                style: TextStyle(fontSize: 12.0)),
-            trailing: Checkbox(
-              value: selectedFiles.contains(file.path),
-              onChanged: (bool value) {
-                setState(() {
-                  if (value) {
-                    selectedFiles.add(file.path);
-                    filesSize += file.statSync().size;
-                  } else {
-                    selectedFiles.remove(file.path);
-                    filesSize -= file.statSync().size;
-                  }
-                });
-              },
-            )),
-      ),
-      onTap: () {
-        openFile(file.path);
-      },
-    );
+  onChange(bool value, FileSystemEntity file) {
+    setState(() {
+      if (value) {
+        selectedFiles.add(file.path);
+        filesSize += file.statSync().size;
+      } else {
+        selectedFiles.remove(file.path);
+        filesSize -= file.statSync().size;
+      }
+    });
   }
 
   Widget _buildFolderItem(FileSystemEntity file) {

@@ -213,7 +213,7 @@ class UI {
             trailing: Checkbox(
               value: isCheck,
               onChanged: (bool value) {
-                onChanged(value);
+                onChanged(value, file);
               },
             )),
       ),

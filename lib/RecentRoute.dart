@@ -1,4 +1,4 @@
-import 'package:bytes_cloud/update/NativeFileSelectorRoute.dart';
+import 'package:bytes_cloud/update/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,20 +51,16 @@ class RecentRouteState extends State<RecentRoute>
     );
   }
 
-  callDownloadSelector() => UI.newPage(
-      context,
-      NativeFileSelectorRoute(
-          {'root': Common().sDownloadDir, 'rootName': '下载'}));
+  callDownloadSelector() => UI.newPage(context,
+      SysFileSelectorPage({'root': Common().sDownloadDir, 'rootName': '下载'}));
   callWxSelector() => UI.newPage(context,
-      NativeFileSelectorRoute({'root': Common().sWxDir, 'rootName': '微信'}));
+      SysFileSelectorPage({'root': Common().sWxDir, 'rootName': '微信'}));
   callQQSelector() => UI.newPage(context,
-      NativeFileSelectorRoute({'root': Common().sQQDir, 'rootName': 'QQ'}));
-  callScreamShotSelector() => UI.newPage(
-      context,
-      NativeFileSelectorRoute(
-          {'root': Common().sScreamShotDir, 'rootName': '截图'}));
+      SysFileSelectorPage({'root': Common().sQQDir, 'rootName': 'QQ'}));
+  callScreamShotSelector() => UI.newPage(context,
+      SysFileSelectorPage({'root': Common().sScreamShotDir, 'rootName': '截图'}));
   callCameraSelector() => UI.newPage(context,
-      NativeFileSelectorRoute({'root': Common().sCameraDir, 'rootName': '相机'}));
+      SysFileSelectorPage({'root': Common().sCameraDir, 'rootName': '相机'}));
   gridView() => GridView.count(
         shrinkWrap: true,
         crossAxisCount: 5,

@@ -9,14 +9,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class FileSearchPage extends StatefulWidget {
-  Map<String, dynamic> args;
-  FileSearchPage(this.args);
+class SearchFilePage extends StatefulWidget {
+  final Map<String, dynamic> args;
+  SearchFilePage(this.args);
   @override
-  State<StatefulWidget> createState() => new _FileSearchPageState(this.args);
+  State<StatefulWidget> createState() => new _SearchFilePageState(this.args);
 }
 
-class _FileSearchPageState extends State<FileSearchPage> {
+class _SearchFilePageState extends State<SearchFilePage> {
   String root;
   String key;
   List<String> historyKeys = [];
@@ -29,7 +29,7 @@ class _FileSearchPageState extends State<FileSearchPage> {
   Widget list;
   List<FileSystemEntity> allFiles = [];
 
-  _FileSearchPageState(this.args);
+  _SearchFilePageState(this.args);
 
   @override
   void initState() {
@@ -104,25 +104,24 @@ class _FileSearchPageState extends State<FileSearchPage> {
               return UI.buildFileItem(
                 file: allFiles[index],
                 isCheck: selectedFiles.contains(allFiles[index].path),
-                onChanged: (value) => {
-                  setState(() {
-                    reflashList = false;
-                    var file = allFiles[index];
-                    if (value) {
-                      selectedFiles.add(file.path);
-                      filesSize += file.statSync().size;
-                    } else {
-                      selectedFiles.remove(file.path);
-                      filesSize -= file.statSync().size;
-                    }
-                  })
-                },
+                onChanged: onChange,
                 onTap: onTap,
               );
             }));
   }
 
-  onChange(bool value) {}
+  onChange(bool value, FileSystemEntity file) {
+    setState(() {
+      reflashList = false;
+      if (value) {
+        selectedFiles.add(file.path);
+        filesSize += file.statSync().size;
+      } else {
+        selectedFiles.remove(file.path);
+        filesSize -= file.statSync().size;
+      }
+    });
+  }
 
   onTap() {}
 

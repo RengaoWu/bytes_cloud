@@ -1,4 +1,4 @@
-import 'package:bytes_cloud/update/NativeFileSelectorRoute.dart';
+import 'package:bytes_cloud/update/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/update/PhotoPushRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';

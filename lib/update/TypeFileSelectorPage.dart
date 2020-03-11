@@ -1,28 +1,24 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeUtils.dart';
-import 'package:bytes_cloud/utils/Json.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:path/path.dart' as p;
 
-class TypeSelectorRoute extends StatefulWidget {
-  String arg_type;
-  TypeSelectorRoute(this.arg_type);
+class TypeFileSelectorPage extends StatefulWidget {
+  final String argType;
+  TypeFileSelectorPage(this.argType);
   @override
   State<StatefulWidget> createState() {
-    return TypeSelectorRouteState(arg_type);
+    return TypeFileSelectorPageState(argType);
   }
 }
 
-class TypeSelectorRouteState extends State<TypeSelectorRoute> {
+class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   String arg_type;
   List<String> selectedFiles = [];
   int filesSize = 0;
@@ -56,7 +52,7 @@ class TypeSelectorRouteState extends State<TypeSelectorRoute> {
     });
   }
 
-  TypeSelectorRouteState(this.arg_type);
+  TypeFileSelectorPageState(this.arg_type);
   initData() {
     // // convert
     FileTypeUtils.convert(arg_type, type2Icon, extensionName2Type);
@@ -147,42 +143,24 @@ class TypeSelectorRouteState extends State<TypeSelectorRoute> {
             itemCount: type2Files[currentType].length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
-              return _buildFileItem(type2Files[currentType][index]);
+              return UI.buildFileItem(
+                  file: allFiles[index],
+                  isCheck: selectedFiles.contains(allFiles[index].path),
+                  onChanged: onChange,
+                  onTap: null);
             }));
   }
 
-  Widget _buildFileItem(FileSystemEntity file) {
-    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
-        .format(file.statSync().modified.toLocal());
-    return InkWell(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
-        ),
-        child: ListTile(
-            leading: Common().selectIcon(file.path, true),
-            title: Text(file.path.substring(file.parent.path.length + 1)),
-            subtitle: Text(
-                '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
-                style: TextStyle(fontSize: 12.0)),
-            trailing: Checkbox(
-              value: selectedFiles.contains(file.path),
-              onChanged: (bool value) {
-                setState(() {
-                  if (value) {
-                    selectedFiles.add(file.path);
-                    filesSize += file.statSync().size;
-                  } else {
-                    selectedFiles.remove(file.path);
-                    filesSize -= file.statSync().size;
-                  }
-                });
-              },
-            )),
-      ),
-    );
+  onChange(bool value, FileSystemEntity file) {
+    setState(() {
+      if (value) {
+        selectedFiles.add(file.path);
+        filesSize += file.statSync().size;
+      } else {
+        selectedFiles.remove(file.path);
+        filesSize -= file.statSync().size;
+      }
+    });
   }
 
   notifyCurrentType(String type) {

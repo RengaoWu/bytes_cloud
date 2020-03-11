@@ -25,6 +25,12 @@ dependencies:
   dio: 3.0.9 #latest version
   multi_image_picker: ^4.6.2
   extended_image: ^0.7.1  # 图片查看器
+  open_file: ^3.0.1 # https://pub.dev/packages/open_file#-readme-tab-
+
+  flutter_filereader: ^2.0.0 # 文件阅读器 failed in android 10
+  # ios add <key>io.flutter.embedded_views_preview</key><true/>
+  native_pdf_view: 2.2.0
+  flutter_fullpdfview: ^1.0.3+2
 
 
 dev_dependencies:

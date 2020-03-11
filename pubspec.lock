@@ -92,11 +92,39 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.0"
+  extension:
+    dependency: transitive
+    description:
+      name: extension
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.5"
+  ffi:
+    dependency: transitive
+    description:
+      name: ffi
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.3"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_filereader:
+    dependency: "direct main"
+    description:
+      name: flutter_filereader
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
+  flutter_fullpdfview:
+    dependency: "direct main"
+    description:
+      name: flutter_fullpdfview
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.3+2"
   flutter_markdown:
     dependency: "direct main"
     description:
@@ -198,6 +226,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.6.3"
+  native_pdf_renderer:
+    dependency: transitive
+    description:
+      name: native_pdf_renderer
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.8.1"
+  native_pdf_view:
+    dependency: "direct main"
+    description:
+      name: native_pdf_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.2.0"
   nested:
     dependency: transitive
     description:
@@ -205,6 +247,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.0.4"
+  open_file:
+    dependency: "direct main"
+    description:
+      name: open_file
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
   path:
     dependency: transitive
     description:

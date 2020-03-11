@@ -35,7 +35,6 @@ class SelfRouteState extends State<SelfRoute>
       physics: ScrollPhysics(),
       shrinkWrap: true,
       children: <Widget>[
-        UI.iconTxtBtn(Constants.NOTE, "笔记", callMarkDownPage), // 笔记
         UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
         UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
         UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享

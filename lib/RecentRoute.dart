@@ -32,6 +32,14 @@ class RecentRouteState extends State<RecentRoute>
         title: boldText(
           '最近',
         ),
+        actions: <Widget>[
+          Container(
+            width: 40,
+            padding: EdgeInsets.only(right: 8),
+            child: Icon(Icons.center_focus_weak),
+            //child: Image.asset(Constants.SCAN),
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[

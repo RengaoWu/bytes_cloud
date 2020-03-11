@@ -67,6 +67,11 @@ class FileUtil {
     return ext == '.png' || ext == '.jpg';
   }
 
+  static bool isPDF(FileSystemEntity file) {
+    String ext = p.extension(file.path);
+    return ext == '.pdf';
+  }
+
   static bool isText(FileSystemEntity file) {
     String ext = p.extension(file.path);
     return ext == '.txt' || ext == '.xml' || ext == '.log';
@@ -75,5 +80,19 @@ class FileUtil {
   static bool isMD(FileSystemEntity file) {
     String ext = p.extension(file.path);
     return ext == '.md';
+  }
+
+  // docx,doc,xlsx,xls,pptx,ppt,pdf,txt
+  static bool isFileReaderSupport(FileSystemEntity file) {
+    //return false;
+    String ext = p.extension(file.path);
+    return ext == '.docx' ||
+        ext == '.doc' ||
+        ext == '.xlsx' ||
+        ext == '.xls' ||
+        ext == '.pptx' ||
+        ext == '.ppt' ||
+        ext == '.txt' ||
+        ext == '.pdf';
   }
 }

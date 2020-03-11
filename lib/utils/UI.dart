@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:bytes_cloud/MarkDownListPage.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/widgets/FileReader.dart';
 import 'package:bytes_cloud/widgets/MarkDownPage.dart';
+import 'package:bytes_cloud/widgets/PdfReader.dart';
 import 'package:bytes_cloud/widgets/PhotoGalleryPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
 
 import '../common.dart';
 import 'Constants.dart';
@@ -231,10 +234,17 @@ class UI {
       BuildContext context, File currentFile, Map<String, dynamic> args) {
     if (FileUtil.isImage(currentFile)) {
       UI.newPage(context, PhotoGalleryPage(args));
+    } else if (FileUtil.isPDF(currentFile)) {
+      //UI.newPage(context, MyApp());
+      UI.newPage(context, PDFScreen(path: currentFile.path));
     } else if (FileUtil.isText(currentFile)) {
       UI.newPage(context, MarkDownPage({'path': currentFile.path}));
     } else if (FileUtil.isMD(currentFile)) {
       UI.newPage(context, MarkDownPage({'path': currentFile.path}));
+    } else if (FileUtil.isFileReaderSupport(currentFile)) {
+      UI.newPage(context, FileReaderPage({'path': currentFile.path}));
+    } else {
+      OpenFile.open(currentFile.path);
     }
   }
 }

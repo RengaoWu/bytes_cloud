@@ -150,7 +150,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
         ),
       );
   onTap(FileSystemEntity file) {
-    UI.newPage(context, PhotoGalleryPage({'files': files, 'current': file}));
+    UI.openFile(context, file, {'files': files, 'current': file});
   }
 
   onChange(bool value, FileSystemEntity file) {
@@ -260,8 +260,6 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
     files.addAll(_folder);
     files.addAll(_files);
   }
-
-  Future openFile(String path) async {}
 
   @override
   bool get wantKeepAlive => true;

@@ -2,10 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 class FileUtil {
-  static String getFileName(String path) =>
-      path.substring(path.lastIndexOf('/') + 1);
+  static String getFileName(String path) {
+    String name = path.substring(path.lastIndexOf('/') + 1);
+    if (name.contains('.')) {
+      return name.substring(0, name.lastIndexOf('.'));
+    }
+    return name;
+  }
 
   static void writeToFile(
       {String path, String fileName, @required String content}) async {
@@ -41,9 +47,9 @@ class FileUtil {
   }
 
   static Future<FileSystemEntity> createFile(
-      String path, String fileName) async {
+      String path, String fileName, String ext) async {
     Directory dir = await getApplicationDocumentsDirectory();
-    File file = new File(dir.path + '/' + path + '/' + fileName);
+    File file = new File(dir.path + '/' + path + '/' + fileName + ext);
     if (!file.existsSync()) {
       file.createSync();
       return file;
@@ -54,5 +60,20 @@ class FileUtil {
   static void deleteFile(String path) {
     File file = File(path);
     if (file.existsSync()) file.deleteSync();
+  }
+
+  static bool isImage(FileSystemEntity file) {
+    String ext = p.extension(file.path);
+    return ext == '.png' || ext == '.jpg';
+  }
+
+  static bool isText(FileSystemEntity file) {
+    String ext = p.extension(file.path);
+    return ext == '.txt' || ext == '.xml' || ext == '.log';
+  }
+
+  static bool isMD(FileSystemEntity file) {
+    String ext = p.extension(file.path);
+    return ext == '.md';
   }
 }

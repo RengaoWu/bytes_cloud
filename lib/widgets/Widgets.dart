@@ -51,8 +51,6 @@ class BaseListItemState extends State<BaseListItem> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     initData();
-    print("$title + " " + $isHidden");
-    print('didChangeDependencies');
   }
 
   // 先调用 didChangeDependencies 再调用 build，调用
@@ -66,11 +64,10 @@ class BaseListItemState extends State<BaseListItem> {
 
   @override
   Widget build(BuildContext context) {
-    print('BaseListItemState build');
     return Padding(
         padding: EdgeInsets.all(8),
-        child: InkWell(
-          child: Row(
+        child: ListTile(
+          title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Expanded(
@@ -82,10 +79,6 @@ class BaseListItemState extends State<BaseListItem> {
                           title,
                           style: TextStyle(fontSize: 18),
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
-                          child: Text(subTitle),
-                        )
                       ],
                     )),
                 isHidden
@@ -100,6 +93,7 @@ class BaseListItemState extends State<BaseListItem> {
                         },
                       ),
               ]),
+          subtitle: Text(subTitle),
           onTap: () {
             if (isHidden)
               click();

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -21,8 +23,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
     List<FileSystemEntity> files = arg['files'];
     FileSystemEntity currentImage = arg['current'];
     files.forEach((f) {
-      String ext = p.extension(f.path);
-      if (ext == '.png' || ext == '.jpg') {
+      if (FileUtil.isImage(f)) {
         images.add(f);
         if (currentImage == f) {
           currentIndex = images.length - 1;
@@ -33,11 +34,19 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GalleryView(),
+      body: Column(
+        children: <Widget>[
+          Expanded(child: galleryView()),
+          Align(
+            alignment: Alignment.center,
+            child: boldText('$currentIndex/${images.length}'),
+          ),
+        ],
+      ),
     );
   }
 
-  GalleryView() {
+  galleryView() {
     return ExtendedImageGesturePageView.builder(
       itemBuilder: (BuildContext context, int index) {
         var item = images[index];
@@ -61,7 +70,9 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
       },
       itemCount: images.length,
       onPageChanged: (int index) {
-        currentIndex = index;
+        setState(() {
+          currentIndex = index;
+        });
         //rebuild.add(index);
       },
       controller: PageController(

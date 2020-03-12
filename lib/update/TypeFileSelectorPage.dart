@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:bytes_cloud/common.dart';
@@ -9,7 +10,6 @@ import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../CacheManager.dart';
 
@@ -40,24 +40,18 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     // 缓存中有
     if (cache[argType] != null) {
       cache[argType].forEach((f) {
-        FileSystemEntity file = File(f);
-        if (file.existsSync()) {
-          // check
-          res.add(file);
+        if (f.existsSync()) {
+          res.add(f);
         }
       });
       return res;
     }
-    Map<String, dynamic> args = {
+    res = (await compute(wapperGetAllFiles, {
       'keys': extensionName2Type.keys.toList(),
       'roots': paths,
       'isExt': true,
-    };
-    res = (await compute(wapperGetAllFiles, args));
-    cache[argType] = [];
-    res.forEach((f) {
-      cache[argType].add(f.path);
-    });
+    }));
+    cache[argType] = res;
     return res;
   }
 
@@ -187,13 +181,13 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   // image or video use this item
   mediaGridView() {
-    return StaggeredGridView.countBuilder(
+    return ListView.builder(
       itemCount: type2Files[currentType].length,
       itemBuilder: (BuildContext context, int index) {
         return inkwellItemCard(type2Files[currentType][index]);
       },
-      crossAxisCount: 4,
-      staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+//      gridDelegate:
+//          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
     );
   }
 
@@ -208,7 +202,10 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     return Card(
       child: Stack(
         children: <Widget>[
-          Common().getThumbFutureBuilder(file.path),
+          Container(
+            child: Common().getThumbWidget(file.path, Common.appRoot),
+            height: 300,
+          ),
           Text(
             FileUtil.getFileName(file.path),
             style: TextStyle(fontSize: 10),

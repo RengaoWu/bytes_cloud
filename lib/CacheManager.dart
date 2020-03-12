@@ -1,4 +1,6 @@
 import 'dart:core';
 
+import 'dart:io';
+
 // keys : FileTypeUtils.ARG : photo, video,
-Map<String, List<String>> cache = {}; // 缓存
+Map<String, List<FileSystemEntity>> cache = {}; // 缓存

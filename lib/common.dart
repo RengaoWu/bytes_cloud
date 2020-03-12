@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:thumbnails/thumbnails.dart';
@@ -22,8 +23,8 @@ class Common {
 
   Common._internal();
 
-  String sd;
-  String appRoot;
+  static String sd;
+  static String appRoot;
   String get downloadDir => sd + '/Download'; // android 'Download', ios null
 
   // wx
@@ -103,20 +104,16 @@ class Common {
         iconImg = Constants.AAC;
         break;
       case '.mp4':
-        iconImg = preview ? path : Constants.MP4;
-        resFlag = preview ? 2 : resFlag;
+        iconImg = Constants.MP4;
         break;
       case '.avi':
-        iconImg = preview ? path : Constants.AVI;
-        resFlag = preview ? 2 : resFlag;
+        iconImg = Constants.AVI;
         break;
       case '.flv':
-        iconImg = preview ? path : Constants.FLV;
-        resFlag = preview ? 2 : resFlag;
+        iconImg = Constants.FLV;
         break;
       case '3gp':
-        iconImg = preview ? path : Constants.GP3;
-        resFlag = preview ? 2 : resFlag;
+        iconImg = Constants.GP3;
         break;
       case '.rar':
         iconImg = Constants.RAR;
@@ -143,8 +140,6 @@ class Common {
           height: 40,
         ),
       );
-    } else if (resFlag == 2) {
-      return getThumbFutureBuilder(path, width: 40, height: 40);
     } else {
       return Image.asset(
         iconImg,
@@ -154,35 +149,40 @@ class Common {
     }
   }
 
-  getThumbFutureBuilder(String path, {double width, double height}) {
-    var thumb = _getThumbCache(path);
+  getThumbWidget(String path, String appRoot) {
+    // from cache
+    var thumb = _getThumbFromCache(path, appRoot);
     if (thumb != null) {
       return Image.file(
         File(thumb),
-        width: width,
-        height: height,
+        fit: BoxFit.cover,
+        width: 400,
+        height: 200,
       );
     }
+    // generate
     return FutureBuilder(
-      future: _getThumb(path),
+      future: _realGetThumb({'path': path, 'appRoot': appRoot}),
+      //future: compute(_getThumb, {'path': path, 'appRoot': Common.appRoot}),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           return Image.file(
             File(snapshot.data),
-            width: width,
-            height: height,
+            fit: BoxFit.cover,
+            width: 400,
+            height: 200,
           );
         }
         return SizedBox(
-          width: width,
-          height: 300,
+          width: 400,
+          height: 200,
         );
       },
     );
   }
 
-  _getThumbCache(String path) {
-    String thumbnailFolder = Common().appRoot + '/cache/';
+  _getThumbFromCache(String path, String appRoot) {
+    String thumbnailFolder = appRoot + '/cache/';
     String thumbnailFolderPng =
         thumbnailFolder + FileUtil.getFileName(path) + '.png';
     if (File(thumbnailFolderPng).existsSync()) {
@@ -191,15 +191,15 @@ class Common {
     return null;
   }
 
-  _getThumb(String path) async {
-    String thumbnailFolder = Common().appRoot + '/cache/';
-    String thumb = await Thumbnails.getThumbnail(
+  static Future<String> _realGetThumb(Map<String, String> args) async {
+    String path = args['path'];
+    String thumbnailFolder = args['appRoot'] + '/cache/';
+    return await Thumbnails.getThumbnail(
         thumbnailFolder:
             thumbnailFolder, // creates the specified path if it doesnt exist
         videoFile: path,
         imageType: ThumbFormat.PNG,
         quality: 10);
-    return thumb;
   }
 
   Future saveStr(String key, String value) async {

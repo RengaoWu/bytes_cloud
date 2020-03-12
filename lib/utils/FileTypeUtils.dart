@@ -103,6 +103,6 @@ class FileTypeUtils {
     if (arg == ARG_VIDEO) {
       return [Common().DCIM, Common().WxRoot, Common().QQRoot]; // or so
     }
-    return [Common().sd];
+    return [Common.sd];
   }
 }

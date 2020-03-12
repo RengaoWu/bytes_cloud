@@ -71,7 +71,7 @@ class NativeRouteState extends State<NativeRoute>
       context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
 
   callFileSelectorPage() => UI.newPage(
-      context, SysFileSelectorPage({'root': Common().sd, 'rootName': '根目录'}));
+      context, SysFileSelectorPage({'root': Common.sd, 'rootName': '根目录'}));
 
   callDocTypeSelector() =>
       UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_DOC));
@@ -169,10 +169,8 @@ class NativeRouteState extends State<NativeRoute>
                             border: InputBorder.none,
                           ),
                           onSubmitted: (String k) {
-                            UI.newPage(
-                                context,
-                                SearchFilePage(
-                                    {'key': k, 'root': Common().sd}));
+                            UI.newPage(context,
+                                SearchFilePage({'key': k, 'root': Common.sd}));
                           },
                           // onChanged: onSearchTextChanged,
                         ),

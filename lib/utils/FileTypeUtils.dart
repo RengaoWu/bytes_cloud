@@ -1,3 +1,4 @@
+import 'package:bytes_cloud/common.dart';
 import 'package:flutter/material.dart';
 import 'Constants.dart';
 
@@ -5,6 +6,7 @@ class FileTypeUtils {
   static const String ARG_DOC = '文档';
   static const String ARG_ZIP = '压缩包';
   static const String ARG_MUSIC = '音乐';
+  static const String ARG_VIDEO = '视频';
 
   static void convert(String type, Map<String, Widget> type2Icon,
       Map<String, String> ext2Type) {
@@ -20,6 +22,10 @@ class FileTypeUtils {
       case ARG_MUSIC:
         type2Icon.addAll(musicType2Icon);
         ext2Type.addAll(musicExtension2Type);
+        break;
+      case ARG_VIDEO:
+        type2Icon.addAll(videoType2Icon);
+        ext2Type.addAll(videoExtension2Type);
         break;
     }
   }
@@ -72,4 +78,31 @@ class FileTypeUtils {
     '.flac': Constants.TYPE_FLAC,
     '.aac': Constants.TYPE_AAC,
   };
+
+  // 视频
+  static Map<String, Widget> videoType2Icon = {
+    Constants.TYPE_ALL: Text('A'),
+    Constants.TYPE_MP4: Image.asset(Constants.MP4),
+    Constants.TYPE_AVI: Image.asset(Constants.AVI),
+    Constants.TYPE_FLV: Image.asset(Constants.FLV),
+  };
+  static Map<String, String> videoExtension2Type = {
+    '.mp4': Constants.TYPE_MP4,
+    '.flv': Constants.TYPE_FLAC,
+    '.avi': Constants.TYPE_AVI,
+  };
+
+  static bool showType(String arg) {
+    if (arg == ARG_VIDEO)
+      return false;
+    else
+      return true;
+  }
+
+  static List<String> getPaths(String arg) {
+    if (arg == ARG_VIDEO) {
+      return [Common().DCIM, Common().WxRoot, Common().QQRoot]; // or so
+    }
+    return [Common().sd];
+  }
 }

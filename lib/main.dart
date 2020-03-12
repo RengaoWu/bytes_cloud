@@ -36,7 +36,8 @@ void main() async {
     // /storage/emulated/0/Android/data/com.bytescloud.bytes_cloud/files
     // Common().sDCardDir = (await getExternalStorageDirectory());
     print((await getExternalStorageDirectory()).path);
-    Common().sDCardDir = '/storage/emulated/0/';
+    Common().sd = '/storage/emulated/0/';
+    Common().appRoot = (await getApplicationSupportDirectory()).path;
   }
 
   Future<void> getPermission() async {

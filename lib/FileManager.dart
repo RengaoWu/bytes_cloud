@@ -38,12 +38,12 @@ class _FilesFragmentState extends State<FilesFragment>
     print("FileManager init");
     super.initState();
 
-    parentDir = Directory(Common().sDCardDir);
-    initPathFiles(Common().sDCardDir);
+    parentDir = Directory(Common().sd);
+    initPathFiles(Common().sd);
   }
 
   Future<bool> onWillPop() async {
-    if (parentDir.path != Common().sDCardDir) {
+    if (parentDir.path != Common().sd) {
       initPathFiles(parentDir.parent.path);
       jumpToPosition(false);
       GlobalEventBus().event.fire(FilePathEvent(parentDir.parent.path));

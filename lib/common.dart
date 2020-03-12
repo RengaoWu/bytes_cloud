@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
+import 'package:thumbnails/thumbnails.dart';
 
 class Common {
   factory Common() => _getInstance();
@@ -20,20 +22,25 @@ class Common {
 
   Common._internal();
 
-  String sDCardDir;
-  String get sDownloadDir =>
-      sDCardDir + '/Download'; // android 'Download', ios null
-  String get sWxDir => sDCardDir + '/Tencent/MicroMsg/Download';
+  String sd;
+  String appRoot;
+  String get downloadDir => sd + '/Download'; // android 'Download', ios null
 
-  String get sQQDir => sDCardDir + '/Tencent';
-  String get sQQFileRecDir => sQQDir + '/QQfile_recv'; // 文件
-  String get sQQFileImageRecDir => sQQDir + '/QQfile_images'; // 聊天图片
-  String get sQQFileCollRecDir => sQQDir + '/QQfile_colleaction'; //收藏
-  String get sQQFavDir => sQQDir + '/QQ_Favorite'; //表情
+  // wx
+  String get WxRoot => sd + '/Tencent/MicroMsg';
+  String get sWxDirDownload => WxRoot + '/Download';
 
-  String get sScreamShotDir =>
-      sDCardDir + '/Pictures/Screenshots'; // 华为手机[截图] /DCIM/Screenshots
-  String get sCameraDir => sDCardDir + '/DCIM/Camera'; // 相机
+  // qq
+  String get QQRoot => sd + '/Tencent';
+  String get sQQFileRecDir => QQRoot + '/QQfile_recv'; // 文件
+  String get sQQFileImageRecDir => QQRoot + '/QQfile_images'; // 聊天图片
+  String get sQQFileCollRecDir => QQRoot + '/QQfile_colleaction'; //收藏
+  String get sQQFavDir => QQRoot + '/QQ_Favorite'; //表情
+
+  String get DCIM => sd + '/DCIM';
+  String get screamShot =>
+      sd + '/Pictures/Screenshots'; // 华为手机[截图] /DCIM/Screenshots
+  String get camera => sd + '/DCIM/Camera'; // 相机
 
   List<FileSystemEntity> get qqFiles => [
         Directory(sQQFileRecDir),
@@ -57,7 +64,7 @@ class Common {
   }
 
   Widget selectIcon(String path, bool preview) {
-    int resFlag = 0; // 图片 1
+    int resFlag = 0; // 图片 1, 视频 2
     String ext = p.extension(path);
     String iconImg = Constants.UNKNOW;
 
@@ -96,16 +103,20 @@ class Common {
         iconImg = Constants.AAC;
         break;
       case '.mp4':
-        iconImg = Constants.MP4;
+        iconImg = preview ? path : Constants.MP4;
+        resFlag = preview ? 2 : resFlag;
         break;
       case '.avi':
-        iconImg = Constants.AVI;
+        iconImg = preview ? path : Constants.AVI;
+        resFlag = preview ? 2 : resFlag;
         break;
       case '.flv':
-        iconImg = Constants.FLV;
+        iconImg = preview ? path : Constants.FLV;
+        resFlag = preview ? 2 : resFlag;
         break;
       case '3gp':
-        iconImg = Constants.GP3;
+        iconImg = preview ? path : Constants.GP3;
+        resFlag = preview ? 2 : resFlag;
         break;
       case '.rar':
         iconImg = Constants.RAR;
@@ -132,6 +143,8 @@ class Common {
           height: 40,
         ),
       );
+    } else if (resFlag == 2) {
+      return getThumbFutureBuilder(path, width: 40, height: 40);
     } else {
       return Image.asset(
         iconImg,
@@ -139,6 +152,54 @@ class Common {
         height: 40,
       );
     }
+  }
+
+  getThumbFutureBuilder(String path, {double width, double height}) {
+    var thumb = _getThumbCache(path);
+    if (thumb != null) {
+      return Image.file(
+        File(thumb),
+        width: width,
+        height: height,
+      );
+    }
+    return FutureBuilder(
+      future: _getThumb(path),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          return Image.file(
+            File(snapshot.data),
+            width: width,
+            height: height,
+          );
+        }
+        return SizedBox(
+          width: width,
+          height: 300,
+        );
+      },
+    );
+  }
+
+  _getThumbCache(String path) {
+    String thumbnailFolder = Common().appRoot + '/cache/';
+    String thumbnailFolderPng =
+        thumbnailFolder + FileUtil.getFileName(path) + '.png';
+    if (File(thumbnailFolderPng).existsSync()) {
+      return thumbnailFolderPng;
+    }
+    return null;
+  }
+
+  _getThumb(String path) async {
+    String thumbnailFolder = Common().appRoot + '/cache/';
+    String thumb = await Thumbnails.getThumbnail(
+        thumbnailFolder:
+            thumbnailFolder, // creates the specified path if it doesnt exist
+        videoFile: path,
+        imageType: ThumbFormat.PNG,
+        quality: 10);
+    return thumb;
   }
 
   Future saveStr(String key, String value) async {

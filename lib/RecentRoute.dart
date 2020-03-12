@@ -60,15 +60,15 @@ class RecentRouteState extends State<RecentRoute>
   }
 
   callDownloadSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sDownloadDir, 'rootName': '下载'}));
+      SysFileSelectorPage({'root': Common().downloadDir, 'rootName': '下载'}));
   callWxSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sWxDir, 'rootName': '微信'}));
+      SysFileSelectorPage({'root': Common().sWxDirDownload, 'rootName': '微信'}));
   callQQSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sQQDir, 'rootName': 'QQ'}));
+      SysFileSelectorPage({'root': Common().QQRoot, 'rootName': 'QQ'}));
   callScreamShotSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sScreamShotDir, 'rootName': '截图'}));
+      SysFileSelectorPage({'root': Common().screamShot, 'rootName': '截图'}));
   callCameraSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sCameraDir, 'rootName': '相机'}));
+      SysFileSelectorPage({'root': Common().camera, 'rootName': '相机'}));
   gridView() => GridView.count(
         shrinkWrap: true,
         crossAxisCount: 5,

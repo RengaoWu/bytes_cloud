@@ -129,8 +129,10 @@ class _SearchFilePageState extends State<SearchFilePage> {
     if (key == '') {
       throw 'Please input key';
     }
-    List<FileSystemEntity> res =
-        await compute(wapperGetFiles, {'key': key, 'root': root});
+    List<FileSystemEntity> res = await compute(wapperGetAllFiles, {
+      'keys': [key],
+      'roots': [root]
+    });
     return res;
   }
 

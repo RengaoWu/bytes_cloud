@@ -29,8 +29,14 @@ dependencies:
 
   flutter_filereader: ^2.0.0 # 文件阅读器 failed in android 10
   # ios add <key>io.flutter.embedded_views_preview</key><true/>
-  native_pdf_view: 2.2.0
+  # zefyr: ^0.10.0
+  # native_pdf_view: 2.2.0
+
   flutter_fullpdfview: ^1.0.3+2
+  video_player: ^0.10.8+1
+  thumbnails: ^1.0.1 # 视频缩略图
+
+
 
 
 dev_dependencies:

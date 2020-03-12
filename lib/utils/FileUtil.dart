@@ -13,6 +13,10 @@ class FileUtil {
     return name;
   }
 
+  static String ext(String path) {
+    return p.extension(path);
+  }
+
   static void writeToFile(
       {String path, String fileName, @required String content}) async {
     File file;
@@ -94,5 +98,10 @@ class FileUtil {
         ext == '.ppt' ||
         ext == '.txt' ||
         ext == '.pdf';
+  }
+
+  static bool isVideo(FileSystemEntity file) {
+    String ext = p.extension(file.path);
+    return ext == '.mp4' || ext == '.avi' || ext == '.3gp' || ext == '.flv';
   }
 }

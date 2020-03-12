@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
-import 'package:bytes_cloud/widgets/PhotoGalleryPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -86,7 +85,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
                 return IconButton(
                   icon: Icon(Icons.file_upload),
                   onPressed: () {
-                    pushToCloud(context);
+                    UI.pushToCloud(context, selectedFiles.length, filesSize);
                   },
                 );
               },
@@ -110,17 +109,6 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
         ),
       ),
     );
-  }
-
-  pushToCloud(BuildContext context) {
-    String content = '';
-    if (selectedFiles.length == 0) {
-      content = '没有选择任何文件';
-    } else {
-      content =
-          '开始上传，总共${selectedFiles.length}个文件，共${Common().getFileSize(filesSize)}';
-    }
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
   }
 
   callNativeFileSearch() {
@@ -150,6 +138,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
         ),
       );
   onTap(FileSystemEntity file) {
+    print('open file ' + file.path);
     UI.openFile(context, file, {'files': files, 'current': file});
   }
 
@@ -271,7 +260,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
 
   // QQ 下的文件过滤一下
   void fileFilter(List<FileSystemEntity> _folder) {
-    if (root == Common().sQQDir && isRoot()) {
+    if (root == Common().QQRoot && isRoot()) {
       _folder.clear();
       Common().qqFiles.forEach((f) {
         if (f.existsSync()) _folder.add(f);

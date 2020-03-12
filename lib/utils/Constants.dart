@@ -14,9 +14,13 @@ class Constants {
   static final String TYPE_7Z = '7Z';
   static final String TYPE_MP3 = 'MP3';
   static final String TYPE_WAV = 'WAV';
-  static final String TYPE_MP4 = 'MP4';
   static final String TYPE_FLAC = 'FLAC';
   static final String TYPE_AAC = 'AAC';
+
+  static final String TYPE_MP4 = 'MP4';
+  static final String TYPE_AVI = 'AVI';
+  static final String TYPE_3GP = '3GP';
+  static final String TYPE_FLV = 'FLV';
 
   /// {@link pubspec.yaml}
   static final String LOGO = 'images/logo.png';
@@ -32,18 +36,20 @@ class Constants {
   static final String VIDEO = 'assets/images/video.png';
   static final String PSD = 'assets/images/psd.png';
   static final String UNKNOW = 'assets/images/unknown.png';
-  // file type
-  static final String GP3 = 'assets/images/3gp.png';
+  // file type - music
   static final String AAC = 'assets/images/aac.png';
-  static final String AVI = 'assets/images/avi.png';
-  static final String FLV = 'assets/images/flv.png';
   static final String MP3 = 'assets/images/mp3.png';
-  static final String MP4 = 'assets/images/mp4.png';
   static final String WAV = 'assets/images/wav.png';
   static final String FLAC = 'assets/images/flac.png';
+  // file type - zip
   static final String ZIP = 'assets/images/zip.png';
   static final String RAR = 'assets/images/rar.png';
   static final String Z7 = 'assets/images/7z.png';
+  // file type - video
+  static final String GP3 = 'assets/images/3gp.png';
+  static final String MP4 = 'assets/images/mp4.png';
+  static final String AVI = 'assets/images/avi.png';
+  static final String FLV = 'assets/images/flv.png';
 
   static final String PHOTO = 'assets/images/photo.png';
   static final String MCF = 'assets/images/audio.png';

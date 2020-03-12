@@ -6,6 +6,7 @@ import 'package:bytes_cloud/widgets/FileReader.dart';
 import 'package:bytes_cloud/widgets/MarkDownPage.dart';
 import 'package:bytes_cloud/widgets/PdfReader.dart';
 import 'package:bytes_cloud/widgets/PhotoGalleryPage.dart';
+import 'package:bytes_cloud/widgets/VideoReader.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -230,21 +231,37 @@ class UI {
     );
   }
 
-  static openFile(
-      BuildContext context, File currentFile, Map<String, dynamic> args) {
-    if (FileUtil.isImage(currentFile)) {
-      UI.newPage(context, PhotoGalleryPage(args));
-    } else if (FileUtil.isPDF(currentFile)) {
-      //UI.newPage(context, MyApp());
-      UI.newPage(context, PDFScreen(path: currentFile.path));
-    } else if (FileUtil.isText(currentFile)) {
-      UI.newPage(context, MarkDownPage({'path': currentFile.path}));
-    } else if (FileUtil.isMD(currentFile)) {
-      UI.newPage(context, MarkDownPage({'path': currentFile.path}));
-    } else if (FileUtil.isFileReaderSupport(currentFile)) {
-      UI.newPage(context, FileReaderPage({'path': currentFile.path}));
+  static pushToCloud(BuildContext context, int length, int size) {
+    String content = '';
+    if (length == 0) {
+      content = '没有选择任何文件';
     } else {
-      OpenFile.open(currentFile.path);
+      content = '开始上传，总共${length}个文件，共${Common().getFileSize(size)}';
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
+  }
+
+  static openFile(
+      BuildContext context, File currentFile, Map<String, dynamic> args,
+      {bool useOtherApp = false}) {
+    if (useOtherApp) {
+      OpenFile.open(currentFile.path); // 手机其他APP
+      return;
+    }
+    if (FileUtil.isImage(currentFile)) {
+      UI.newPage(context, PhotoGalleryPage(args)); // 图片
+    } else if (FileUtil.isVideo(currentFile)) {
+      UI.newPage(context, VideoPage({'path': currentFile.path})); // 视频
+    } else if (FileUtil.isPDF(currentFile)) {
+      UI.newPage(context, PDFScreen(path: currentFile.path)); // pdf
+    } else if (FileUtil.isText(currentFile)) {
+      UI.newPage(context, MarkDownPage({'path': currentFile.path})); // 文本
+    } else if (FileUtil.isMD(currentFile)) {
+      UI.newPage(context, MarkDownPage({'path': currentFile.path})); // MD
+//    } else if (FileUtil.isFileReaderSupport(currentFile)) {
+//      UI.newPage(context, FileReaderPage({'path': currentFile.path})); // Android 10 不兼容
+    } else {
+      OpenFile.open(currentFile.path); // 手机其他APP
     }
   }
 }

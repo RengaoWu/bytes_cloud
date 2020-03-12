@@ -64,11 +64,14 @@ class NativeRouteState extends State<NativeRoute>
     );
   }
 
+  callVideoSelectorPage() =>
+      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_VIDEO));
+
   callPhotoSelectorPage() => UI.newPage(
       context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
 
-  callFileSelectorPage() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sDCardDir, 'rootName': '根目录'}));
+  callFileSelectorPage() => UI.newPage(
+      context, SysFileSelectorPage({'root': Common().sd, 'rootName': '根目录'}));
 
   callDocTypeSelector() =>
       UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_DOC));
@@ -89,7 +92,7 @@ class NativeRouteState extends State<NativeRoute>
           shrinkWrap: true,
           children: <Widget>[
             UI.iconTxtBtn(Constants.PHOTO, "图片", callPhotoSelectorPage),
-            UI.iconTxtBtn(Constants.VIDEO, "视频", () => {print("")}),
+            UI.iconTxtBtn(Constants.VIDEO, "视频", callVideoSelectorPage),
             UI.iconTxtBtn(Constants.MUSIC, "音乐", callMusicSelector),
             UI.iconTxtBtn(Constants.DOC, "文档", callDocTypeSelector),
 //            UI.iconTxtBtn(Constants.FILE2, "文件", callFileSelectorPage),
@@ -169,7 +172,7 @@ class NativeRouteState extends State<NativeRoute>
                             UI.newPage(
                                 context,
                                 SearchFilePage(
-                                    {'key': k, 'root': Common().sDCardDir}));
+                                    {'key': k, 'root': Common().sd}));
                           },
                           // onChanged: onSearchTextChanged,
                         ),

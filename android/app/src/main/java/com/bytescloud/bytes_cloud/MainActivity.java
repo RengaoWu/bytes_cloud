@@ -1,30 +1,19 @@
 package com.bytescloud.bytes_cloud;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.media.ExifInterface;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
-import android.webkit.MimeTypeMap;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.regex.Pattern;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -33,51 +22,90 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
-    private static final String TAG = "MainActivity1";
-    private static final String METHOD_CHANNEL = "FileChannel";
+    private static final String COMMON_CHANNEL = "common";
     private static final Handler ui = new Handler();
+
+    // METHOD LIST
+    private static final String getThumbnails = "getThumbnails";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getPhoto();
     }
 
     @Override
     public void configureFlutterEngine(FlutterEngine flutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
-        new MethodChannel(flutterEngine.getDartExecutor(), METHOD_CHANNEL).setMethodCallHandler(
+        new MethodChannel(flutterEngine.getDartExecutor(), COMMON_CHANNEL).setMethodCallHandler(
                 (methodCall, result) -> {
-                    if (methodCall.method.equals("openFile")) {
-                        String path = methodCall.argument("path");
-                        openFile(getContext(), path);
-                        result.success("");
-                    }else {
+                    if (methodCall.method.equals(getThumbnails)) {
+                        handleGetThumbanils(methodCall, result);
+                    } else {
                         result.notImplemented();
                     }
                 }
         );
     }
 
-    private void openFile(Context context, String path) {
-        try {
-            if (!path.contains("file://")) {
-                path = "file://" + path;
-            }
-            //获取文件类型
-            String[] nameType = path.split("\\.");
-            String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(nameType[1]);
-
-            Intent intent = new Intent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(Intent.ACTION_VIEW);
-            //设置文件的路径和文件类型
-            intent.setDataAndType(Uri.parse(path), mimeType);
-            //跳转
-            context.startActivity(intent);
-        } catch (Exception e) {
-            System.out.println(e);
+    private void handleGetThumbanils(MethodCall methodCall, MethodChannel.Result result) {
+        ArrayList<String> args = (ArrayList<String>) methodCall.arguments;
+        if (args == null) {
+            result.error("1", "arg is null", "");
+            return;
         }
+        new Thread() {
+            @Override
+            public void run() {
+                ArrayList<String> res = userDirectory(args.subList(1, args.size()), args.get(0), 50);
+                if (res == null) {
+                    ui.post(() -> result.error("2", "create dir failed", ""));
+                } else {
+                    ui.post(() -> result.success(res));
+                }
+            }
+        }.start();
+    }
+
+    private ArrayList<String> userDirectory(List<String> vidPath, String thumbPath, int quality) {
+        ArrayList<String> res = new ArrayList<>();
+        List<Bitmap> bitmaps = new ArrayList<Bitmap>(vidPath.size());
+        List<String> vidNames = new ArrayList<String>(vidPath.size());
+        for (int i = 0; i < vidPath.size(); i++) {
+            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(vidPath.get(i), MediaStore.Video.Thumbnails.MINI_KIND);
+            bitmaps.add(bitmap);
+            vidNames.add(getFileName(Uri.parse(vidPath.get(i)).getLastPathSegment()));
+        }
+        File fileDir = new File(thumbPath + File.separator);
+        if (!fileDir.exists()) {
+            boolean b = fileDir.mkdirs();
+            if (!b) {
+                return null;
+            }
+        }
+        try {
+            for (int i = 0; i < bitmaps.size(); i++) {
+                Bitmap bitmap = bitmaps.get(i);
+                if (bitmap == null) {
+                    res.add(""); // 测试发现这里可能为null
+                    continue;
+                }
+                String tempFile = new File(fileDir.getAbsolutePath() + File.separator + vidNames.get(i)).getAbsolutePath();
+                FileOutputStream out = new FileOutputStream(new File(tempFile + ".png"));
+                bitmaps.get(i).compress(Bitmap.CompressFormat.PNG, quality, out);
+                out.flush();
+                out.close();
+                res.add(tempFile + ".png");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    private static final Pattern ext = Pattern.compile("(?<=.)\\.[^.]+$");
+
+    private String getFileName(String s) {
+        return ext.matcher(s).replaceAll("");
     }
 
 }

@@ -1,7 +1,11 @@
+import 'package:flutter/services.dart';
+
 class Constants {
   // Channel
-  static final String FILE_CHANNEL = 'FileChannel';
+  static const String COMMON_CHANNEL = 'common';
+  static const String getThumbnails = 'getThumbnails';
 
+  static const MethodChannel COMMON = MethodChannel(COMMON_CHANNEL);
   // File type
   static final String TYPE_ALL = '全部';
   static final String TYPE_DOC = 'DOC';

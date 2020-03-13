@@ -6,6 +6,7 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeUtils.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -52,6 +53,14 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
       'isExt': true,
     }));
     cache[argType] = res;
+
+//    // generate 缩略图
+//    List<String> arg = [Common().appCache];
+//    res.forEach((f) {
+//      arg.add(f.path);
+//    });
+//    await Constants.COMMON.invokeListMethod(Constants.getThumbnails, arg);
+
     return res;
   }
 
@@ -203,7 +212,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
       child: Stack(
         children: <Widget>[
           Container(
-            child: Common().getThumbWidget(file.path, Common.appRoot),
+            child: getThumbWidget(file.path),
             height: 300,
           ),
           Text(

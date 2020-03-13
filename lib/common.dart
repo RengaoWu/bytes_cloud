@@ -26,6 +26,7 @@ class Common {
   static String sd;
   static String appRoot;
   String get downloadDir => sd + '/Download'; // android 'Download', ios null
+  String get appCache => appRoot + '/cache';
 
   // wx
   String get WxRoot => sd + '/Tencent/MicroMsg';
@@ -147,59 +148,6 @@ class Common {
         height: 40,
       );
     }
-  }
-
-  getThumbWidget(String path, String appRoot) {
-    // from cache
-    var thumb = _getThumbFromCache(path, appRoot);
-    if (thumb != null) {
-      return Image.file(
-        File(thumb),
-        fit: BoxFit.cover,
-        width: 400,
-        height: 200,
-      );
-    }
-    // generate
-    return FutureBuilder(
-      future: _realGetThumb({'path': path, 'appRoot': appRoot}),
-      //future: compute(_getThumb, {'path': path, 'appRoot': Common.appRoot}),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          return Image.file(
-            File(snapshot.data),
-            fit: BoxFit.cover,
-            width: 400,
-            height: 200,
-          );
-        }
-        return SizedBox(
-          width: 400,
-          height: 200,
-        );
-      },
-    );
-  }
-
-  _getThumbFromCache(String path, String appRoot) {
-    String thumbnailFolder = appRoot + '/cache/';
-    String thumbnailFolderPng =
-        thumbnailFolder + FileUtil.getFileName(path) + '.png';
-    if (File(thumbnailFolderPng).existsSync()) {
-      return thumbnailFolderPng;
-    }
-    return null;
-  }
-
-  static Future<String> _realGetThumb(Map<String, String> args) async {
-    String path = args['path'];
-    String thumbnailFolder = args['appRoot'] + '/cache/';
-    return await Thumbnails.getThumbnail(
-        thumbnailFolder:
-            thumbnailFolder, // creates the specified path if it doesnt exist
-        videoFile: path,
-        imageType: ThumbFormat.PNG,
-        quality: 10);
   }
 
   Future saveStr(String key, String value) async {

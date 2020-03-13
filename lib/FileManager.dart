@@ -26,7 +26,6 @@ class FilesFragment extends StatefulWidget {
 // AutomaticKeepAliveClientMixin 使得即使控件不现实也会保存状态
 class _FilesFragmentState extends State<FilesFragment>
     with AutomaticKeepAliveClientMixin {
-  MethodChannel _channel = MethodChannel(Constants.FILE_CHANNEL);
   ScrollController controller = ScrollController();
 
   Directory parentDir;
@@ -369,10 +368,7 @@ class _FilesFragmentState extends State<FilesFragment>
     files.addAll(_files);
   }
 
-  Future openFile(String path) async {
-    final Map<String, dynamic> args = <String, dynamic>{'path': path};
-    await _channel.invokeMethod('openFile', args);
-  }
+  Future openFile(String path) async {}
 
   @override
   void deactivate() {

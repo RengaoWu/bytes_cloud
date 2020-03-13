@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/android.iml" filepath="$PROJECT_DIR$/android.iml" group="android" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="android/app" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_filereader-2.0.0/android/flutter_filereader.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_filereader-2.0.0/android/flutter_filereader.iml" group="android/flutter_filereader" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_fullpdfview-1.0.3+2/android/flutter_fullpdfview.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_fullpdfview-1.0.3+2/android/flutter_fullpdfview.iml" group="android/flutter_fullpdfview" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/android/fluttertoast.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/android/fluttertoast.iml" group="android/fluttertoast" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/multi_image_picker-4.6.3/android/multi_image_picker.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/multi_image_picker-4.6.3/android/multi_image_picker.iml" group="android/multi_image_picker" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/open_file-3.0.1/android/open_file.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/open_file-3.0.1/android/open_file.iml" group="android/open_file" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider-1.6.5/android/path_provider.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider-1.6.5/android/path_provider.iml" group="android/path_provider" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider_macos-0.0.4/android/path_provider_macos.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider_macos-0.0.4/android/path_provider_macos.iml" group="android/path_provider_macos" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/permission_handler-4.4.0/android/permission_handler.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/permission_handler-4.4.0/android/permission_handler.iml" group="android/permission_handler" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/android/shared_preferences.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/android/shared_preferences.iml" group="android/shared_preferences" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/android/shared_preferences_macos.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/android/shared_preferences_macos.iml" group="android/shared_preferences_macos" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/android/shared_preferences_web.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/android/shared_preferences_web.iml" group="android/shared_preferences_web" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/sqflite-1.2.2+1/android/sqflite.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/sqflite-1.2.2+1/android/sqflite.iml" group="android/sqflite" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/thumbnails-1.0.1/android/thumbnails.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/thumbnails-1.0.1/android/thumbnails.iml" group="android/thumbnails" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player-0.10.8+1/android/video_player.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player-0.10.8+1/android/video_player.iml" group="android/video_player" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player_web-0.1.2+1/android/video_player_web.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player_web-0.1.2+1/android/video_player_web.iml" group="android/video_player_web" />
+    </modules>
+  </component>
+</project>

@@ -1,12 +1,9 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
-import 'package:thumbnails/thumbnails.dart';
 
 class Common {
   factory Common() => _getInstance();

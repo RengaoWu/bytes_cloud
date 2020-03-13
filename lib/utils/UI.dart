@@ -182,13 +182,16 @@ class UI {
       onTap: () => call(text),
       onLongPress: () => longPressCall(text),
       child: Chip(
-        label: Text(text),
+        label: Text(
+          text,
+          style: TextStyle(fontSize: 12),
+        ),
         avatar: icon == null
             ? null
             : CircleAvatar(
                 child: Padding(
                   child: icon,
-                  padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(2),
                 ),
                 backgroundColor: Color.fromARGB(0x00, 0xff, 0xff, 0xff),
               ),

@@ -8,6 +8,11 @@ class FileTypeUtils {
   static const String ARG_MUSIC = '音乐';
   static const String ARG_VIDEO = '视频';
 
+  static const _A = Text(
+    'A',
+    style: TextStyle(fontSize: 14),
+  );
+
   static void convert(String type, Map<String, Widget> type2Icon,
       Map<String, String> ext2Type) {
     switch (type) {
@@ -32,7 +37,7 @@ class FileTypeUtils {
 
   // 文档类型
   static Map<String, Widget> documentType2Icon = {
-    Constants.TYPE_ALL: Text('A'),
+    Constants.TYPE_ALL: _A,
     Constants.TYPE_DOC: Image.asset(Constants.DOC),
     Constants.TYPE_XLS: Image.asset(Constants.EXCEL),
     Constants.TYPE_PPT: Image.asset(Constants.PPT),
@@ -52,7 +57,7 @@ class FileTypeUtils {
 
   // 压缩文件
   static Map<String, Widget> zipType2Icon = {
-    Constants.TYPE_ALL: Text('A'),
+    Constants.TYPE_ALL: _A,
     Constants.TYPE_ZIP: Image.asset(Constants.ZIP),
     Constants.TYPE_RAR: Image.asset(Constants.RAR),
     Constants.TYPE_7Z: Image.asset(Constants.Z7),
@@ -66,7 +71,7 @@ class FileTypeUtils {
 
   // 音频
   static Map<String, Widget> musicType2Icon = {
-    Constants.TYPE_ALL: Text('A'),
+    Constants.TYPE_ALL: _A,
     Constants.TYPE_MP3: Image.asset(Constants.MP3),
     Constants.TYPE_WAV: Image.asset(Constants.WAV),
     Constants.TYPE_FLAC: Image.asset(Constants.FLAC),
@@ -81,7 +86,7 @@ class FileTypeUtils {
 
   // 视频
   static Map<String, Widget> videoType2Icon = {
-    Constants.TYPE_ALL: Text('A'),
+    Constants.TYPE_ALL: _A,
     Constants.TYPE_MP4: Image.asset(Constants.MP4),
     Constants.TYPE_AVI: Image.asset(Constants.AVI),
     Constants.TYPE_FLV: Image.asset(Constants.FLV),

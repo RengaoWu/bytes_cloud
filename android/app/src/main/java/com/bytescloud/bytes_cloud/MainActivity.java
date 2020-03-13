@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Log;
 
 
 import java.io.File;
@@ -22,6 +23,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
+    private static final String TAG = "MainActivity";
     private static final String COMMON_CHANNEL = "common";
     private static final Handler ui = new Handler();
 
@@ -91,6 +93,7 @@ public class MainActivity extends FlutterActivity {
                 }
                 String tempFile = new File(fileDir.getAbsolutePath() + File.separator + vidNames.get(i)).getAbsolutePath();
                 FileOutputStream out = new FileOutputStream(new File(tempFile + ".png"));
+                Log.d(TAG, "userDirectory: " + tempFile);
                 bitmaps.get(i).compress(Bitmap.CompressFormat.PNG, quality, out);
                 out.flush();
                 out.close();

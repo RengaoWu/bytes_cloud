@@ -39,8 +39,8 @@ class HomeRouteState extends State<HomeRoute>
       bottomNavigationBar: new Material(
         child: new TabBar(
             controller: tabController,
-            labelColor: Colors.deepPurpleAccent,
-            unselectedLabelColor: Colors.black26,
+            labelColor: Colors.blueAccent,
+            unselectedLabelColor: Colors.blueGrey,
             tabs: <Widget>[
               new Tab(
                 text: '最近',

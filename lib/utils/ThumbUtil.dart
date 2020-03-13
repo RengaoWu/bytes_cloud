@@ -12,12 +12,7 @@ getThumbWidget(String path) {
   // from cache
   var thumb = _getThumbFromCache(path);
   if (thumb != null) {
-    return Image.file(
-      File(thumb),
-      fit: BoxFit.cover,
-      width: 400,
-      height: 200,
-    );
+    return _getImage(thumb);
   }
   // generate
   return FutureBuilder(
@@ -25,38 +20,40 @@ getThumbWidget(String path) {
     //future: compute(_getThumb, {'path': path, 'appRoot': Common.appRoot}),
     builder: (BuildContext context, AsyncSnapshot snapshot) {
       if (snapshot.hasData) {
-        return Image.file(
-          File(snapshot.data),
-          fit: BoxFit.cover,
-          width: 400,
-          height: 200,
-        );
+        return _getImage(snapshot.data);
       }
       return SizedBox(
-        width: 400,
         height: 200,
+        width: 200,
       );
     },
   );
 }
 
+_getImage(String path) {
+  return ClipRRect(
+      //borderRadius: BorderRadius.circular(4),
+      child: Image.file(
+    File(path),
+    width: 200,
+    height: 200,
+    fit: BoxFit.cover,
+  ));
+}
+
 _getThumbFromCache(String path) {
   String thumbnailFolder = Common().appCache;
   String thumbnailFolderPng =
-      thumbnailFolder + FileUtil.getFileName(path) + '.png';
+      thumbnailFolder + '/' + FileUtil.getFileName(path) + '.png';
   if (File(thumbnailFolderPng).existsSync()) {
+    print("YES");
     return thumbnailFolderPng;
   }
+  print("NO");
   return null;
 }
 
 Future<String> _realGetThumb(String cachePath, String videoPath) async {
   return (await Constants.COMMON
       .invokeListMethod(Constants.getThumbnails, [cachePath, videoPath]))[0];
-//  return await Thumbnails.getThumbnail(
-//      thumbnailFolder:
-//          cachePath, // creates the specified path if it doesnt exist
-//      videoFile: videoPath,
-//      imageType: ThumbFormat.PNG,
-//      quality: 10);
 }

@@ -6,11 +6,13 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeUtils.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../CacheManager.dart';
 
@@ -158,12 +160,15 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   }
 
   fileList() {
-    return Expanded(child: Scrollbar(child: selectShowStyle()));
+    return Expanded(
+        child: Scrollbar(
+            child:
+                Padding(padding: EdgeInsets.all(8), child: selectShowStyle())));
   }
 
   selectShowStyle() {
     if (argType == FileTypeUtils.ARG_VIDEO) {
-      return mediaGridView();
+      return mediaGridView(type2Files[currentType]);
     } else {
       return customerListView();
     }
@@ -189,36 +194,96 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   }
 
   // image or video use this item
-  mediaGridView() {
-    return ListView.builder(
-      itemCount: type2Files[currentType].length,
+  mediaGridView(List<FileSystemEntity> list) {
+    // generate group
+    List<_ViewHolder> holders = [];
+    for (int i = 0; i < list.length; i++) {
+      FileSystemEntity entity = list[i];
+      var dataTime = entity.statSync().modified;
+      if (i == 0) {
+        holders.add(_ViewHolder(entity, dataTime, 1)); // group
+        holders.add(_ViewHolder(entity, dataTime, 0)); //child
+        continue;
+      }
+      var lastDataTime = list[i - 1].statSync().modified;
+      if (dataTime.month == lastDataTime.month &&
+          dataTime.year == lastDataTime.year) {
+        holders.add(_ViewHolder(entity, dataTime, 0));
+      } else {
+        holders.add(_ViewHolder(entity, dataTime, 1)); // group
+        holders.add(_ViewHolder(entity, dataTime, 0)); //child
+      }
+    }
+    return StaggeredGridView.countBuilder(
+      crossAxisCount: 2,
+      itemCount: holders.length,
       itemBuilder: (BuildContext context, int index) {
-        return inkwellItemCard(type2Files[currentType][index]);
+        _ViewHolder holder = holders[index];
+        return holder.type == 0
+            ? inkwellItemCard(holder)
+            : groupItemCard(holder);
       },
-//      gridDelegate:
-//          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
+      staggeredTileBuilder: (int index) {
+        _ViewHolder holder = holders[index];
+        if (holder.type == 1) {
+          return new StaggeredTile.count(2, 0.4);
+        } else {
+          return new StaggeredTile.count(1, 1);
+        }
+      },
     );
   }
 
-  inkwellItemCard(FileSystemEntity file) {
+  groupItemCard(_ViewHolder holder) {
+    return Container(
+      margin: const EdgeInsets.only(left: 5, right: 5),
+      child: Text(
+        '-----------  ${holder.dataTime.year} 年 ${holder.dataTime.month} 月 -----------',
+        style: TextStyle(fontSize: 15, color: Colors.black38),
+      ),
+      alignment: Alignment.center,
+    );
+  }
+
+  inkwellItemCard(_ViewHolder holder) {
     return InkWell(
-      child: itemCard(file),
-      onTap: () => UI.openFile(context, file, null),
+      child: itemCard(holder),
+      onTap: () => UI.openFile(context, holder.entity, null),
     );
   }
 
-  itemCard(FileSystemEntity file) {
+  itemCard(_ViewHolder holder) {
+    String path = holder.entity.path;
     return Card(
+      elevation: 4,
       child: Stack(
+        alignment: Alignment.center,
         children: <Widget>[
-          Container(
-            child: getThumbWidget(file.path),
-            height: 300,
+          getThumbWidget(path),
+          Positioned(
+              right: 0,
+              top: 0,
+              child: Checkbox(
+                  value: selectedFiles.contains(path),
+                  checkColor: Colors.white,
+                  onChanged: (value) {
+                    if (value) {
+                      selectedFiles.add(path);
+                      filesSize += holder.entity.statSync().size;
+                    } else {
+                      selectedFiles.remove(path);
+                      filesSize -= holder.entity.statSync().size;
+                    }
+                    setState(() {});
+                  })),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Text(
+              convertTimeToString(holder.dataTime),
+              style: TextStyle(fontSize: 12, color: Colors.white),
+            ),
           ),
-          Text(
-            FileUtil.getFileName(file.path),
-            style: TextStyle(fontSize: 10),
-          )
         ],
       ),
     );
@@ -265,4 +330,11 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
       children: children,
     );
   }
+}
+
+class _ViewHolder {
+  int type = 0; // type 0 is child, type 1 is group name
+  FileSystemEntity entity;
+  DateTime dataTime;
+  _ViewHolder(this.entity, this.dataTime, this.type);
 }

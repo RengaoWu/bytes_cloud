@@ -97,8 +97,9 @@ class FileTypeUtils {
     '.avi': Constants.TYPE_AVI,
   };
 
+  // 是否按照文件类型展示
   static bool showType(String arg) {
-    if (arg == ARG_VIDEO)
+    if (arg == ARG_VIDEO || arg == ARG_MUSIC)
       return false;
     else
       return true;

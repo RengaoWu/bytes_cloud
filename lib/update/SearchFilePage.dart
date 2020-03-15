@@ -96,18 +96,22 @@ class _SearchFilePageState extends State<SearchFilePage> {
   }
 
   searchListView() {
-    return Expanded(
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: allFiles.length,
-            itemBuilder: (BuildContext context, int index) {
-              return UI.buildFileItem(
-                file: allFiles[index],
-                isCheck: selectedFiles.contains(allFiles[index].path),
-                onChanged: onChange,
-                onTap: onTap,
-              );
-            }));
+    return MediaQuery.removePadding(
+      removeTop: true,
+      child: Expanded(
+          child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: allFiles.length,
+              itemBuilder: (BuildContext context, int index) {
+                return UI.buildFileItem(
+                  file: allFiles[index],
+                  isCheck: selectedFiles.contains(allFiles[index].path),
+                  onChanged: onChange,
+                  onTap: onTap,
+                );
+              })),
+      context: context,
+    );
   }
 
   onChange(bool value, FileSystemEntity file) {

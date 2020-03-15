@@ -22,6 +22,14 @@ boldText(String text) {
 }
 
 class UI {
+  /// The height of the toolbar component of the [AppBar].
+  static const double kToolbarHeight = 56.0;
+
+  /// The height of the bottom navigation bar.
+  static const double kBottomNavigationBarHeight = 56.0;
+
+  /// The height of a tab bar containing text.
+  static const double kTextTabBarHeight = 48.0;
   static newPage(BuildContext context, Widget widget) => Navigator.push(
       context, new MaterialPageRoute(builder: (context) => widget));
 
@@ -177,8 +185,7 @@ class UI {
 
   static iconTextBtn(Widget icon, String text, Function call,
       {Function longPressCall}) {
-    return UnconstrainedBox(
-        child: InkWell(
+    return InkWell(
       onTap: () => call(text),
       onLongPress: () => longPressCall(text),
       child: Chip(
@@ -197,7 +204,7 @@ class UI {
               ),
         backgroundColor: Color.fromARGB(0x66, 0xAA, 0xFF, 0xFF),
       ),
-    ));
+    );
   }
 
   static Widget buildFileItem(
@@ -209,12 +216,8 @@ class UI {
         .format(file.statSync().modified.toLocal());
 
     return InkWell(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  width: 0.5, color: Color(Constants.COLOR_DIVIDER))),
-        ),
+      child: Card(
+        elevation: 4,
         child: ListTile(
             leading: Common().selectIcon(file.path, true),
             title: Text(file.path.substring(file.parent.path.length + 1)),

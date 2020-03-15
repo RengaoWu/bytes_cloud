@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:bytes_cloud/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
@@ -9,8 +10,11 @@ import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
+import 'package:bytes_cloud/utils/UI.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -26,18 +30,94 @@ class TypeFileSelectorPage extends StatefulWidget {
 }
 
 class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
-  String argType;
-  List<String> selectedFiles = [];
-  int filesSize = 0;
-  String currentType = Constants.TYPE_ALL;
-  List<FileSystemEntity> allFiles = [];
+  String argType; // 当前展示的文件类型 ： 文档、视频、音频、压缩包
+  List<String> selectedFiles = []; // 被选择的文件
+  int filesSize = 0; // 被选择文件的大小
   Map<String, Widget> type2Icon = {};
   Map<String, String> extensionName2Type = {};
-  Map<String, List<FileSystemEntity>> type2Files = {};
-  TypeFileSelectorPageState(this.argType);
+  // type2Files 是否初始化完成
   bool isReady = false;
+  // 展示的数据
+  Map<String, List<FileSystemEntity>> type2Files = {};
+  String currentType = Constants.TYPE_ALL; // 默认将该类型所有文件都展示出来
 
-  // 内存缓存，
+  TypeFileSelectorPageState(this.argType);
+
+  initData() {
+    FileTypeUtils.convert(argType, type2Icon, extensionName2Type);
+    type2Icon.keys.forEach((key) {
+      type2Files[key] = []; // 初始化数据
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: NestedScrollView(
+      body: isReady
+          ? fileList(type2Files[currentType])
+          : loadFilesFuture(), // 根据当前的currentType返回List
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return <Widget>[
+          SliverAppBar(
+            leading: InkWell(
+              child: Icon(Icons.arrow_left),
+              onTap: () => Navigator.pop(context),
+            ),
+            title: Text('$currentType'),
+            pinned: false, //
+            expandedHeight: FileTypeUtils.showType(argType)
+                ? UI.kToolbarHeight + 32
+                : UI.kToolbarHeight, // 向下滑动是否保留 bottom
+            forceElevated: innerBoxIsScrolled,
+            centerTitle: true,
+            floating: false,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              background: Container(
+                  padding: EdgeInsets.only(top: UI.kToolbarHeight + 8),
+                  child: fileTypeGridView()),
+            ),
+            actions: <Widget>[
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: Icon(Icons.file_upload),
+                    onPressed: () {
+                      UI.pushToCloud(context, selectedFiles.length, filesSize);
+                    },
+                  );
+                },
+              ),
+            ],
+          )
+        ];
+      },
+    ));
+  }
+
+  loadFilesFuture() {
+    return FutureBuilder(
+      future: getAllFile(FileTypeUtils.getPaths(argType)),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return handleLoadFiles(snapshot.data);
+        }
+      },
+    );
+  }
+
+  // 查询数据并缓存
   Future<List<FileSystemEntity>> getAllFile(List<String> paths) async {
     List<FileSystemEntity> res = [];
     // 缓存中有
@@ -56,136 +136,63 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     }));
     cache[argType] = res;
 
-//    // generate 缩略图
-//    List<String> arg = [Common().appCache];
-//    res.forEach((f) {
-//      arg.add(f.path);
-//    });
-//    await Constants.COMMON.invokeListMethod(Constants.getThumbnails, arg);
-
     return res;
   }
 
+  handleLoadFiles(List<FileSystemEntity> list) {
+    sortFiles(list); // 按照时间排序
+    mapTypeFiles(list); // 按照文件类型分组
+    isReady = true; // 数据加载完成
+    return fileList(list); // 展示UI
+  }
+
+  // 时间降序排列
+  sortFiles(List<FileSystemEntity> list) => list
+      .sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
+
   // map操作
-  mapTypeFiles() {
-    allFiles.forEach((file) {
+  mapTypeFiles(List<FileSystemEntity> list) {
+    type2Files[currentType].addAll(list); // 添加到数据源中
+    list.forEach((file) {
       String extension = file.path.substring(file.path.lastIndexOf('.'));
       if (extension != null && extensionName2Type.keys.contains(extension)) {
-        type2Files[extensionName2Type[extension]].add(file);
+        type2Files[extensionName2Type[extension]]
+            .add(file); // 查询的数据map到 type2Files类型中
       }
     });
   }
 
-  initData() {
-    FileTypeUtils.convert(argType, type2Icon, extensionName2Type);
-    type2Icon.keys.forEach((key) {
-      type2Files[key] = [];
-    });
+  // 展示UI
+  Widget fileList(List<FileSystemEntity> list) {
+    return Scrollbar(child: showSelectorList(list));
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initData();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-          child: Icon(Icons.arrow_left),
-          onTap: () => Navigator.pop(context),
-        ),
-        title: Text('$currentType'),
-        centerTitle: true,
-        actions: <Widget>[
-          Builder(
-            builder: (context) {
-              return IconButton(
-                icon: Icon(Icons.file_upload),
-                onPressed: () {
-                  UI.pushToCloud(context, selectedFiles.length, filesSize);
-                },
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          fileTypeGridView(),
-          isReady ? fileList() : loadFilesFuture(),
-          Padding(
-              padding: EdgeInsets.all(4),
-              child: Center(
-                child: Text(
-                    '总共 ${selectedFiles.length} 项，总共 ${Common().getFileSize(filesSize)}'),
-              ))
-          //Expanded(child: FileSelectorFragment()),
-        ],
-      ),
+  Widget showSelectorList(List<FileSystemEntity> list) {
+    List<_ViewHolder> holders = insertGroupItem(list); // 插入分组的数据
+    return MediaQuery.removePadding(
+      removeTop: true,
+      child: argType == FileTypeUtils.ARG_VIDEO
+          ? mediaGridView(holders)
+          : generalListView(holders),
+      context: context,
     );
   }
 
-  loadFilesFuture() {
-    return FutureBuilder(
-      future: getAllFile(FileTypeUtils.getPaths(argType)),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Expanded(
-              child: Center(
-            child: CircularProgressIndicator(),
-          ));
-        } else {
-          return handleLoadFiles(snapshot.data);
-        }
-      },
-    );
-  }
-
-  handleLoadFiles(List<FileSystemEntity> list) {
-    allFiles.addAll(list);
-    sortFiles();
-    type2Files[currentType].addAll(allFiles);
-    mapTypeFiles();
-    isReady = true;
-    return fileList();
-  }
-
-  // 时间降序排列
-  sortFiles() {
-    allFiles
-        .sort((a, b) => b.statSync().modified.compareTo(a.statSync().modified));
-  }
-
-  fileList() {
-    return Expanded(
-        child: Scrollbar(
-            child:
-                Padding(padding: EdgeInsets.all(8), child: selectShowStyle())));
-  }
-
-  selectShowStyle() {
-    if (argType == FileTypeUtils.ARG_VIDEO) {
-      return mediaGridView(type2Files[currentType]);
-    } else {
-      return customerListView();
-    }
-  }
-
-  customerListView() {
+  Widget generalListView(List<_ViewHolder> list) {
     return ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemCount: type2Files[currentType].length,
+        //physics: BouncingScrollPhysics(),
         shrinkWrap: true,
+        itemCount: list.length,
         itemBuilder: (BuildContext context, int index) {
-          return customerListViewItem(context, index);
+          return generalListViewItem(context, list[index]);
         });
   }
 
-  customerListViewItem(BuildContext context, int index) {
-    File file = type2Files[currentType][index];
+  Widget generalListViewItem(BuildContext context, _ViewHolder holder) {
+    if (holder.type == _ViewHolder.GROUP) {
+      return groupItemCard(holder);
+    }
+    File file = holder.entity;
     return UI.buildFileItem(
         file: file,
         isCheck: selectedFiles.contains(file.path),
@@ -193,8 +200,8 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
         onTap: onTap);
   }
 
-  // image or video use this item
-  mediaGridView(List<FileSystemEntity> list) {
+  // 按照日期进行分组
+  List<_ViewHolder> insertGroupItem(List<FileSystemEntity> list) {
     // generate group
     List<_ViewHolder> holders = [];
     for (int i = 0; i < list.length; i++) {
@@ -214,19 +221,24 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
         holders.add(_ViewHolder(entity, dataTime, 0)); //child
       }
     }
+    return holders;
+  }
+
+  // image or video use this item
+  Widget mediaGridView(List<_ViewHolder> holders) {
     return StaggeredGridView.countBuilder(
       crossAxisCount: 2,
       itemCount: holders.length,
       itemBuilder: (BuildContext context, int index) {
         _ViewHolder holder = holders[index];
-        return holder.type == 0
+        return holder.type == _ViewHolder.CHILD
             ? inkwellItemCard(holder)
             : groupItemCard(holder);
       },
       staggeredTileBuilder: (int index) {
         _ViewHolder holder = holders[index];
-        if (holder.type == 1) {
-          return new StaggeredTile.count(2, 0.4);
+        if (holder.type == _ViewHolder.GROUP) {
+          return new StaggeredTile.count(2, 0.3);
         } else {
           return new StaggeredTile.count(1, 1);
         }
@@ -234,9 +246,9 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     );
   }
 
-  groupItemCard(_ViewHolder holder) {
+  Widget groupItemCard(_ViewHolder holder) {
     return Container(
-      margin: const EdgeInsets.only(left: 5, right: 5),
+      margin: const EdgeInsets.all(4),
       child: Text(
         '-----------  ${holder.dataTime.year} 年 ${holder.dataTime.month} 月 -----------',
         style: TextStyle(fontSize: 15, color: Colors.black38),
@@ -245,14 +257,14 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     );
   }
 
-  inkwellItemCard(_ViewHolder holder) {
+  Widget inkwellItemCard(_ViewHolder holder) {
     return InkWell(
       child: itemCard(holder),
       onTap: () => UI.openFile(context, holder.entity, null),
     );
   }
 
-  itemCard(_ViewHolder holder) {
+  Widget itemCard(_ViewHolder holder) {
     String path = holder.entity.path;
     return Card(
       elevation: 4,
@@ -302,9 +314,11 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   }
 
   onTap(FileSystemEntity file) {
-    UI.openFile(context, file, {'files': allFiles});
+    UI.openFile(
+        context, file, {'files': type2Files[currentType]}); // 打开文件，传入当前展示的整个数据源
   }
 
+  // 修改当前展示的数据分组
   notifyCurrentType(String type) {
     print(type);
     if (type == currentType) {
@@ -316,23 +330,29 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   }
 
   // 类型筛选Grid
-  fileTypeGridView() {
+  Widget fileTypeGridView() {
     if (!FileTypeUtils.showType(argType)) {
       return Container();
     }
-    List<Widget> children = [];
-    type2Icon.forEach((type, widget) {
-      children.add(UI.iconTextBtn(widget, type, notifyCurrentType));
-    });
-    return Wrap(
-      spacing: 8.0, // 主轴(水平)方向间距
-      alignment: WrapAlignment.center, //沿主轴方向居中
-      children: children,
+    List<String> types = type2Files.keys.toList();
+    types.forEach(print);
+    return ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+      itemCount: types.length,
+      itemBuilder: (context, index) {
+        String type = types[index];
+        return Padding(
+            padding: EdgeInsets.only(right: 2, left: 2),
+            child: UI.iconTextBtn(type2Icon[type], type, notifyCurrentType));
+      },
     );
   }
 }
 
 class _ViewHolder {
+  static const CHILD = 0;
+  static const GROUP = 1;
   int type = 0; // type 0 is child, type 1 is group name
   FileSystemEntity entity;
   DateTime dataTime;

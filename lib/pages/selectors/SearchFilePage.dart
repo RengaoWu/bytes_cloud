@@ -18,15 +18,17 @@ class SearchFilePage extends StatefulWidget {
 class _SearchFilePageState extends State<SearchFilePage> {
   String root;
   String key;
+  static const PAGE_LENGTH = 100;
   List<String> historyKeys = [];
   final controller = TextEditingController();
   Set<String> selectedFiles = Set();
   int filesSize = 0;
   Map<String, dynamic> args;
 
-  bool reflashList = true;
+  bool reflashList = false;
   Widget list;
   List<FileSystemEntity> allFiles = [];
+  List<FileSystemEntity> pageFiles = [];
 
   _SearchFilePageState(this.args);
 
@@ -47,10 +49,19 @@ class _SearchFilePageState extends State<SearchFilePage> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          searchBar(),
+          Container(
+            color: Theme.of(context).primaryColor,
+            height: MediaQueryData.fromWindow(window).padding.top,
+          ),
+          UI.searchBar(context, controller, (String k) {
+            if (key == k) return;
+            setState(() {
+              key = k;
+            });
+          }),
           historySearch(),
           key == null
-              ? SizedBox()
+              ? Container()
               : reflashList
                   ? FutureBuilder(
                       future: startSearch(key, root),
@@ -64,18 +75,14 @@ class _SearchFilePageState extends State<SearchFilePage> {
                                 height: 40,
                                 child: CircularProgressIndicator()),
                           ));
-                        } else if (snapshot.connectionState ==
-                            ConnectionState.done) {
-                          if (snapshot.hasError) {
-                            return Expanded(
-                                child: Center(
-                              child: boldText(snapshot.error.toString()),
-                            ));
-                          } else {
-                            return handleSearchResult(snapshot);
-                          }
+                        }
+                        if (snapshot.hasData) {
+                          return handleSearchResult(snapshot);
                         } else {
-                          return Text('Empty');
+                          return Expanded(
+                              child: Center(
+                            child: boldText(snapshot.error.toString()),
+                          ));
                         }
                       })
                   : searchListView(),
@@ -91,17 +98,26 @@ class _SearchFilePageState extends State<SearchFilePage> {
     }
     allFiles.clear();
     allFiles.addAll(snapshot.data);
+    if (allFiles.length > PAGE_LENGTH) {
+      allFiles = allFiles.sublist(0, PAGE_LENGTH);
+    }
     return searchListView();
   }
 
   searchListView() {
     return MediaQuery.removePadding(
-      removeTop: true,
+      //removeTop: true,
       child: Expanded(
           child: ListView.builder(
               shrinkWrap: true,
               itemCount: allFiles.length,
               itemBuilder: (BuildContext context, int index) {
+                if (index == PAGE_LENGTH - 1) {
+                  return Container(
+                    child: Text('默认最多显示$PAGE_LENGTH条哦'),
+                    alignment: Alignment.center,
+                  );
+                }
                 return UI.buildFileItem(
                   file: allFiles[index],
                   isCheck: selectedFiles.contains(allFiles[index].path),
@@ -166,57 +182,4 @@ class _SearchFilePageState extends State<SearchFilePage> {
       historyKeys.remove(key);
     });
   }
-
-  searchBar() => Container(
-        color: Theme.of(context).primaryColor,
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: MediaQueryData.fromWindow(window).padding.top,
-          ),
-          child: Container(
-            height: 62.0,
-            child: new Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: new Card(
-                    child: new Container(
-                  child: new Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 5.0,
-                      ),
-                      Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: controller,
-                          decoration: new InputDecoration(
-                            hintText: '搜索',
-                            border: InputBorder.none,
-                          ),
-                          onSubmitted: (String k) {
-                            setState(() {
-                              key = k;
-                            });
-                          },
-                          // onChanged: onSearchTextChanged,
-                        ),
-                      ),
-                      IconButton(
-                        icon: new Icon(Icons.cancel),
-                        color: Colors.grey,
-                        iconSize: 18.0,
-                        onPressed: () {
-                          controller.clear();
-                          // onSearchTextChanged('');
-                        },
-                      ),
-                    ],
-                  ),
-                ))),
-          ),
-        ),
-      );
 }

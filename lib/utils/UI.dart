@@ -353,4 +353,57 @@ class UI {
       );
     }
   }
+
+  static searchBar(BuildContext context, TextEditingController controller,
+          Function submit) =>
+      Container(
+          color: Theme.of(context).primaryColor,
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 0,
+            ),
+            child: Container(
+              height: UI.kToolbarHeight,
+              child: new Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: new Card(
+                      child: new Container(
+                    child: new Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: controller,
+                            style: TextStyle(fontSize: 15),
+                            decoration: new InputDecoration(
+                              hintText: '搜索',
+                              border: InputBorder.none,
+                            ),
+                            onSubmitted: (String k) {
+                              submit(k);
+                            },
+                            // onChanged: onSearchTextChanged,
+                          ),
+                        ),
+                        IconButton(
+                          icon: new Icon(Icons.cancel),
+                          color: Colors.grey,
+                          iconSize: 18.0,
+                          onPressed: () {
+                            controller.clear();
+                            // onSearchTextChanged('');
+                          },
+                        ),
+                      ],
+                    ),
+                  ))),
+            ),
+          ));
 }

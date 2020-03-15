@@ -32,10 +32,16 @@ class NativeRouteState extends State<NativeRoute>
     // Column 导致 gridView 有一个未知的padding
     // 用ListView
     return Scaffold(
-        body: ListView(
-      physics: ScrollPhysics(),
+        body: Column(
+      //physics: ScrollPhysics(),
       children: <Widget>[
-        searchBar(),
+        Container(
+          color: Theme.of(context).primaryColor,
+          height: MediaQueryData.fromWindow(window).padding.top,
+        ),
+        UI.searchBar(context, controller, (k) {
+          UI.newPage(context, SearchFilePage({'key': k, 'root': Common.sd}));
+        }),
         gridView(),
         UI.divider(width: 1, padding: 16),
         nativeFileSystem(),
@@ -98,58 +104,6 @@ class NativeRouteState extends State<NativeRoute>
             UI.iconTxtBtn(Constants.MCF, "语言", () => {print("")}),
             UI.iconTxtBtn(Constants.SCAN, "扫描", () => {print("")}),
           ],
-        ),
-      );
-
-  searchBar() => Container(
-        color: Theme.of(context).primaryColor,
-        child: Padding(
-          padding: EdgeInsets.only(top: 0
-              //top: MediaQueryData.fromWindow(window).padding.top,
-              ),
-          child: Container(
-            height: 60.0,
-            child: new Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: new Card(
-                    child: new Container(
-                  child: new Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 5.0,
-                      ),
-                      Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: controller,
-                          decoration: new InputDecoration(
-                            hintText: '搜索',
-                            border: InputBorder.none,
-                          ),
-                          onSubmitted: (String k) {
-                            UI.newPage(context,
-                                SearchFilePage({'key': k, 'root': Common.sd}));
-                          },
-                          // onChanged: onSearchTextChanged,
-                        ),
-                      ),
-                      IconButton(
-                        icon: new Icon(Icons.cancel),
-                        color: Colors.grey,
-                        iconSize: 18.0,
-                        onPressed: () {
-                          controller.clear();
-                          // onSearchTextChanged('');
-                        },
-                      ),
-                    ],
-                  ),
-                ))),
-          ),
         ),
       );
 

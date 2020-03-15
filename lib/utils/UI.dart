@@ -1,17 +1,15 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/MarkDownListPage.dart';
+import 'package:bytes_cloud/pages/plugins/MDPage.dart';
+import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/widgets/FileReader.dart';
-import 'package:bytes_cloud/widgets/MarkDownPage.dart';
-import 'package:bytes_cloud/widgets/PdfReader.dart';
-import 'package:bytes_cloud/widgets/PhotoGalleryPage.dart';
-import 'package:bytes_cloud/widgets/VideoReader.dart';
+import 'package:bytes_cloud/pages/plugins/PdfReaderPage.dart';
+import 'package:bytes_cloud/pages/plugins/GalleryPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
+import 'package:path/path.dart' as p;
 
-import '../common.dart';
 import 'Constants.dart';
 
 boldText(String text) {
@@ -219,10 +217,10 @@ class UI {
       child: Card(
         elevation: 4,
         child: ListTile(
-            leading: Common().selectIcon(file.path, true),
+            leading: selectIcon(file.path, true),
             title: Text(file.path.substring(file.parent.path.length + 1)),
             subtitle: Text(
-                '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
+                '$modifiedTime  ${FileUtil.getFileSize(file.statSync().size)}',
                 style: TextStyle(fontSize: 12.0)),
             trailing: Checkbox(
               value: isCheck,
@@ -242,7 +240,7 @@ class UI {
     if (length == 0) {
       content = '没有选择任何文件';
     } else {
-      content = '开始上传，总共${length}个文件，共${Common().getFileSize(size)}';
+      content = '开始上传，总共${length}个文件，共${FileUtil.getFileSize(size)}';
     }
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
   }
@@ -257,7 +255,7 @@ class UI {
     if (FileUtil.isImage(currentFile)) {
       UI.newPage(context, PhotoGalleryPage(args)); // 图片
     } else if (FileUtil.isVideo(currentFile)) {
-      UI.newPage(context, VideoPage({'path': currentFile.path})); // 视频
+      UI.newPage(context, VideoPlayerPage({'path': currentFile.path})); // 视频
     } else if (FileUtil.isPDF(currentFile)) {
       UI.newPage(context, PDFScreen(path: currentFile.path)); // pdf
     } else if (FileUtil.isText(currentFile)) {
@@ -268,6 +266,91 @@ class UI {
 //      UI.newPage(context, FileReaderPage({'path': currentFile.path})); // Android 10 不兼容
     } else {
       OpenFile.open(currentFile.path); // 手机其他APP
+    }
+  }
+
+  static Widget selectIcon(String path, bool preview) {
+    int resFlag = 0; // 图片 1, 视频 2
+    String ext = p.extension(path);
+    String iconImg = Constants.UNKNOW;
+
+    switch (ext) {
+      case '.ppt':
+      case '.pptx':
+        iconImg = Constants.PPT;
+        break;
+      case '.doc':
+      case '.docx':
+        iconImg = Constants.DOC;
+        break;
+      case '.xls':
+      case '.xlsx':
+        iconImg = Constants.EXCEL;
+        break;
+      case '.jpg':
+      case '.jpeg':
+      case '.png':
+        iconImg = preview ? path : Constants.IMAGE;
+        resFlag = preview ? 1 : resFlag;
+        break;
+      case '.txt':
+        iconImg = Constants.TXT;
+        break;
+      case '.mp3':
+        iconImg = Constants.MP3;
+        break;
+      case '.wav':
+        iconImg = Constants.WAV;
+        break;
+      case '.flac':
+        iconImg = Constants.FLAC;
+        break;
+      case '.aac':
+        iconImg = Constants.AAC;
+        break;
+      case '.mp4':
+        iconImg = Constants.MP4;
+        break;
+      case '.avi':
+        iconImg = Constants.AVI;
+        break;
+      case '.flv':
+        iconImg = Constants.FLV;
+        break;
+      case '3gp':
+        iconImg = Constants.GP3;
+        break;
+      case '.rar':
+        iconImg = Constants.RAR;
+        break;
+      case '.zip':
+        iconImg = Constants.ZIP;
+        break;
+      case '.7z':
+        iconImg = Constants.Z7;
+        break;
+      case '.psd':
+      case '.pdf':
+        iconImg = Constants.PSD;
+        break;
+      default:
+        iconImg = Constants.FILE;
+        break;
+    }
+    if (resFlag == 1) {
+      return ClipRect(
+        child: Image.file(
+          File(path),
+          width: 40,
+          height: 40,
+        ),
+      );
+    } else {
+      return Image.asset(
+        iconImg,
+        width: 40,
+        height: 40,
+      );
     }
   }
 }

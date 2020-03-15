@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bytes_cloud/common.dart';
+import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
                 padding: EdgeInsets.all(4),
                 child: Center(
                   child: Text(
-                      '总共 ${selectedFiles.length} 项，总共 ${Common().getFileSize(filesSize)}'),
+                      '总共 ${selectedFiles.length} 项，总共 ${FileUtil.getFileSize(filesSize)}'),
                 ))
           ],
         ),

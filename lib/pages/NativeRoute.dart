@@ -1,19 +1,16 @@
 import 'dart:ui';
 
-import 'package:bytes_cloud/FileManager.dart';
-import 'package:bytes_cloud/MarkDownListPage.dart';
-import 'package:bytes_cloud/common.dart';
-import 'package:bytes_cloud/update/SearchFilePage.dart';
-import 'package:bytes_cloud/update/TypeFileSelectorPage.dart';
-import 'package:bytes_cloud/update/SysFileSelectorPage.dart';
-import 'package:bytes_cloud/update/PhotoPushRoute.dart';
+import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/pages/content/MDListPage.dart';
+import 'package:bytes_cloud/pages/selectors/PhotoPushRoute.dart';
+import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
+import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
+import 'package:bytes_cloud/pages/selectors/TypeFileSelectorPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/FileTypeUtils.dart';
+import 'package:bytes_cloud/utils/FileTypeConfig.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'SearchRoute.dart';
 
 class NativeRoute extends StatefulWidget {
   @override
@@ -65,7 +62,7 @@ class NativeRouteState extends State<NativeRoute>
   }
 
   callVideoSelectorPage() =>
-      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_VIDEO));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeConfig.ARG_VIDEO));
 
   callPhotoSelectorPage() => UI.newPage(
       context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
@@ -74,13 +71,13 @@ class NativeRouteState extends State<NativeRoute>
       context, SysFileSelectorPage({'root': Common.sd, 'rootName': '根目录'}));
 
   callDocTypeSelector() =>
-      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_DOC));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeConfig.ARG_DOC));
 
   callZipTypeSelector() =>
-      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_ZIP));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeConfig.ARG_ZIP));
 
   callMusicSelector() =>
-      UI.newPage(context, TypeFileSelectorPage(FileTypeUtils.ARG_MUSIC));
+      UI.newPage(context, TypeFileSelectorPage(FileTypeConfig.ARG_MUSIC));
 
   callMarkDownPage() => UI.newPage(context, MarkDownListPage());
 
@@ -103,41 +100,6 @@ class NativeRouteState extends State<NativeRoute>
           ],
         ),
       );
-
-  Widget getSearchWidget() {
-    return Center(
-        child: Padding(
-      padding: EdgeInsets.all(8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                showSearch(context: context, delegate: SearchBarDelegate());
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                  ),
-                  boldText(
-                    'Search',
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Icon(
-            Icons.sort,
-            color: Colors.grey,
-          )
-        ],
-      ),
-    ));
-  }
 
   searchBar() => Container(
         color: Theme.of(context).primaryColor,

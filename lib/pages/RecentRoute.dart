@@ -1,10 +1,9 @@
-import 'package:bytes_cloud/update/SysFileSelectorPage.dart';
+import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'common.dart';
 
 class RecentRoute extends StatefulWidget {
   @override

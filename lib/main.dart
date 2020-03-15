@@ -1,15 +1,13 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/HomeRout.dart';
-import 'package:bytes_cloud/utils/SPUtil.dart';
+import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/pages/HomeRout.dart';
+import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'NativeRoute.dart';
-import 'common.dart';
 
 class MyApp extends StatelessWidget {
   @override

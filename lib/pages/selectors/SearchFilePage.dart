@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:bytes_cloud/common.dart';
-import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
-import 'package:bytes_cloud/utils/SPUtil.dart';
+import 'package:bytes_cloud/utils/IoslateMethods.dart';
+import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

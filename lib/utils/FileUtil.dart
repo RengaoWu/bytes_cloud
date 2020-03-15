@@ -104,4 +104,18 @@ class FileUtil {
     String ext = p.extension(file.path);
     return ext == '.mp4' || ext == '.avi' || ext == '.3gp' || ext == '.flv';
   }
+
+  static String getFileSize(int fileSize) {
+    String str = '';
+
+    if (fileSize < 1024) {
+      str = '${fileSize.toStringAsFixed(2)}B';
+    } else if (1024 <= fileSize && fileSize < 1048576) {
+      str = '${(fileSize / 1024).toStringAsFixed(2)}KB';
+    } else if (1048576 <= fileSize && fileSize < 1073741824) {
+      str = '${(fileSize / 1024 / 1024).toStringAsFixed(2)}MB';
+    }
+
+    return str;
+  }
 }

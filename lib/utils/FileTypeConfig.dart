@@ -1,8 +1,8 @@
-import 'package:bytes_cloud/common.dart';
+import 'package:bytes_cloud/core/common.dart';
 import 'package:flutter/material.dart';
 import 'Constants.dart';
 
-class FileTypeUtils {
+class FileTypeConfig {
   static const String ARG_DOC = '文档';
   static const String ARG_ZIP = '压缩包';
   static const String ARG_MUSIC = '音乐';

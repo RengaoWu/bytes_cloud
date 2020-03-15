@@ -16,7 +16,6 @@ class GlobalEventBus {
   static GlobalEventBus _instance;
 
   GlobalEventBus._internal() {
-    // 创建对象
     event = EventBus();
   }
 

@@ -1,15 +1,10 @@
-import 'package:bytes_cloud/update/SysFileSelectorPage.dart';
-import 'package:bytes_cloud/update/PhotoPushRoute.dart';
-import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'NativeRoute.dart';
-import 'PhotoPage.dart';
+import 'RemoteRoute.dart';
 import 'RecentRoute.dart';
-import 'SelfPage.dart';
-import 'common.dart';
+import 'SelfRoute.dart';
 
 class HomeRoute extends StatefulWidget {
   @override

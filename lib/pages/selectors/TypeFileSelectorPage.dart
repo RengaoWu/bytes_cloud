@@ -1,24 +1,16 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:bytes_cloud/common.dart';
+import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/FileIoslateMethods.dart';
-import 'package:bytes_cloud/utils/FileTypeUtils.dart';
-import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/IoslateMethods.dart';
+import 'package:bytes_cloud/utils/FileTypeConfig.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
-import 'package:bytes_cloud/utils/ThumbUtil.dart';
-import 'package:bytes_cloud/utils/UI.dart';
-import 'package:bytes_cloud/utils/UI.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-import '../CacheManager.dart';
 
 class TypeFileSelectorPage extends StatefulWidget {
   final String argType;
@@ -44,7 +36,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   TypeFileSelectorPageState(this.argType);
 
   initData() {
-    FileTypeUtils.convert(argType, type2Icon, extensionName2Type);
+    FileTypeConfig.convert(argType, type2Icon, extensionName2Type);
     type2Icon.keys.forEach((key) {
       type2Files[key] = []; // 初始化数据
     });
@@ -72,7 +64,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
             ),
             title: Text('$currentType'),
             pinned: false, //
-            expandedHeight: FileTypeUtils.showType(argType)
+            expandedHeight: FileTypeConfig.showType(argType)
                 ? UI.kToolbarHeight + 32
                 : UI.kToolbarHeight, // 向下滑动是否保留 bottom
             forceElevated: innerBoxIsScrolled,
@@ -104,7 +96,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   loadFilesFuture() {
     return FutureBuilder(
-      future: getAllFile(FileTypeUtils.getPaths(argType)),
+      future: getAllFile(FileTypeConfig.getPaths(argType)),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -171,7 +163,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     List<_ViewHolder> holders = insertGroupItem(list); // 插入分组的数据
     return MediaQuery.removePadding(
       removeTop: true,
-      child: argType == FileTypeUtils.ARG_VIDEO
+      child: argType == FileTypeConfig.ARG_VIDEO
           ? mediaGridView(holders)
           : generalListView(holders),
       context: context,
@@ -331,7 +323,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   // 类型筛选Grid
   Widget fileTypeGridView() {
-    if (!FileTypeUtils.showType(argType)) {
+    if (!FileTypeConfig.showType(argType)) {
       return Container();
     }
     List<String> types = type2Files.keys.toList();

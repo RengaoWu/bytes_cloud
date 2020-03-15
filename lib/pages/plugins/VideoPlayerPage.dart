@@ -4,14 +4,14 @@ import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPage extends StatefulWidget {
-  Map<String, dynamic> args;
-  VideoPage(this.args);
+class VideoPlayerPage extends StatefulWidget {
+  final Map<String, dynamic> args;
+  VideoPlayerPage(this.args);
   @override
-  _VideoPageState createState() => _VideoPageState();
+  _VideoPlayerPageState createState() => _VideoPlayerPageState();
 }
 
-class _VideoPageState extends State<VideoPage> {
+class _VideoPlayerPageState extends State<VideoPlayerPage> {
   VideoPlayerController _controller;
 
   @override

@@ -65,14 +65,12 @@ class DBManager {
   }
 
   // 查
-  Future<List<Map>> queryAll(String tableName) async {
+  Future<List<Map>> queryAll(String tableName, String orderBy) async {
     await init();
-    print('queryAll');
-    List<Map> maps = await _db.query(tableName);
+    List<Map> maps = await _db.query(tableName, orderBy: orderBy);
     if (maps == null || maps.length == 0) {
       return null;
     }
-    print('queryAll end');
     print('queryAll ${maps.length}');
     return maps;
   }

@@ -46,9 +46,11 @@ class RecentRouteState extends State<RecentRoute>
       ),
       body: Scrollbar(
           child: ListView(
+        shrinkWrap: true,
         children: <Widget>[
           leftTitle('快捷访问'),
           gridView(),
+          UI.divider(width: 2, padding: 8),
           listView(),
         ],
       )),
@@ -66,7 +68,36 @@ class RecentRouteState extends State<RecentRoute>
                   height: 48, width: 48, child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
-          return Text((snapshot.data as List).length.toString());
+          List<RecentFileEntity> recentList = snapshot.data;
+          Map<String, List<RecentFileEntity>> map = {};
+          print("recentList ${recentList.length}");
+          print('FutureBuilder ' + DateTime.now().toIso8601String());
+          recentList.forEach((f) {
+            if (f == null) {
+              print('f is null');
+            }
+            DateTime modifyTime =
+                DateTime.fromMillisecondsSinceEpoch(f.createTime);
+            String date =
+                " ${modifyTime.year}年 ${modifyTime.month}月 ${modifyTime.day}日";
+            if (map.containsKey(date)) {
+              map[date].add(f);
+            } else {
+              map[date] = [f];
+            }
+          });
+          print('FutureBuilder ' + DateTime.now().toIso8601String());
+          List<MapEntry<String, List<RecentFileEntity>>> list =
+              map.entries.toList();
+          ListView view = ListView.builder(
+              shrinkWrap: true,
+              itemCount: list.length,
+              physics: new NeverScrollableScrollPhysics(), //禁用滑动事件
+              itemBuilder: (BuildContext context, int index) {
+                return Text(
+                    'Time : ${list[index].key} , ${list[index].value.length}');
+              });
+          return view;
         }
         print(snapshot.error.toString());
         return Text(snapshot.error.toString());
@@ -75,13 +106,16 @@ class RecentRouteState extends State<RecentRoute>
   }
 
   Future<List<RecentFileEntity>> getRecentFiles() async {
-    List<Map> maps =
-        await DBManager.instance.queryAll(RecentFileEntity.tableName); // for db
+    List<Map> maps = await DBManager.instance
+        .queryAll(RecentFileEntity.tableName, 'modifyTime desc'); // for db
     List<RecentFileEntity> result = [];
     if (maps != null && maps.length != 0) {
-      result = maps.map((map) {
-        RecentFileEntity.fromMap(map); //
-      }).toList();
+      maps.forEach((f) {
+        result.add(RecentFileEntity.fromMap(f));
+      });
+//      result = maps.map((map) {
+//        RecentFileEntity.fromMap(map); //
+//      }).toList();
     } else {
       List<String> recentList = Common().recentDir;
       List<String> recentFileExt = Common().recentFileExt();

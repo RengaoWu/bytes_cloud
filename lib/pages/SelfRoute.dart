@@ -14,7 +14,8 @@ class SelfRoute extends StatefulWidget {
 class SelfRouteState extends State<SelfRoute>
     with AutomaticKeepAliveClientMixin {
   @override
-  Widget build(BuildContextcontext) {
+  Widget build(BuildContext context) {
+    print('SelfRoute build');
     return Scaffold(
         body: ListView(
       shrinkWrap: true,

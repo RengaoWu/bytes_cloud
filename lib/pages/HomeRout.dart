@@ -19,13 +19,13 @@ class HomeRouteState extends State<HomeRoute>
   @override
   void initState() {
     super.initState();
-    tabController = new TabController(length: 4, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new TabBarView(controller: tabController, children: <Widget>[
+      body: TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),
         NativeRoute(),
         RemoteRoute(),
@@ -35,7 +35,7 @@ class HomeRouteState extends State<HomeRoute>
         child: new TabBar(
             controller: tabController,
             labelColor: Colors.blueAccent,
-            unselectedLabelColor: Colors.blueGrey,
+            unselectedLabelColor: Colors.grey,
             tabs: <Widget>[
               new Tab(
                 text: '最近',

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,6 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NotoSansSC',
       ),
       home: HomeRoute(),
-//      home: PhotoPushRoute(
-//        type: 1,
-//      ),
-      // home: HttpTestRoute(),
-      // home: LoginRoute(),
-      // home: BgWidget(),
     );
   }
 }
@@ -55,8 +50,8 @@ void main() async {
   // Permission check
   Future.wait([
     initializeDateFormatting("zh-CN", ""),
-    getPermission(),
-    SPUtil.getSp()
+    getPermission(), // 初始化权限
+    SPUtil.getSp(), // 初始化 sp
   ]).then((result) {
     SPUtil.sp = result[2] as SharedPreferences;
     runApp(MyApp());

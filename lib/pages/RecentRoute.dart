@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/entity/DBManager.dart';
+import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class RecentRoute extends StatefulWidget {
@@ -16,17 +22,15 @@ class RecentRouteState extends State<RecentRoute>
     with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    print("RecentRouteState build");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(Icons.widgets),
-            onPressed: () => {
-                  UI.bottomSheet(
-                      context: context,
-                      content: gridView(),
-                      height: 240,
-                      radius: 8)
-                }),
+            onPressed: () {
+              setState(() {});
+            }),
         centerTitle: true,
         title: boldText(
           '最近',
@@ -40,22 +44,58 @@ class RecentRouteState extends State<RecentRoute>
           ),
         ],
       ),
-      body: Column(
+      body: Scrollbar(
+          child: ListView(
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 0, 0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '快捷访问',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          gridView()
+          leftTitle('快捷访问'),
+          gridView(),
+          listView(),
         ],
-      ),
+      )),
     );
+  }
+
+  // 最近的文件：来源：微信、QQ、下载管理器、相机、QQ邮箱、浏览器、百度网盘、音乐、
+  listView() {
+    return FutureBuilder<List<RecentFileEntity>>(
+      future: getRecentFiles(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+              child: SizedBox(
+                  height: 48, width: 48, child: CircularProgressIndicator()));
+        }
+        if (snapshot.hasData) {
+          return Text((snapshot.data as List).length.toString());
+        }
+        print(snapshot.error.toString());
+        return Text(snapshot.error.toString());
+      },
+    );
+  }
+
+  Future<List<RecentFileEntity>> getRecentFiles() async {
+    List<Map> maps =
+        await DBManager.instance.queryAll(RecentFileEntity.tableName); // for db
+    List<RecentFileEntity> result = [];
+    if (maps != null && maps.length != 0) {
+      result = maps.map((map) {
+        RecentFileEntity.fromMap(map); //
+      }).toList();
+    } else {
+      List<String> recentList = Common().recentDir;
+      List<String> recentFileExt = Common().recentFileExt();
+      recentList.forEach(print); // folder
+      recentFileExt.forEach(print); // ext
+      List<FileSystemEntity> recentFiles = await compute(wapperGetAllFiles,
+          {"keys": recentFileExt, "roots": recentList, "isExt": true});
+      recentFiles.forEach((f) {
+        result.add(RecentFileEntity.forSystemFileEntity(f));
+        DBManager.instance.insert(RecentFileEntity.tableName, result.last);
+      });
+    }
+    print(result.length);
+    return result;
   }
 
   callDownloadSelector() => UI.newPage(context,
@@ -63,7 +103,7 @@ class RecentRouteState extends State<RecentRoute>
   callWxSelector() => UI.newPage(context,
       SysFileSelectorPage({'root': Common().sWxDirDownload, 'rootName': '微信'}));
   callQQSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().QQRoot, 'rootName': 'QQ'}));
+      SysFileSelectorPage({'root': Common().TencentRoot, 'rootName': 'QQ'}));
   callScreamShotSelector() => UI.newPage(context,
       SysFileSelectorPage({'root': Common().screamShot, 'rootName': '截图'}));
   callCameraSelector() => UI.newPage(context,
@@ -83,4 +123,17 @@ class RecentRouteState extends State<RecentRoute>
 
   @override
   bool get wantKeepAlive => true;
+
+  leftTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 8, 0, 0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
 }

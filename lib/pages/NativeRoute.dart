@@ -43,9 +43,9 @@ class NativeRouteState extends State<NativeRoute>
           UI.newPage(context, SearchFilePage({'key': k, 'root': Common.sd}));
         }),
         gridView(),
-        UI.divider(width: 1, padding: 16),
+        UI.divider(width: 2, padding: 16),
         nativeFileSystem(),
-        UI.divider(padding: 16),
+        UI.divider(width: 1, padding: 16),
       ],
     ));
   }

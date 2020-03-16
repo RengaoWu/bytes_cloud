@@ -31,14 +31,13 @@ class UI {
   static newPage(BuildContext context, Widget widget) => Navigator.push(
       context, new MaterialPageRoute(builder: (context) => widget));
 
-  static Widget divider(
-      {color = Colors.grey, double padding = 0, double width = 0.5}) {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(padding, 0, padding, 0),
-        child: DecoratedBox(
-          decoration:
-              BoxDecoration(border: Border.all(color: color, width: width)),
-        ));
+  static Widget divider({Color color, double padding = 0, double width = 0.5}) {
+    return Divider(
+      color: color,
+      indent: padding,
+      endIndent: padding,
+      thickness: width,
+    );
   }
 
   static appbarBtn(IconData icon,

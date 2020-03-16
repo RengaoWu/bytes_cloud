@@ -107,7 +107,7 @@ class FileTypeConfig {
 
   static List<String> getPaths(String arg) {
     if (arg == ARG_VIDEO) {
-      return [Common().DCIM, Common().WxRoot, Common().QQRoot]; // or so
+      return [Common().DCIM, Common().WxRoot, Common().TencentRoot]; // or so
     }
     return [Common.sd];
   }

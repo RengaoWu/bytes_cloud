@@ -261,7 +261,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
 
   // QQ 下的文件过滤一下
   void fileFilter(List<FileSystemEntity> _folder) {
-    if (root == Common().QQRoot && isRoot()) {
+    if (root == Common().TencentRoot && isRoot()) {
       _folder.clear();
       Common().qqFiles.forEach((f) {
         if (f.existsSync()) _folder.add(f);

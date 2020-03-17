@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
@@ -5,11 +6,15 @@ import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
+import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class RecentRoute extends StatefulWidget {
   @override
@@ -20,6 +25,8 @@ class RecentRoute extends StatefulWidget {
 
 class RecentRouteState extends State<RecentRoute>
     with AutomaticKeepAliveClientMixin {
+  bool isFast = false;
+  HashSet<String> cacheSet = HashSet();
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -44,16 +51,24 @@ class RecentRouteState extends State<RecentRoute>
           ),
         ],
       ),
-      body: Scrollbar(
-          child: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          leftTitle('快捷访问'),
-          gridView(),
-          UI.divider(width: 2, padding: 8),
-          listView(),
-        ],
-      )),
+      body: Listener(
+          onPointerMove: (PointerMoveEvent event) {
+            print(event.delta.dy);
+            if (event.delta.dy > 20 || event.delta.dy < -20) {
+              isFast = true;
+            } else {
+              isFast = false;
+            }
+            print("isFast " + isFast.toString());
+          },
+          onPointerUp: (PointerUpEvent event) {
+            isFast = false;
+          },
+          child: Scrollbar(
+              child: Padding(
+            padding: EdgeInsets.only(left: 8, right: 8),
+            child: listView(),
+          ))),
     );
   }
 
@@ -69,17 +84,14 @@ class RecentRouteState extends State<RecentRoute>
         }
         if (snapshot.hasData) {
           List<RecentFileEntity> recentList = snapshot.data;
-          Map<String, List<RecentFileEntity>> map = {};
-          print("recentList ${recentList.length}");
+          // kv : <groupMd5, entity>
+          Map<int, List<RecentFileEntity>> map = {};
           print('FutureBuilder ' + DateTime.now().toIso8601String());
           recentList.forEach((f) {
             if (f == null) {
               print('f is null');
             }
-            DateTime modifyTime =
-                DateTime.fromMillisecondsSinceEpoch(f.createTime);
-            String date =
-                " ${modifyTime.year}年 ${modifyTime.month}月 ${modifyTime.day}日";
+            int date = f.groupMd5;
             if (map.containsKey(date)) {
               map[date].add(f);
             } else {
@@ -87,22 +99,125 @@ class RecentRouteState extends State<RecentRoute>
             }
           });
           print('FutureBuilder ' + DateTime.now().toIso8601String());
-          List<MapEntry<String, List<RecentFileEntity>>> list =
+          List<MapEntry<int, List<RecentFileEntity>>> list =
               map.entries.toList();
           ListView view = ListView.builder(
-              shrinkWrap: true,
-              itemCount: list.length,
-              physics: new NeverScrollableScrollPhysics(), //禁用滑动事件
-              itemBuilder: (BuildContext context, int index) {
-                return Text(
-                    'Time : ${list[index].key} , ${list[index].value.length}');
-              });
+            shrinkWrap: true,
+            itemCount: list.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == 0) {
+                return headerView();
+              }
+              return recentItemCard(list[index - 1].value);
+            },
+          );
           return view;
         }
         print(snapshot.error.toString());
         return Text(snapshot.error.toString());
       },
     );
+  }
+
+  headerView() {
+    return Column(
+      children: <Widget>[leftTitle('快捷访问'), gridView(), UI.divider(width: 1)],
+    );
+  }
+
+  recentItemCard(List<RecentFileEntity> group) {
+    return Card(
+        elevation: 2,
+        child: Container(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                groupTitle(group[0]),
+                innerContent(group),
+                groupTail(group[0]),
+              ],
+            )));
+  }
+
+  groupTail(RecentFileEntity file) {
+    return Row(children: <Widget>[
+      Text(
+        convertTimeToString(
+            DateTime.fromMillisecondsSinceEpoch(file.modifyTime)),
+        style: TextStyle(fontSize: 12, color: Colors.grey),
+      )
+    ]);
+  }
+
+  groupTitle(RecentFileEntity file) {
+    String source = RecentFileEntity.fileFrom(file.path);
+    String type = RecentFileEntity.fileType(file.path);
+    String sourceIcon;
+
+    if (source == '微信') {
+      sourceIcon = Constants.WECHAT;
+    } else if (source == 'QQ') {
+      sourceIcon = Constants.QQ;
+    } else if (source == '文档') {
+      sourceIcon = Constants.DOC;
+    } else if (source == '截图') {
+      sourceIcon = Constants.SCREAMSHOT;
+    } else if (source == '相册') {
+      sourceIcon = Constants.PHOTO;
+    } else {
+      sourceIcon = Constants.UNKNOW;
+    }
+    Widget widget = Image.asset(
+      sourceIcon,
+      width: 16,
+      height: 16,
+    );
+    return Row(
+      children: <Widget>[
+        widget,
+        Expanded(
+            child: Text(
+          '来自${source}的${type}',
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        )),
+        Icon(
+          Icons.more_vert,
+          size: 16,
+        ),
+      ],
+    );
+  }
+
+  innerContent(List<RecentFileEntity> group) {
+    List<RecentFileEntity> showData;
+    double size = (UI.DISPLAY_WIDTH - 40) / 3;
+    if (group.length >= 6) {
+      showData = group.sublist(0, 5);
+    } else {
+      showData = group;
+    }
+
+    var widgets = showData.map((f) {
+      cacheSet.add(f.path);
+      return UI.selectPreview(f.path, size);
+    }).toList();
+    if (group.length >= 6) {
+      widgets.add(SizedBox(
+        width: size,
+        height: size,
+        child: Icon(
+          Icons.more_horiz,
+          size: 30,
+        ),
+      ));
+    }
+
+    return Container(
+        padding: EdgeInsets.only(top: 8, bottom: 8),
+        child: Wrap(
+          children: widgets,
+        ));
   }
 
   Future<List<RecentFileEntity>> getRecentFiles() async {
@@ -113,9 +228,6 @@ class RecentRouteState extends State<RecentRoute>
       maps.forEach((f) {
         result.add(RecentFileEntity.fromMap(f));
       });
-//      result = maps.map((map) {
-//        RecentFileEntity.fromMap(map); //
-//      }).toList();
     } else {
       List<String> recentList = Common().recentDir;
       List<String> recentFileExt = Common().recentFileExt();
@@ -124,8 +236,10 @@ class RecentRouteState extends State<RecentRoute>
       List<FileSystemEntity> recentFiles = await compute(wapperGetAllFiles,
           {"keys": recentFileExt, "roots": recentList, "isExt": true});
       recentFiles.forEach((f) {
-        result.add(RecentFileEntity.forSystemFileEntity(f));
-        DBManager.instance.insert(RecentFileEntity.tableName, result.last);
+        if (f.statSync().size > 1024) {
+          result.add(RecentFileEntity.forSystemFileEntity(f));
+          DBManager.instance.insert(RecentFileEntity.tableName, result.last);
+        }
       });
     }
     print(result.length);
@@ -160,7 +274,7 @@ class RecentRouteState extends State<RecentRoute>
 
   leftTitle(String title) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 8, 0, 0),
+      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(

@@ -1,3 +1,4 @@
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,10 @@ class HomeRouteState extends State<HomeRoute>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    UI.DISPLAY_WIDTH = size.width;
+    UI.DISPLAY_HEIGHT = size.height;
+
     return Scaffold(
       body: TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),

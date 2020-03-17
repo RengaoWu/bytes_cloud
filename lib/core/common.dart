@@ -42,14 +42,19 @@ class Common {
 
   // 最近的文件：来源：微信、QQ、下载管理器、相机、QQ邮箱、浏览器、百度网盘、音乐、
   //
-  List<String> get recentDir =>
-      <String>[TencentRoot, DCIM, screamShot]; // wx 和 qq的文件有重合，先判断是否是wx
+  List<String> get recentDir => <String>[
+        sQQFileRecDir,
+        sWxDirDownload,
+        DCIM,
+        screamShot
+      ]; // wx 和 qq的文件有重合，先判断是否是wx
   List<String> recentFileExt() {
     List<String> list = [];
     list.addAll(FileTypeConfig.documentExtension2Type.keys);
     list.addAll(FileTypeConfig.videoExtension2Type.keys);
     list.addAll(FileTypeConfig.musicExtension2Type.keys);
     list.addAll(['.png', '.jpg']);
+    list.remove('.txt');
     return list;
   }
 

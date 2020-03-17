@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class Entity {
@@ -13,8 +14,7 @@ class RecentFileEntity extends Entity {
 
   String path; //路径
   int modifyTime;
-  int createTime;
-  String folder; //文件名
+  int groupMd5; // hashCode(时间 + 文件夹 + 文件类型)
   int cloudTime;
 
   static getSQL() => '''
@@ -22,24 +22,19 @@ class RecentFileEntity extends Entity {
             path TEXT PRIMARY KEY, 
             modifyTime INTEGER, 
             createTime INTEGER, 
-            folder TEXT,
+            groupMd5 INTEGER,
             cloudTime INTEGER)
   ''';
   RecentFileEntity(
-      {@required this.path,
-      this.createTime,
-      this.modifyTime,
-      this.folder,
-      this.cloudTime})
+      {@required this.path, this.modifyTime, this.groupMd5, this.cloudTime})
       : super.fromMap(null);
 
   @override
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       'path': path,
-      'createTime': createTime,
       'modifyTime': modifyTime,
-      'folder': folder,
+      'groupMd5': groupMd5,
       'cloudTime': cloudTime
     };
     return map;
@@ -48,32 +43,44 @@ class RecentFileEntity extends Entity {
   @override
   RecentFileEntity.fromMap(Map<String, dynamic> map) : super.fromMap(null) {
     path = map['path'];
-    createTime = map['createTime'];
     modifyTime = map['modifyTime'];
-    folder = map['folder'];
+    groupMd5 = map['groupMd5'];
     cloudTime = map['cloudTime'];
   }
 
   RecentFileEntity.forSystemFileEntity(FileSystemEntity entity)
       : super.fromMap(null) {
     path = entity.path;
-    createTime = entity.statSync().changed.millisecondsSinceEpoch;
-    modifyTime = entity.statSync().modified.millisecondsSinceEpoch;
-    folder = fileFrom(entity.path);
+    DateTime time = entity.statSync().modified;
+    modifyTime = time.millisecondsSinceEpoch;
+    groupMd5 = (fileFrom(path) + FileUtil.ext(path)).hashCode +
+        time.year +
+        time.month +
+        time.day;
     cloudTime = 0;
   }
 
   static fileFrom(String path) {
     if (path.startsWith(Common().WxRoot)) {
-      return Common().WxRoot; // 先判断wx，再判断tencent(qq)
+      return '微信'; // 先判断wx，再判断tencent(qq)
     } else if (path.startsWith(Common().TencentRoot)) {
-      return Common().TencentRoot;
+      return 'QQ';
     } else if (path.startsWith(Common().DCIM)) {
-      return Common().DCIM;
+      return '相册';
     } else if (path.startsWith(Common().screamShot)) {
-      return Common().screamShot;
+      return '截图';
     } else {
-      return '';
+      return '其他';
+    }
+  }
+
+  static fileType(String path) {
+    if (FileUtil.isImage(path)) {
+      return '图片';
+    } else if (FileUtil.isVideo(path)) {
+      return '视频';
+    } else if (FileUtil.isDoc(path)) {
+      return '文档';
     }
   }
 }

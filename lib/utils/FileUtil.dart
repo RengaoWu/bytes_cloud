@@ -66,30 +66,30 @@ class FileUtil {
     if (file.existsSync()) file.deleteSync();
   }
 
-  static bool isImage(FileSystemEntity file) {
-    String ext = p.extension(file.path);
+  static bool isImage(String file) {
+    String ext = p.extension(file);
     return ext == '.png' || ext == '.jpg';
   }
 
-  static bool isPDF(FileSystemEntity file) {
-    String ext = p.extension(file.path);
+  static bool isPDF(String file) {
+    String ext = p.extension(file);
     return ext == '.pdf';
   }
 
-  static bool isText(FileSystemEntity file) {
-    String ext = p.extension(file.path);
+  static bool isText(String file) {
+    String ext = p.extension(file);
     return ext == '.txt' || ext == '.xml' || ext == '.log';
   }
 
-  static bool isMD(FileSystemEntity file) {
-    String ext = p.extension(file.path);
+  static bool isMD(String file) {
+    String ext = p.extension(file);
     return ext == '.md';
   }
 
   // docx,doc,xlsx,xls,pptx,ppt,pdf,txt
-  static bool isFileReaderSupport(FileSystemEntity file) {
+  static bool isDoc(String file) {
     //return false;
-    String ext = p.extension(file.path);
+    String ext = p.extension(file);
     return ext == '.docx' ||
         ext == '.doc' ||
         ext == '.xlsx' ||
@@ -100,8 +100,8 @@ class FileUtil {
         ext == '.pdf';
   }
 
-  static bool isVideo(FileSystemEntity file) {
-    String ext = p.extension(file.path);
+  static bool isVideo(String file) {
+    String ext = p.extension(file);
     return ext == '.mp4' || ext == '.avi' || ext == '.3gp' || ext == '.flv';
   }
 

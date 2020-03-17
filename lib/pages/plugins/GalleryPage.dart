@@ -4,7 +4,6 @@ import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
 
 class PhotoGalleryPage extends StatefulWidget {
   final Map<String, dynamic> map;
@@ -23,7 +22,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
     List<FileSystemEntity> files = arg['files'];
     FileSystemEntity currentImage = arg['current'];
     files.forEach((f) {
-      if (FileUtil.isImage(f)) {
+      if (FileUtil.isImage(f.path)) {
         images.add(f);
         if (currentImage == f) {
           currentIndex = images.length - 1;

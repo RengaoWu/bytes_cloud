@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/pages/plugins/MDPage.dart';
 import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/pages/plugins/PdfReaderPage.dart';
 import 'package:bytes_cloud/pages/plugins/GalleryPage.dart';
+import 'package:bytes_cloud/utils/OtherUtil.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -28,6 +33,9 @@ class UI {
 
   /// The height of a tab bar containing text.
   static const double kTextTabBarHeight = 48.0;
+  static double DISPLAY_WIDTH;
+  static double DISPLAY_HEIGHT;
+
   static newPage(BuildContext context, Widget widget) => Navigator.push(
       context, new MaterialPageRoute(builder: (context) => widget));
 
@@ -251,15 +259,15 @@ class UI {
       OpenFile.open(currentFile.path); // 手机其他APP
       return;
     }
-    if (FileUtil.isImage(currentFile)) {
+    if (FileUtil.isImage(currentFile.path)) {
       UI.newPage(context, PhotoGalleryPage(args)); // 图片
-    } else if (FileUtil.isVideo(currentFile)) {
+    } else if (FileUtil.isVideo(currentFile.path)) {
       UI.newPage(context, VideoPlayerPage({'path': currentFile.path})); // 视频
-    } else if (FileUtil.isPDF(currentFile)) {
+    } else if (FileUtil.isPDF(currentFile.path)) {
       UI.newPage(context, PDFScreen(path: currentFile.path)); // pdf
-    } else if (FileUtil.isText(currentFile)) {
+    } else if (FileUtil.isText(currentFile.path)) {
       UI.newPage(context, MarkDownPage({'path': currentFile.path})); // 文本
-    } else if (FileUtil.isMD(currentFile)) {
+    } else if (FileUtil.isMD(currentFile.path)) {
       UI.newPage(context, MarkDownPage({'path': currentFile.path})); // MD
 //    } else if (FileUtil.isFileReaderSupport(currentFile)) {
 //      UI.newPage(context, FileReaderPage({'path': currentFile.path})); // Android 10 不兼容
@@ -338,7 +346,7 @@ class UI {
     }
     if (resFlag == 1) {
       return ClipRect(
-        child: Image.file(
+        child: ExtendedImage.file(
           File(path),
           width: 40,
           height: 40,
@@ -351,6 +359,99 @@ class UI {
         height: 40,
       );
     }
+  }
+
+  static Widget selectPreview(String path, double size) {
+    String ext = p.extension(path);
+    int resFlag = 0; // 图片 1, 视频 2
+    String iconImg = Constants.UNKNOW;
+    switch (ext) {
+      case '.ppt':
+      case '.pptx':
+        iconImg = Constants.PPT;
+        break;
+      case '.doc':
+      case '.docx':
+        iconImg = Constants.DOC;
+        break;
+      case '.xls':
+      case '.xlsx':
+        iconImg = Constants.EXCEL;
+        break;
+      case '.jpg':
+      case '.jpeg':
+      case '.png':
+        iconImg = "";
+        resFlag = 1;
+        break;
+      case '.txt':
+        iconImg = Constants.TXT;
+        break;
+      case '.mp3':
+      case '.wav':
+      case '.flac':
+      case '.aac':
+        iconImg = Constants.MUSIC;
+        break;
+      case '.mp4':
+      case '.avi':
+      case '.flv':
+      case '3gp':
+        //iconImg = Constants.VIDEO;
+        resFlag = 2;
+        break;
+      case '.rar':
+      case '.zip':
+      case '.7z':
+        iconImg = Constants.COMPRESSFILE;
+        break;
+      case '.psd':
+      case '.pdf':
+        iconImg = Constants.PSD;
+        break;
+      default:
+        iconImg = Constants.FILE;
+        break;
+    }
+    if (resFlag == 1) {
+      // return loadImage(<String, dynamic>{'path': path, 'size': size});
+      return FutureBuilder(
+        future: loadImage(<String, dynamic>{'path': path, 'size': size}),
+//        future:
+//            compute(loadImage, <String, dynamic>{'path': path, 'size': size}),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SizedBox(
+              width: size,
+              height: size,
+            );
+          }
+          if (snapshot.hasData) {
+            return snapshot.data;
+          }
+          return Text('error');
+        },
+      );
+    } else if (resFlag == 2) {
+      return SizedBox(width: size, height: size, child: getThumbWidget(path));
+    }
+    return ExtendedImage.asset(
+      iconImg,
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+    );
+  }
+
+  static loadImage(Map<String, dynamic> map) async {
+    double size = map['size'];
+    String path = map['path'];
+    return ExtendedImage.file(
+      File(path),
+      fit: BoxFit.cover,
+      width: size,
+      height: size,
+    );
   }
 
   static searchBar(BuildContext context, TextEditingController controller,

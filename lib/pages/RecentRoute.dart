@@ -4,7 +4,9 @@ import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
+import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -140,7 +142,7 @@ class RecentRouteState extends State<RecentRoute>
     String source = RecentFileEntity.fileFrom(file.path);
     String sourceIcon = RecentFileEntity.fileIcon(source);
     String type = RecentFileEntity.fileType(file.path);
-
+    GlobalKey key = GlobalKey();
     return Row(
       children: <Widget>[
         Padding(
@@ -156,16 +158,53 @@ class RecentRouteState extends State<RecentRoute>
           '来自${source}的${type}',
           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
         )),
-        Icon(
-          Icons.more_vert,
-          size: 16,
+        IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            key: key,
+            size: 12,
+          ),
+          onPressed: () {
+            showMoreWindow(key);
+          },
         ),
       ],
     );
   }
 
+  showMoreWindow(GlobalKey key) {
+    PopupWindow.showPopWindow(
+      context,
+      '',
+      key,
+      PopDirection.left,
+      Card(
+          elevation: 4,
+          child: Column(
+            children: <Widget>[
+              FlatButton(
+                child: Text("上传到云"),
+                onPressed: () {},
+              ),
+              FlatButton(
+                child: Text("分享"),
+                onPressed: () {},
+              ),
+            ],
+          )),
+    );
+  }
+
   double itemInnerViewPhotoSize = (UI.DISPLAY_WIDTH - 40) / 2;
   itemInnerView(List<RecentFileEntity> group) {
+    if (FileUtil.isVideo(group[0].path) || FileUtil.isImage(group[0].path)) {
+      return itemInnerImageView(group);
+    } else {
+      return itemInnerFileView(group);
+    }
+  }
+
+  itemInnerImageView(List<RecentFileEntity> group) {
     List<RecentFileEntity> showData;
     if (group.length >= 4) {
       showData = group.sublist(0, 4);
@@ -180,24 +219,46 @@ class RecentRouteState extends State<RecentRoute>
           tag: f.path,
         ),
         onTap: () {
-          position = controller.offset;
-          List<FileSystemEntity> sysFiles = group.map((entity) {
-            return File(entity.path);
-          }).toList();
-          UI.openFile(context, File(f.path), files: sysFiles);
+          openFile(f, group);
         },
       );
     }).toList();
-
-//    Future.delayed(Duration(milliseconds: 500)).then((onValue) {
-//      print("position : ${position}");
-//    });
-
     return Container(
         padding: EdgeInsets.only(top: 8, bottom: 8),
         child: Wrap(
           children: widgets,
         ));
+  }
+
+  itemInnerFileView(List<RecentFileEntity> group) {
+    var widgets = group.map((f) {
+      return ListTile(
+        leading: UI.selectIcon(f.path, false),
+        title: Text(
+          FileUtil.getFileName(f.path),
+        ),
+        subtitle: Text(
+          FileUtil.getFileSize(
+            File(f.path).statSync().size,
+          ),
+          style: TextStyle(fontSize: 12),
+        ),
+        trailing: Icon(Icons.arrow_right),
+        onTap: () {
+          openFile(f, group);
+        },
+      );
+    }).toList();
+    return Column(
+      children: widgets,
+    );
+  }
+
+  openFile(RecentFileEntity f, List<RecentFileEntity> group) {
+    List<FileSystemEntity> sysFiles = group.map((entity) {
+      return File(entity.path);
+    }).toList();
+    UI.openFile(context, File(f.path), files: sysFiles);
   }
 
   Future<List<RecentFileEntity>> getRecentFiles() async {

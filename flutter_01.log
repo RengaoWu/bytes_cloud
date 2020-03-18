@@ -1,0 +1,84 @@
+Flutter crash report; please file at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter --no-color build apk
+
+## exception
+
+ProcessException: ProcessException: Permission denied
+  Command: /Users/rengaowu/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/multi_image_picker-4.6.3/android/gradlew -I=/Users/rengaowu/Env/flutter/packages/flutter_tools/gradle/aar_init_script.gradle -Pflutter-root=/Users/rengaowu/Env/flutter -Poutput-dir=/Users/rengaowu/Code/bytes_cloud/build/app -Pis-plugin=true -Ptarget-platform=android-arm,android-arm64,android-x64 assembleAarRelease
+
+```
+#0      _DefaultProcessUtils.run (package:flutter_tools/src/base/process.dart:266:37)
+<asynchronous suspension>
+#1      buildGradleAar (package:flutter_tools/src/android/gradle.dart:548:33)
+#2      buildPluginsAsAar (package:flutter_tools/src/android/gradle.dart:711:13)
+<asynchronous suspension>
+#3      buildGradleApp (package:flutter_tools/src/android/gradle.dart:257:11)
+#4      _AsyncAwaitCompleter.start (dart:async-patch/async_patch.dart:45:6)
+#5      buildGradleApp (package:flutter_tools/src/android/gradle.dart:218:28)
+#6      buildGradleApp (package:flutter_tools/src/android/gradle.dart:415:19)
+#7      _asyncThenWrapperHelper.<anonymous closure> (dart:async-patch/async_patch.dart:73:64)
+#8      _rootRunUnary (dart:async/zone.dart:1134:38)
+#9      _CustomZone.runUnary (dart:async/zone.dart:1031:19)
+#10     _FutureListener.handleValue (dart:async/future_impl.dart:139:18)
+#11     Future._propagateToListeners.handleValueCallback (dart:async/future_impl.dart:680:45)
+#12     Future._propagateToListeners (dart:async/future_impl.dart:709:32)
+#13     Future._completeWithValue (dart:async/future_impl.dart:524:5)
+#14     Future._asyncComplete.<anonymous closure> (dart:async/future_impl.dart:554:7)
+#15     _rootRun (dart:async/zone.dart:1126:13)
+#16     _CustomZone.run (dart:async/zone.dart:1023:19)
+#17     _CustomZone.runGuarded (dart:async/zone.dart:925:7)
+#18     _CustomZone.bindCallbackGuarded.<anonymous closure> (dart:async/zone.dart:965:23)
+#19     _microtaskLoop (dart:async/schedule_microtask.dart:43:21)
+#20     _startMicrotaskLoop (dart:async/schedule_microtask.dart:52:5)
+#21     _runPendingImmediateCallback (dart:isolate-patch/isolate_patch.dart:118:13)
+#22     _RawReceivePortImpl._handleMessage (dart:isolate-patch/isolate_patch.dart:175:5)
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, v1.12.13+hotfix.7, on Mac OS X 10.14.6 18G103, locale zh-Hans-CN)
+    • Flutter version 1.12.13+hotfix.7 at /Users/rengaowu/Env/flutter
+    • Framework revision 9f5ff2306b (7 weeks ago), 2020-01-26 22:38:26 -0800
+    • Engine revision a67792536c
+    • Dart version 2.7.0
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 29.0.3)
+    • Android SDK at /Users/rengaowu/Library/Android/sdk
+    • Android NDK location not configured (optional; useful for native profiling support)
+    • Platform android-29, build-tools 29.0.3
+    • ANDROID_HOME = /Users/rengaowu/Library/Android/sdk
+    • Java binary at: /Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin/java
+    • Java version OpenJDK Runtime Environment (build 1.8.0_212-release-1586-b4-5784211)
+    • All Android licenses accepted.
+
+[✓] Xcode - develop for iOS and macOS (Xcode 11.3.1)
+    • Xcode at /Applications/Xcode.app/Contents/Developer
+    • Xcode 11.3.1, Build version 11C504
+    • CocoaPods version 1.8.4
+
+[✓] Android Studio (version 3.6)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    • Flutter plugin version 44.0.2
+    • Dart plugin version 192.7761
+    • Java version OpenJDK Runtime Environment (build 1.8.0_212-release-1586-b4-5784211)
+
+[!] IntelliJ IDEA Community Edition (version 2019.3.1)
+    • IntelliJ at /Applications/IntelliJ IDEA CE.app
+    ✗ Flutter plugin not installed; this adds Flutter specific functionality.
+    • Dart plugin version 193.5731
+    • For information about installing plugins, see
+      https://flutter.dev/intellij-setup/#installing-the-plugins
+
+[✓] VS Code (version 1.43.0)
+    • VS Code at /Applications/Visual Studio Code.app/Contents
+    • Flutter extension version 3.8.1
+
+[✓] Connected device (1 available)
+    • ELE AL00 • Q5S0219312006139 • android-arm64 • Android 10 (API 29)
+
+! Doctor found issues in 1 category.
+```

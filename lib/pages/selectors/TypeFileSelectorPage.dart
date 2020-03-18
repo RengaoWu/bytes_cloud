@@ -252,7 +252,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   Widget inkwellItemCard(_ViewHolder holder) {
     return InkWell(
       child: itemCard(holder),
-      onTap: () => UI.openFile(context, holder.entity, null),
+      onTap: () => UI.openFile(context, holder.entity),
     );
   }
 
@@ -306,8 +306,8 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   }
 
   onTap(FileSystemEntity file) {
-    UI.openFile(
-        context, file, {'files': type2Files[currentType]}); // 打开文件，传入当前展示的整个数据源
+    UI.openFile(context, file,
+        files: type2Files[currentType]); // 打开文件，传入当前展示的整个数据源
   }
 
   // 修改当前展示的数据分组

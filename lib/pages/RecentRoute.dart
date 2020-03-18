@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
@@ -6,15 +5,12 @@ import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class RecentRoute extends StatefulWidget {
   @override
@@ -26,18 +22,15 @@ class RecentRoute extends StatefulWidget {
 class RecentRouteState extends State<RecentRoute>
     with AutomaticKeepAliveClientMixin {
   bool isFast = false;
-  HashSet<String> cacheSet = HashSet();
+  ScrollController controller = ScrollController(keepScrollOffset: true);
+  double position = 0;
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print("RecentRouteState build");
+    //controller = ScrollController(keepScrollOffset: true);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.widgets),
-            onPressed: () {
-              setState(() {});
-            }),
+        leading: IconButton(icon: Icon(Icons.widgets), onPressed: () {}),
         centerTitle: true,
         title: boldText(
           '最近',
@@ -47,28 +40,13 @@ class RecentRouteState extends State<RecentRoute>
             width: 40,
             padding: EdgeInsets.only(right: 8),
             child: Icon(Icons.center_focus_weak),
-            //child: Image.asset(Constants.SCAN),
           ),
         ],
       ),
-      body: Listener(
-          onPointerMove: (PointerMoveEvent event) {
-            print(event.delta.dy);
-            if (event.delta.dy > 20 || event.delta.dy < -20) {
-              isFast = true;
-            } else {
-              isFast = false;
-            }
-            print("isFast " + isFast.toString());
-          },
-          onPointerUp: (PointerUpEvent event) {
-            isFast = false;
-          },
-          child: Scrollbar(
-              child: Padding(
-            padding: EdgeInsets.only(left: 8, right: 8),
-            child: listView(),
-          ))),
+      body: Padding(
+        padding: EdgeInsets.only(left: 8, right: 8),
+        child: listView(),
+      ),
     );
   }
 
@@ -83,35 +61,7 @@ class RecentRouteState extends State<RecentRoute>
                   height: 48, width: 48, child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
-          List<RecentFileEntity> recentList = snapshot.data;
-          // kv : <groupMd5, entity>
-          Map<int, List<RecentFileEntity>> map = {};
-          print('FutureBuilder ' + DateTime.now().toIso8601String());
-          recentList.forEach((f) {
-            if (f == null) {
-              print('f is null');
-            }
-            int date = f.groupMd5;
-            if (map.containsKey(date)) {
-              map[date].add(f);
-            } else {
-              map[date] = [f];
-            }
-          });
-          print('FutureBuilder ' + DateTime.now().toIso8601String());
-          List<MapEntry<int, List<RecentFileEntity>>> list =
-              map.entries.toList();
-          ListView view = ListView.builder(
-            shrinkWrap: true,
-            itemCount: list.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 0) {
-                return headerView();
-              }
-              return recentItemCard(list[index - 1].value);
-            },
-          );
-          return view;
+          return handleGetRecentFiles(snapshot.data);
         }
         print(snapshot.error.toString());
         return Text(snapshot.error.toString());
@@ -119,13 +69,49 @@ class RecentRouteState extends State<RecentRoute>
     );
   }
 
+  handleGetRecentFiles(List<RecentFileEntity> recentList) {
+    // kv : <groupMd5, entity> and check file exist
+    Map<int, List<RecentFileEntity>> map = {};
+    recentList.forEach((f) {
+      File file = File(f.path);
+      if (file.existsSync()) {
+        int date = f.groupMd5;
+        if (map.containsKey(date)) {
+          map[date].add(f);
+        } else {
+          map[date] = [f];
+        }
+      } else {
+        DBManager.instance.delete(RecentFileEntity.tableName, {'path': f.path});
+      }
+    });
+    // return list view
+    List<MapEntry<int, List<RecentFileEntity>>> list = map.entries.toList();
+    ListView view = ListView.builder(
+      controller: controller,
+      itemCount: list.length + 1,
+      key: PageStorageKey('RecentRoute'),
+      itemBuilder: (BuildContext context, int index) {
+        if (index == 0) {
+          return headerView();
+        }
+        return contentItemView(list[index - 1].value);
+      },
+    );
+    return view;
+  }
+
   headerView() {
     return Column(
-      children: <Widget>[leftTitle('快捷访问'), gridView(), UI.divider(width: 1)],
+      children: <Widget>[
+        leftTitle('快捷访问'),
+        headerGridView(),
+        UI.divider(width: 1)
+      ],
     );
   }
 
-  recentItemCard(List<RecentFileEntity> group) {
+  contentItemView(List<RecentFileEntity> group) {
     return Card(
         elevation: 2,
         child: Container(
@@ -133,14 +119,14 @@ class RecentRouteState extends State<RecentRoute>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                groupTitle(group[0]),
-                innerContent(group),
-                groupTail(group[0]),
+                itemTitleView(group[0]),
+                itemInnerView(group),
+                itemTailView(group[0]),
               ],
             )));
   }
 
-  groupTail(RecentFileEntity file) {
+  itemTailView(RecentFileEntity file) {
     return Row(children: <Widget>[
       Text(
         convertTimeToString(
@@ -150,32 +136,21 @@ class RecentRouteState extends State<RecentRoute>
     ]);
   }
 
-  groupTitle(RecentFileEntity file) {
+  itemTitleView(RecentFileEntity file) {
     String source = RecentFileEntity.fileFrom(file.path);
+    String sourceIcon = RecentFileEntity.fileIcon(source);
     String type = RecentFileEntity.fileType(file.path);
-    String sourceIcon;
 
-    if (source == '微信') {
-      sourceIcon = Constants.WECHAT;
-    } else if (source == 'QQ') {
-      sourceIcon = Constants.QQ;
-    } else if (source == '文档') {
-      sourceIcon = Constants.DOC;
-    } else if (source == '截图') {
-      sourceIcon = Constants.SCREAMSHOT;
-    } else if (source == '相册') {
-      sourceIcon = Constants.PHOTO;
-    } else {
-      sourceIcon = Constants.UNKNOW;
-    }
-    Widget widget = Image.asset(
-      sourceIcon,
-      width: 16,
-      height: 16,
-    );
     return Row(
       children: <Widget>[
-        widget,
+        Padding(
+          padding: EdgeInsets.all(4),
+          child: Image.asset(
+            sourceIcon,
+            width: 16,
+            height: 16,
+          ),
+        ),
         Expanded(
             child: Text(
           '来自${source}的${type}',
@@ -189,29 +164,34 @@ class RecentRouteState extends State<RecentRoute>
     );
   }
 
-  innerContent(List<RecentFileEntity> group) {
+  double itemInnerViewPhotoSize = (UI.DISPLAY_WIDTH - 40) / 2;
+  itemInnerView(List<RecentFileEntity> group) {
     List<RecentFileEntity> showData;
-    double size = (UI.DISPLAY_WIDTH - 40) / 3;
-    if (group.length >= 6) {
-      showData = group.sublist(0, 5);
+    if (group.length >= 4) {
+      showData = group.sublist(0, 4);
     } else {
       showData = group;
     }
 
     var widgets = showData.map((f) {
-      cacheSet.add(f.path);
-      return UI.selectPreview(f.path, size);
-    }).toList();
-    if (group.length >= 6) {
-      widgets.add(SizedBox(
-        width: size,
-        height: size,
-        child: Icon(
-          Icons.more_horiz,
-          size: 30,
+      return InkWell(
+        child: Hero(
+          child: UI.selectPreview(f.path, itemInnerViewPhotoSize),
+          tag: f.path,
         ),
-      ));
-    }
+        onTap: () {
+          position = controller.offset;
+          List<FileSystemEntity> sysFiles = group.map((entity) {
+            return File(entity.path);
+          }).toList();
+          UI.openFile(context, File(f.path), files: sysFiles);
+        },
+      );
+    }).toList();
+
+//    Future.delayed(Duration(milliseconds: 500)).then((onValue) {
+//      print("position : ${position}");
+//    });
 
     return Container(
         padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -256,7 +236,7 @@ class RecentRouteState extends State<RecentRoute>
       SysFileSelectorPage({'root': Common().screamShot, 'rootName': '截图'}));
   callCameraSelector() => UI.newPage(context,
       SysFileSelectorPage({'root': Common().camera, 'rootName': '相机'}));
-  gridView() => GridView.count(
+  headerGridView() => GridView.count(
         shrinkWrap: true,
         crossAxisCount: 5,
         children: <Widget>[
@@ -283,5 +263,17 @@ class RecentRouteState extends State<RecentRoute>
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    print('recent route dispose');
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    print('recent route deactivate');
   }
 }

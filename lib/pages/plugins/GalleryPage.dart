@@ -24,7 +24,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
     files.forEach((f) {
       if (FileUtil.isImage(f.path)) {
         images.add(f);
-        if (currentImage == f) {
+        if (currentImage.path == f.path) {
           currentIndex = images.length - 1;
         }
       }
@@ -60,7 +60,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
         );
         if (index == currentIndex) {
           return Hero(
-            tag: item.path + index.toString(),
+            tag: item.path,
             child: image,
           );
         } else {

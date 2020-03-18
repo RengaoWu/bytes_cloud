@@ -222,7 +222,6 @@ class UI {
 
     return InkWell(
       child: Card(
-        elevation: 4,
         child: ListTile(
             leading: selectIcon(file.path, true),
             title: Text(file.path.substring(file.parent.path.length + 1)),
@@ -252,15 +251,15 @@ class UI {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
   }
 
-  static openFile(
-      BuildContext context, File currentFile, Map<String, dynamic> args,
-      {bool useOtherApp = false}) {
+  static openFile(BuildContext context, File currentFile,
+      {List<FileSystemEntity> files, bool useOtherApp = false}) {
     if (useOtherApp) {
       OpenFile.open(currentFile.path); // 手机其他APP
       return;
     }
     if (FileUtil.isImage(currentFile.path)) {
-      UI.newPage(context, PhotoGalleryPage(args)); // 图片
+      UI.newPage(context,
+          PhotoGalleryPage({"files": files, "current": currentFile})); // 图片
     } else if (FileUtil.isVideo(currentFile.path)) {
       UI.newPage(context, VideoPlayerPage({'path': currentFile.path})); // 视频
     } else if (FileUtil.isPDF(currentFile.path)) {
@@ -414,11 +413,8 @@ class UI {
         break;
     }
     if (resFlag == 1) {
-      // return loadImage(<String, dynamic>{'path': path, 'size': size});
       return FutureBuilder(
         future: loadImage(<String, dynamic>{'path': path, 'size': size}),
-//        future:
-//            compute(loadImage, <String, dynamic>{'path': path, 'size': size}),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
@@ -437,8 +433,8 @@ class UI {
     }
     return ExtendedImage.asset(
       iconImg,
-      width: size,
-      height: size,
+      width: size / 2,
+      height: size / 2,
       fit: BoxFit.cover,
     );
   }

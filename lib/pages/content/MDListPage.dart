@@ -100,7 +100,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
         files.remove(file);
         setState(() {});
       }),
-      onTap: () => UI.openFile(context, file, null),
+      onTap: () => UI.openFile(context, file),
     );
   }
 

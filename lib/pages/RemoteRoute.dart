@@ -71,5 +71,19 @@ class RemoteRouteState extends State<RemoteRoute>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('remote route dispose');
+  }
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print('remote route deactivate');
+  }
 }

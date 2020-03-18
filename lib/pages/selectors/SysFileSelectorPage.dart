@@ -140,7 +140,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
       );
   onTap(FileSystemEntity file) {
     print('open file ' + file.path);
-    UI.openFile(context, file, {'files': files, 'current': file});
+    UI.openFile(context, file, files: files);
   }
 
   onChange(bool value, FileSystemEntity file) {

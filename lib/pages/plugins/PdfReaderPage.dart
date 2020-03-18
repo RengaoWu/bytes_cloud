@@ -44,7 +44,7 @@ class _PDFScreenState extends State<PDFScreen> {
               IconButton(
                 icon: Icon(Icons.apps),
                 onPressed: () {
-                  UI.openFile(context, File(widget.path), {},
+                  UI.openFile(context, File(widget.path),
                       useOtherApp: true);
                 },
               ),

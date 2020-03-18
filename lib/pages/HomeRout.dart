@@ -15,16 +15,19 @@ class HomeRoute extends StatefulWidget {
 }
 
 class HomeRouteState extends State<HomeRoute>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController tabController;
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 4, vsync: this);
+    print("home route init");
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    print('home route build');
     final size = MediaQuery.of(context).size;
     UI.DISPLAY_WIDTH = size.width;
     UI.DISPLAY_HEIGHT = size.height;
@@ -42,21 +45,21 @@ class HomeRouteState extends State<HomeRoute>
             labelColor: Colors.blueAccent,
             unselectedLabelColor: Colors.grey,
             tabs: <Widget>[
-              new Tab(
+              Tab(
                 text: '最近',
-                icon: new Icon(Icons.recent_actors),
+                icon: const Icon(Icons.recent_actors),
               ),
-              new Tab(
+              Tab(
                 text: '分类',
-                icon: new Icon(Icons.cloud),
+                icon: const Icon(Icons.cloud),
               ),
-              new Tab(
+              Tab(
                 text: '云盘',
-                icon: new Icon(Icons.photo),
+                icon: const Icon(Icons.photo),
               ),
-              new Tab(
+              Tab(
                 text: '我的',
-                icon: new Icon(Icons.person),
+                icon: const Icon(Icons.person),
               )
             ]),
       ),
@@ -67,5 +70,15 @@ class HomeRouteState extends State<HomeRoute>
   void dispose() {
     super.dispose();
     tabController.dispose();
+    print('home route dispose');
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    print('home route deactivate');
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/foundation.dart';
 
@@ -82,5 +83,23 @@ class RecentFileEntity extends Entity {
     } else if (FileUtil.isDoc(path)) {
       return '文档';
     }
+  }
+
+  static fileIcon(String source) {
+    String sourceIcon;
+    if (source == '微信') {
+      sourceIcon = Constants.WECHAT;
+    } else if (source == 'QQ') {
+      sourceIcon = Constants.QQ;
+    } else if (source == '文档') {
+      sourceIcon = Constants.DOC;
+    } else if (source == '截图') {
+      sourceIcon = Constants.SCREAMSHOT;
+    } else if (source == '相册') {
+      sourceIcon = Constants.PHOTO;
+    } else {
+      sourceIcon = Constants.UNKNOW;
+    }
+    return sourceIcon;
   }
 }

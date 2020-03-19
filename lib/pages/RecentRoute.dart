@@ -27,11 +27,31 @@ class RecentRoute extends StatefulWidget {
 
 class RecentRouteState extends State<RecentRoute>
     with AutomaticKeepAliveClientMixin {
-  ScrollController controller = ScrollController(keepScrollOffset: true);
+  ScrollController _controller = ScrollController(keepScrollOffset: true);
   Future scan() async => UI.newPage(context, ScanPage());
   Widget _recentFileListView;
   List<MapEntry<int, List<RecentFileEntity>>> _sourceListData;
   bool hasNew = false; // 第一次打开需要加载列表
+  bool showToTopBtn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    //监听滚动事件，打印滚动位置
+    _controller.addListener(() {
+      if (_controller.offset < 1000 && showToTopBtn) {
+        setState(() {
+          showToTopBtn = false;
+          hasNew = false;
+        });
+      } else if (_controller.offset >= 1000 && showToTopBtn == false) {
+        setState(() {
+          showToTopBtn = true;
+          hasNew = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +78,14 @@ class RecentRouteState extends State<RecentRoute>
           ),
         ],
       ),
+      floatingActionButton: showToTopBtn
+          ? FloatingActionButton(
+              child: Icon(Icons.arrow_upward),
+              onPressed: () {
+                _controller.animateTo(0,
+                    duration: Duration(milliseconds: 500), curve: Curves.ease);
+              })
+          : null,
       body: Padding(
         padding: EdgeInsets.only(left: 8, right: 8),
         child: recentFilesListViewFuture(),
@@ -69,7 +97,10 @@ class RecentRouteState extends State<RecentRoute>
   recentFilesListViewFuture() {
     print("hasNew $hasNew");
     if (hasNew) _recentFileListView = recentListView();
-    if (_recentFileListView != null) return _recentFileListView;
+    if (_recentFileListView != null) {
+      print('use old');
+      return _recentFileListView;
+    }
 
     return FutureBuilder<bool>(
       future: hasNewRecentFilesFromFileSystem(), // 如果有新数据，直接更新到_SourceListData
@@ -80,7 +111,8 @@ class RecentRouteState extends State<RecentRoute>
                   height: 48, width: 48, child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
-          return recentListView();
+          _recentFileListView = recentListView();
+          return _recentFileListView;
         }
         return Text(snapshot.error.toString());
       },
@@ -110,7 +142,7 @@ class RecentRouteState extends State<RecentRoute>
 
   Widget recentListView() {
     ListView listView = ListView.builder(
-      controller: controller,
+      controller: _controller,
       itemCount: _sourceListData.length + 1,
       key: PageStorageKey('RecentRoute'),
       itemBuilder: (BuildContext context, int index) {

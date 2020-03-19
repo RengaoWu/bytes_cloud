@@ -27,6 +27,7 @@ class Common {
   // wx
   String get WxRoot => sd + '/Tencent/MicroMsg';
   String get sWxDirDownload => WxRoot + '/Download';
+  String get sWxMsg => WxRoot + '/WeiXin';
 
   // qq
   String get TencentRoot => sd + '/Tencent';
@@ -45,6 +46,7 @@ class Common {
   List<String> get recentDir => <String>[
         sQQFileRecDir,
         sWxDirDownload,
+        sWxMsg,
         DCIM,
         screamShot
       ]; // wx 和 qq的文件有重合，先判断是否是wx

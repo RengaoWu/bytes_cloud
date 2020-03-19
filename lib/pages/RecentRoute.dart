@@ -11,6 +11,7 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
+import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -25,20 +26,22 @@ class RecentRoute extends StatefulWidget {
 
 class RecentRouteState extends State<RecentRoute>
     with AutomaticKeepAliveClientMixin {
-  bool isFast = false;
   ScrollController controller = ScrollController(keepScrollOffset: true);
-  double position = 0;
+  Future scan() async => UI.newPage(context, ScanPage());
+  Widget _recentFileListView;
+  List<MapEntry<int, List<RecentFileEntity>>> _sourceListData;
+  bool hasNew = false; // 第一次打开需要加载列表
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    print('build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {
-              UI.newPage(context,
-                  SearchFilePage({'key': '', 'roots': Common().recentDir}));
-            }),
+            onPressed: () => UI.newPage(context,
+                SearchFilePage({'key': '', 'roots': Common().recentDir}))),
         centerTitle: true,
         title: boldText(
           '最近',
@@ -56,15 +59,19 @@ class RecentRouteState extends State<RecentRoute>
       ),
       body: Padding(
         padding: EdgeInsets.only(left: 8, right: 8),
-        child: listView(),
+        child: recentFilesListViewFuture(),
       ),
     );
   }
 
   // 最近的文件：来源：微信、QQ、下载管理器、相机、QQ邮箱、浏览器、百度网盘、音乐、
-  listView() {
-    return FutureBuilder<List<RecentFileEntity>>(
-      future: getRecentFiles(),
+  recentFilesListViewFuture() {
+    print("hasNew $hasNew");
+    if (hasNew) _recentFileListView = recentListView();
+    if (_recentFileListView != null) return _recentFileListView;
+
+    return FutureBuilder<bool>(
+      future: hasNewRecentFilesFromFileSystem(), // 如果有新数据，直接更新到_SourceListData
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -72,20 +79,16 @@ class RecentRouteState extends State<RecentRoute>
                   height: 48, width: 48, child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
-          return handleGetRecentFiles(snapshot.data);
+          return recentListView();
         }
-        print(snapshot.error.toString());
         return Text(snapshot.error.toString());
       },
     );
   }
 
-  Future scan() async {
-    UI.newPage(context, ScanPage());
-  }
-
-  handleGetRecentFiles(List<RecentFileEntity> recentList) {
+  updateListData() async {
     // kv : <groupMd5, entity> and check file exist
+    var recentList = await getRecentFilesFromDB();
     Map<int, List<RecentFileEntity>> map = {};
     recentList.forEach((f) {
       File file = File(f.path);
@@ -101,19 +104,84 @@ class RecentRouteState extends State<RecentRoute>
       }
     });
     // return list view
-    List<MapEntry<int, List<RecentFileEntity>>> list = map.entries.toList();
-    ListView view = ListView.builder(
+    _sourceListData = map.entries.toList();
+  }
+
+  Widget recentListView() {
+    ListView listView = ListView.builder(
       controller: controller,
-      itemCount: list.length + 1,
+      itemCount: _sourceListData.length + 1,
       key: PageStorageKey('RecentRoute'),
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
           return headerView();
         }
-        return contentItemView(list[index - 1].value);
+        return contentItemView(_sourceListData[index - 1].value);
       },
     );
-    return view;
+
+    hasNew = false;
+    return RefreshIndicator(
+      child: listView,
+      onRefresh: () async {
+        await hasNewRecentFilesFromFileSystem().then((v) {
+          if (v) {
+            setState(() {
+              hasNew = true;
+            });
+          }
+        });
+      },
+    );
+  }
+
+  // 查询是否有新文件，如果有添加到数据库
+  Future<bool> hasNewRecentFilesFromFileSystem() async {
+    // 增量查询
+    List<FileSystemEntity> recentFiles = await compute(wapperGetAllFiles, {
+      "keys": Common().recentFileExt(),
+      "roots": Common().recentDir,
+      "isExt": true,
+      'fromTime': SPUtil.getInt("lastGetRecentFileTime", 0)
+    });
+    // 更新时间戳
+    var newTimeStamp = 0;
+    if (recentFiles.length == 0) {
+      newTimeStamp = DateTime.now().millisecondsSinceEpoch;
+    } else {
+      newTimeStamp = recentFiles[0].statSync().modified.millisecondsSinceEpoch;
+    }
+    SPUtil.setInt("lastGetRecentFileTime", newTimeStamp);
+    // 存入数据库
+    print("增量查询最近文件, 新文件长度:${recentFiles.length}");
+    bool hasNewRecentFile = false;
+    recentFiles.forEach((f) {
+      if (f.statSync().size > 1024) {
+        DBManager.instance.insert(RecentFileEntity.tableName,
+            RecentFileEntity.forSystemFileEntity(f));
+        hasNewRecentFile = true;
+      }
+    });
+    if (hasNewRecentFile) {
+      await updateListData();
+      print('更新数据');
+    }
+    return hasNewRecentFile;
+  }
+
+  Future<List<RecentFileEntity>> getRecentFilesFromDB() async {
+    // 全量数据库查询
+    List<Map> maps = await DBManager.instance
+        .queryAll(RecentFileEntity.tableName, 'modifyTime desc'); // for db
+    List<RecentFileEntity> result = [];
+    // 转化类型
+    if (maps != null && maps.length != 0) {
+      maps.forEach((f) {
+        result.add(RecentFileEntity.fromMap(f));
+      });
+    }
+    print(result.length);
+    return result;
   }
 
   headerView() {
@@ -272,32 +340,6 @@ class RecentRouteState extends State<RecentRoute>
       return File(entity.path);
     }).toList();
     UI.openFile(context, File(f.path), files: sysFiles);
-  }
-
-  Future<List<RecentFileEntity>> getRecentFiles() async {
-    List<Map> maps = await DBManager.instance
-        .queryAll(RecentFileEntity.tableName, 'modifyTime desc'); // for db
-    List<RecentFileEntity> result = [];
-    if (maps != null && maps.length != 0) {
-      maps.forEach((f) {
-        result.add(RecentFileEntity.fromMap(f));
-      });
-    } else {
-      List<String> recentList = Common().recentDir;
-      List<String> recentFileExt = Common().recentFileExt();
-      recentList.forEach(print); // folder
-      recentFileExt.forEach(print); // ext
-      List<FileSystemEntity> recentFiles = await compute(wapperGetAllFiles,
-          {"keys": recentFileExt, "roots": recentList, "isExt": true});
-      recentFiles.forEach((f) {
-        if (f.statSync().size > 1024) {
-          result.add(RecentFileEntity.forSystemFileEntity(f));
-          DBManager.instance.insert(RecentFileEntity.tableName, result.last);
-        }
-      });
-    }
-    print(result.length);
-    return result;
   }
 
   callDownloadSelector() => UI.newPage(context,

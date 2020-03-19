@@ -55,14 +55,13 @@ _getImage(String path) {
 }
 
 _getThumbFromCache(String path) {
+  print('_getThumbFromCache path = ' + path);
   String thumbnailFolder = Common().appCache;
   String thumbnailFolderPng =
       thumbnailFolder + '/' + FileUtil.getFileName(path) + '.png';
   if (File(thumbnailFolderPng).existsSync()) {
-    print("YES");
     return thumbnailFolderPng;
   }
-  print("NO");
   return null;
 }
 

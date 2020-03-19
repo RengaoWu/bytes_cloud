@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
@@ -162,7 +163,7 @@ class RecentRouteState extends State<RecentRoute>
         hasNewRecentFile = true;
       }
     });
-    if (hasNewRecentFile) {
+    if (hasNewRecentFile || _sourceListData == null) {
       await updateListData();
       print('更新数据');
     }
@@ -194,6 +195,7 @@ class RecentRouteState extends State<RecentRoute>
     );
   }
 
+  static const int PIC_MAX_SHOW_LENGTH = 4;
   contentItemView(List<RecentFileEntity> group) {
     return Card(
         elevation: 2,
@@ -239,13 +241,13 @@ class RecentRouteState extends State<RecentRoute>
           '来自${source}的${type}',
           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
         )),
-        IconButton(
-          icon: Icon(
+        InkWell(
+          child: Icon(
             Icons.more_vert,
             key: key,
-            size: 12,
+            size: 18,
           ),
-          onPressed: () {
+          onTap: () {
             showMoreWindow(key);
           },
         ),
@@ -287,13 +289,38 @@ class RecentRouteState extends State<RecentRoute>
 
   itemInnerImageView(List<RecentFileEntity> group) {
     List<RecentFileEntity> showData;
-    if (group.length >= 4) {
-      showData = group.sublist(0, 4);
+    if (group.length >= PIC_MAX_SHOW_LENGTH) {
+      showData = group.sublist(0, PIC_MAX_SHOW_LENGTH);
     } else {
       showData = group;
     }
-
+    int i = 0;
     var widgets = showData.map((f) {
+      i++;
+      if (i == PIC_MAX_SHOW_LENGTH) {
+        return SizedBox(
+          width: itemInnerViewPhotoSize,
+          height: itemInnerViewPhotoSize,
+          child: Stack(
+            children: <Widget>[
+              UI.selectPreview(f.path, itemInnerViewPhotoSize),
+              InkWell(
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  width: itemInnerViewPhotoSize,
+                  height: itemInnerViewPhotoSize,
+                  child: Icon(
+                    Icons.more_horiz,
+                    color: Colors.white,
+                    size: 84,
+                  ),
+                ),
+                onTap: () => openFile(f, group),
+              )
+            ],
+          ),
+        );
+      }
       return InkWell(
         child: Hero(
           child: UI.selectPreview(f.path, itemInnerViewPhotoSize),
@@ -305,7 +332,7 @@ class RecentRouteState extends State<RecentRoute>
       );
     }).toList();
     return Container(
-        padding: EdgeInsets.only(top: 8, bottom: 8),
+        padding: EdgeInsets.only(top: 4, bottom: 4),
         child: Wrap(
           children: widgets,
         ));

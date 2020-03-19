@@ -15,156 +15,155 @@ class SelfRouteState extends State<SelfRoute>
     with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
-    print('SelfRoute build');
+    super.build(context);
     return Scaffold(
-        body: ListView(
-      shrinkWrap: true,
-      children: <Widget>[
-        getAvatorWidget(), // 头像
-        //getVolumeWidget(),
-        getGridView(),
-      ],
+        body: MediaQuery.removePadding(
+      child: Column(
+        children: <Widget>[
+          headerView(), // 头像
+          bodyView(),
+          footerView(),
+        ],
+      ),
+      context: context,
     ));
+  }
+
+  footerView() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: Card(
+        child: Column(
+          children: <Widget>[
+            listTitle(
+                Constants.NIGHT,
+                '夜间模式',
+                Switch(
+                  value: false,
+                  onChanged: (value) {},
+                ),
+                null,
+                left: 8,
+                top: 4,
+                right: 8),
+            Divider(
+              indent: 8,
+              endIndent: 8,
+            ),
+            listTitle(Constants.SETTING, '设置', null, null,
+                left: 8, right: 8, top: 8, bottom: 8),
+            Divider(
+              indent: 8,
+              endIndent: 8,
+            ),
+            listTitle(Constants.FACEBACK, '反馈', null, null,
+                left: 8, right: 8, bottom: 16, top: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  listTitle(String icon, String content, Widget tail, Function call,
+      {double top = 0, double left = 0, double right = 0, double bottom = 0}) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(left, top, right, bottom),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 8, right: 8),
+            child: Image.asset(
+              icon,
+              width: 24,
+            ),
+          ),
+          Expanded(child: boldText(content)),
+          tail != null ? tail : SizedBox()
+        ],
+      ),
+    );
   }
 
   callMarkDownPage() => Navigator.push(
       context, MaterialPageRoute(builder: (context) => new MarkDownListPage()));
 
-  Widget getGridView() {
-    return GridView.count(
-      crossAxisCount: 3,
-      physics: ScrollPhysics(),
-      shrinkWrap: true,
-      children: <Widget>[
-        UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
-        UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
-        UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享
-        UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
-        UI.iconTxtBtn(Constants.DOWNLOADED, "已下载", () => {print("")}), // 已下载文件
-        UI.iconTxtBtn(Constants.SETTING, "设置", () => {print("")}),
-        UI.iconTxtBtn(Constants.FACEBACK, "反馈", () => {print("")}),
-      ],
-    );
+  Widget bodyView() {
+    return Container(
+        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+        child: Card(
+            child: Column(children: <Widget>[
+          UI.leftTitle('云盘功能', paddingLeft: 24, paddingTop: 16, size: 16),
+          MediaQuery.removePadding(
+            removeTop: true,
+            child: GridView.count(
+              crossAxisCount: 4,
+              physics: ScrollPhysics(),
+              shrinkWrap: true,
+              children: <Widget>[
+                UI.iconTxtBtn(Constants.BACK, "备份", () => {print("")}),
+                UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
+                UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
+                UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享
+                UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
+                UI.iconTxtBtn(
+                    Constants.DOWNLOADED, "已下载", () => {print("")}), // 已下载文件
+              ],
+            ),
+            context: context,
+          )
+        ])));
   }
 
-  Widget getAvatorWidget() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 32, 0, 8),
-      child: Row(
+  Widget headerView() {
+    return Container(
+      height: 220,
+      padding: EdgeInsets.only(bottom: 16),
+      alignment: Alignment.center,
+      child: Stack(
         children: <Widget>[
-          Padding(
-              padding: EdgeInsets.all(16),
-              child: ClipRRect(
+          Image.network(
+            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584635196741&di=bbc124b387b8cc030e2c4a7ed3510c9a&imgtype=0&src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201401%2F23%2F095609lsejfi4thjrrwydj.jpg',
+            fit: BoxFit.cover,
+            height: 240,
+          ),
+          Positioned(
+              top: 40,
+              left: 0,
+              right: 0,
+              child: UnconstrainedBox(
+                  child: ClipRRect(
                 borderRadius: BorderRadius.circular(40),
                 child: Image.network(
                   "http://b-ssl.duitang.com/uploads/item/201409/25/20140925103211_w3edR.jpeg",
                   width: 80,
                   height: 80,
-                  cacheHeight: 80,
-                  cacheWidth: 80,
                 ),
-              )),
-          Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: Text(
-                  "白茶清欢",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
+              ))),
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 120,
+            child: UnconstrainedBox(
+                child: Text('白茶清欢',
+                    style: TextStyle(fontSize: 18, color: Colors.white))),
+          ),
+          Positioned(
+            right: 16,
+            top: 16,
+            child: IconButton(
+              icon: Icon(
+                Icons.compare_arrows,
+                size: 32,
+                color: Colors.white,
               ),
-              Row(
-                children: <Widget>[
-                  SizedBox(
-                    child: Image.asset(Constants.CHANGE_USER),
-                    height: 16,
-                  ),
-                  Text(
-                    '切换账号',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  )
-                ],
-              )
-            ],
+              onPressed: () {},
+            ),
           )
         ],
       ),
     );
   }
 
-//  Widget getVolumeWidget() {
-//    return Padding(
-//      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-//      child: DecoratedBox(
-//          decoration: BoxDecoration(
-//            shape: BoxShape.rectangle,
-//            color: Colors.white,
-//          ),
-//          child: Column(
-//            crossAxisAlignment: CrossAxisAlignment.start,
-//            children: <Widget>[
-//              Padding(
-//                padding: EdgeInsets.fromLTRB(8, 8, 8, 4),
-//                child: Text(
-//                  "存储空间 3/10 GB",
-//                  style: TextStyle(fontSize: 16, color: Colors.lightGreen),
-//                ),
-//              ),
-//              Padding(
-//                padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-//                child: LinearProgressIndicator(
-//                  value: 0.3,
-//                ),
-//              ),
-//            ],
-//          )),
-//    );
-//  }
-
-  Widget getCircleVolumeWidget(void call()) {
-    return InkWell(
-      child: Card(
-          child: UnconstrainedBox(
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: CircularProgressIndicator(
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation(Colors.blue),
-            value: .3,
-          ),
-        ),
-      )),
-      onTap: call,
-    );
-  }
-
   @override
   bool get wantKeepAlive => true;
-
-  Widget getSliverPage({Widget body}) {
-    return NestedScrollView(
-        body: body,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              title: Text(
-                'Photo',
-                style: TextStyle(color: Colors.deepOrange),
-              ),
-              pinned: false, // 向下滑动是否保留 bottom
-              flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                background: Image.network(
-                  'https://cdn.duitang.com/uploads/item/201408/11/20140811200850_LUY5c.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              expandedHeight: 200,
-              forceElevated: innerBoxIsScrolled,
-              floating: true,
-            )
-          ];
-        });
-  }
 }

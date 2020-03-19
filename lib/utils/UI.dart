@@ -17,10 +17,10 @@ import 'package:path/path.dart' as p;
 
 import 'Constants.dart';
 
-boldText(String text) {
+boldText(String text, {double fontSize = 14}) {
   return Text(
     text,
-    style: TextStyle(fontWeight: FontWeight.bold),
+    style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
   );
 }
 
@@ -502,4 +502,23 @@ class UI {
                   ))),
             ),
           ));
+  static leftTitle(String title,
+      {double paddingLeft = 8,
+      double paddingTop = 0,
+      double paddingRight = 0,
+      double paddingBottom = 0,
+      double size = 18,
+      FontWeight fontWeight = FontWeight.bold}) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          paddingLeft, paddingTop, paddingRight, paddingBottom),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: TextStyle(fontSize: size, fontWeight: fontWeight),
+        ),
+      ),
+    );
+  }
 }

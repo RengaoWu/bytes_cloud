@@ -78,6 +78,8 @@ class Constants {
   static final String PHONE = 'assets/images/phone.png';
   static final String SCREAMSHOT = 'assets/images/screamshot.png';
   static final String CAMERA = 'assets/images/camera.png';
+  static final String BACK = 'assets/images/back.png';
+  static final String NIGHT = 'assets/images/night.png';
 
   static final int COLOR_DIVIDER = 0xffe5e5e5;
 }

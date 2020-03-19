@@ -220,7 +220,7 @@ class RecentRouteState extends State<RecentRoute>
   headerView() {
     return Column(
       children: <Widget>[
-        leftTitle('快捷访问'),
+        UI.leftTitle('快捷访问'),
         headerGridView(),
         UI.divider(width: 1)
       ],
@@ -426,19 +426,6 @@ class RecentRouteState extends State<RecentRoute>
 
   @override
   bool get wantKeepAlive => true;
-
-  leftTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
 
   @override
   void dispose() {

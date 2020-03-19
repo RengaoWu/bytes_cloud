@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -16,7 +18,7 @@ class SearchFilePage extends StatefulWidget {
 }
 
 class _SearchFilePageState extends State<SearchFilePage> {
-  String root;
+  List<String> roots;
   String key;
   static const PAGE_LENGTH = 100;
   List<String> historyKeys = [];
@@ -25,7 +27,8 @@ class _SearchFilePageState extends State<SearchFilePage> {
   int filesSize = 0;
   Map<String, dynamic> args;
 
-  bool reflashList = false;
+  bool flashListView = false;
+  bool isDeepSearch = false;
   Widget list;
   List<FileSystemEntity> allFiles = [];
   List<FileSystemEntity> pageFiles = [];
@@ -40,7 +43,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
 
   initDate() {
     key = args['key'];
-    root = args['root'];
+    roots = args['roots'];
     historyKeys = SPUtil.getArray('search_history', []);
     controller.value = TextEditingValue(text: key);
   }
@@ -57,14 +60,15 @@ class _SearchFilePageState extends State<SearchFilePage> {
             if (key == k) return;
             setState(() {
               key = k;
+              flashListView = true;
             });
           }),
           historySearch(),
           key == null
               ? Container()
-              : reflashList
+              : flashListView
                   ? FutureBuilder(
-                      future: startSearch(key, root),
+                      future: startSearch(key, roots),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -100,8 +104,38 @@ class _SearchFilePageState extends State<SearchFilePage> {
     allFiles.addAll(snapshot.data);
     if (allFiles.length > PAGE_LENGTH) {
       allFiles = allFiles.sublist(0, PAGE_LENGTH);
+      return searchListView();
+    } else if (allFiles.length == 0) {
+      return InkWell(
+          onTap: () {
+            if (isDeepSearch) return;
+            setState(() {
+              roots = [Common.sd];
+              isDeepSearch = true;
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.only(top: 150),
+            child: Column(
+              children: <Widget>[
+                Image.asset(
+                  Constants.NULL,
+                  width: 160,
+                  height: 160,
+                ),
+                isDeepSearch
+                    ? Text(
+                        '点击尝试深度搜索',
+                        style: TextStyle(fontSize: 18),
+                      )
+                    : Text(
+                        '空空如也',
+                        style: TextStyle(fontSize: 18),
+                      )
+              ],
+            ),
+          ));
     }
-    return searchListView();
   }
 
   searchListView() {
@@ -131,7 +165,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
 
   onChange(bool value, FileSystemEntity file) {
     setState(() {
-      reflashList = false;
+      flashListView = false;
       if (value) {
         selectedFiles.add(file.path);
         filesSize += file.statSync().size;
@@ -144,13 +178,13 @@ class _SearchFilePageState extends State<SearchFilePage> {
 
   onTap() {}
 
-  static startSearch(String key, String root) async {
+  static startSearch(String key, List<String> roots) async {
     if (key == '') {
       throw 'Please input key';
     }
     List<FileSystemEntity> res = await compute(wapperGetAllFiles, {
       'keys': [key],
-      'roots': [root]
+      'roots': roots
     });
     return res;
   }
@@ -158,8 +192,8 @@ class _SearchFilePageState extends State<SearchFilePage> {
   historySearch() {
     List<Widget> widgets = [];
     historyKeys.forEach((key) {
-      widgets.add(
-          UI.iconTextBtn(null, key, onChipTap, longPressCall: onChipLongPress));
+      widgets.add(UI.iconTextBtn(null, key, changeSearchKey,
+          longPressCall: onChipLongPress));
     });
     widgets = widgets.reversed.toList();
     return Wrap(
@@ -169,16 +203,18 @@ class _SearchFilePageState extends State<SearchFilePage> {
     );
   }
 
-  onChipTap(String k) {
+  changeSearchKey(String k) {
+    if (k == key) return;
     setState(() {
-      reflashList = true;
+      flashListView = true;
       key = k;
+      controller.value = TextEditingValue(text: key);
     });
   }
 
   onChipLongPress(String key) {
     setState(() {
-      reflashList = false;
+      flashListView = false;
       historyKeys.remove(key);
     });
   }

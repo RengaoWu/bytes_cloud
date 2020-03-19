@@ -4,6 +4,7 @@ import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:bytes_cloud/pages/plugins/ScanPage.dart';
+import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
@@ -32,7 +33,12 @@ class RecentRouteState extends State<RecentRoute>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.widgets), onPressed: () {}),
+        leading: IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              UI.newPage(context,
+                  SearchFilePage({'key': '', 'roots': Common().recentDir}));
+            }),
         centerTitle: true,
         title: boldText(
           '最近',

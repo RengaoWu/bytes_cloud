@@ -113,7 +113,12 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
   }
 
   callNativeFileSearch() {
-    UI.newPage(context, SearchFilePage({'key': '', 'root': root}));
+    UI.newPage(
+        context,
+        SearchFilePage({
+          'key': '',
+          'roots': [root]
+        }));
   }
 
   _emptyView() =>

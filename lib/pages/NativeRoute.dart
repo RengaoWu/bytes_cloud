@@ -40,7 +40,7 @@ class NativeRouteState extends State<NativeRoute>
           height: MediaQueryData.fromWindow(window).padding.top,
         ),
         UI.searchBar(context, controller, (k) {
-          UI.newPage(context, SearchFilePage({'key': k, 'root': Common.sd}));
+          UI.newPage(context, SearchFilePage({'key': k, 'roots': [Common.sd]}));
         }),
         gridView(),
         UI.divider(width: 2, padding: 16),

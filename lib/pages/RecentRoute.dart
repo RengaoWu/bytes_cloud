@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
+import 'package:bytes_cloud/pages/plugins/ScanPage.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
@@ -29,7 +30,6 @@ class RecentRouteState extends State<RecentRoute>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    //controller = ScrollController(keepScrollOffset: true);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: Icon(Icons.widgets), onPressed: () {}),
@@ -41,7 +41,10 @@ class RecentRouteState extends State<RecentRoute>
           Container(
             width: 40,
             padding: EdgeInsets.only(right: 8),
-            child: Icon(Icons.center_focus_weak),
+            child: IconButton(
+              icon: Icon(Icons.crop_free),
+              onPressed: scan,
+            ),
           ),
         ],
       ),
@@ -69,6 +72,10 @@ class RecentRouteState extends State<RecentRoute>
         return Text(snapshot.error.toString());
       },
     );
+  }
+
+  Future scan() async {
+    UI.newPage(context, ScanPage());
   }
 
   handleGetRecentFiles(List<RecentFileEntity> recentList) {

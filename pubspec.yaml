@@ -23,6 +23,7 @@ dependencies:
   provider: ^4.0.4
   sqflite: ^1.2.0
   dio: 3.0.9 #latest version
+  image_picker: ^0.6.3+4
   multi_image_picker: ^4.6.2
   extended_image: ^0.7.1  # 图片查看器
   open_file: ^3.0.1 # https://pub.dev/packages/open_file#-readme-tab-
@@ -35,6 +36,9 @@ dependencies:
   flutter_fullpdfview: ^1.0.3+2
   video_player: ^0.10.8+1
   thumbnails: ^1.0.1 # 视频缩略图
+  barcode_scan: ^2.0.1 # 二维码
+  flutter_qr_reader: ^1.0.3
+
 
 
 

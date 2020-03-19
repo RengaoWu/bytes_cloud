@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: com.tencent.tbs.tbssdk:sdk:43697@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/efb849aa99ce0e7399701a17f00997be/jetified-sdk-43697/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/efb849aa99ce0e7399701a17f00997be/jetified-sdk-43697/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/efb849aa99ce0e7399701a17f00997be/jetified-sdk-43697/jars/libs/tbs_sdk_thirdapp_v4.3.0.1072_43646_sharewithdownloadwithfile_withoutGame_obfs_20190429_175122.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ee49adc375b08b1e50b8d8820647f5bd/jetified-sdk-43697/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ee49adc375b08b1e50b8d8820647f5bd/jetified-sdk-43697/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ee49adc375b08b1e50b8d8820647f5bd/jetified-sdk-43697/jars/libs/tbs_sdk_thirdapp_v4.3.0.1072_43646_sharewithdownloadwithfile_withoutGame_obfs_20190429_175122.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.tencent.tbs.tbssdk/sdk/43697/5d0afcd002db27bae57583a31e55c683d2f049f2/sdk-43697-javadoc.jar!/" />

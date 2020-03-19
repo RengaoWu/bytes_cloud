@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/android.iml" filepath="$PROJECT_DIR$/android.iml" group="android" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="android/app" />
+      <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/barcode_scan-2.0.1/android/barcode_scan.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/barcode_scan-2.0.1/android/barcode_scan.iml" group="android/barcode_scan" />
       <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_filereader-2.0.0/android/flutter_filereader.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_filereader-2.0.0/android/flutter_filereader.iml" group="android/flutter_filereader" />
       <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_fullpdfview-1.0.3+2/android/flutter_fullpdfview.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_fullpdfview-1.0.3+2/android/flutter_fullpdfview.iml" group="android/flutter_fullpdfview" />
       <module fileurl="file://$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/android/fluttertoast.iml" filepath="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/android/fluttertoast.iml" group="android/fluttertoast" />

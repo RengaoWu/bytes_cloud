@@ -47,15 +47,15 @@ class HomeRouteState extends State<HomeRoute>
             tabs: <Widget>[
               Tab(
                 text: '最近',
-                icon: const Icon(Icons.recent_actors),
+                icon: const Icon(Icons.beach_access),
               ),
               Tab(
                 text: '分类',
-                icon: const Icon(Icons.cloud),
+                icon: const Icon(Icons.phone_android),
               ),
               Tab(
                 text: '云盘',
-                icon: const Icon(Icons.photo),
+                icon: const Icon(Icons.cloud),
               ),
               Tab(
                 text: '我的',

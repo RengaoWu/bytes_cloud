@@ -51,7 +51,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
           )),
           Align(
             alignment: Alignment.center,
-            child: boldText('$currentIndex/${images.length}'),
+            child: boldText('${currentIndex + 1}/${images.length}'),
           ),
         ],
       ),

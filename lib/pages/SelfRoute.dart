@@ -153,7 +153,7 @@ class SelfRouteState extends State<SelfRoute>
             child: IconButton(
               icon: Icon(
                 Icons.compare_arrows,
-                size: 32,
+                size: 28,
                 color: Colors.white,
               ),
               onPressed: () {},

@@ -2,38 +2,30 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
 // https://github.com/flutterchina/dio/blob/master/README-ZH.md
-var dio = Dio();
-String host = "";
-
-String generateUrl(String path, Map<String, String> map) {
-  String url = host + path;
-  if (map == null) return url;
-  url += '?';
-  map.forEach((String key, String value) {
-    url = url + key + '=' + value + '&';
-  });
-  return url.substring(0, url.length - 1);
-}
+String host = "http://116.62.177.146:5000"; // host
+var dio = Dio(BaseOptions(baseUrl: host));
 
 // GET
-Future<String> httpGet(String path, Map<String, String> map) async {
+Future<Map<String, dynamic>> httpGet(
+    String path, Map<String, String> map) async {
   try {
-    Response response = await Dio().get(generateUrl(path, map));
+    Response response = await dio.get(path, queryParameters: map);
     return response.data;
   } catch (e) {
-    return e.toString();
+    print(e.toString());
+    return {'error': e.toString()};
   }
 }
 
-// POST form-data
-Future<String> httpPost(String path, Map<String, String> map) async {
-  try {
-    FormData data = FormData.fromMap(map);
-    Response response = await dio.post(generateUrl(path, null), data: data);
-    return response.data;
-  } catch (e) {
-    return e.toString();
-  }
-}
+//// POST form-data
+//Future<String> httpPost(String path, Map<String, String> map) async {
+//  try {
+//    FormData data = FormData.fromMap(map);
+//    Response response = await dio.post(path, data: data);
+//    return response.data;
+//  } catch (e) {
+//    return e.toString();
+//  }
+//}
 
 // post 多个文件

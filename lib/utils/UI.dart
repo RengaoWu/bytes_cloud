@@ -241,6 +241,59 @@ class UI {
     );
   }
 
+  static Widget buildFolderItem({
+    FileSystemEntity file,
+    Function onTap,
+  }) {
+    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+        .format(file.statSync().modified.toLocal());
+
+    return InkWell(
+      child: Card(
+          child: Container(
+        decoration: BoxDecoration(
+          border:
+              Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+        ),
+        child: ListTile(
+          leading: Image.asset('assets/images/folder.png'),
+          title: Row(
+            children: <Widget>[
+              Expanded(
+                  child:
+                      Text(file.path.substring(file.parent.path.length + 1))),
+              Text(
+                '${_calculateFilesCountByFolder(file)}项',
+                style: TextStyle(color: Colors.grey),
+              )
+            ],
+          ),
+          subtitle: Text(modifiedTime, style: TextStyle(fontSize: 12.0)),
+          trailing: Icon(Icons.chevron_right),
+        ),
+      )),
+      onTap: () {
+        onTap();
+      },
+    );
+  }
+
+  // 计算以 . 开头的文件、文件夹总数
+  static int _calculatePointBegin(List<FileSystemEntity> fileList) {
+    int count = 0;
+    for (var v in fileList) {
+      if (p.basename(v.path).substring(0, 1) == '.') count++;
+    }
+    return count;
+  }
+
+  // 计算文件夹内 文件、文件夹的数量，以 . 开头的除外
+  static int _calculateFilesCountByFolder(Directory path) {
+    var dir = path.listSync();
+    int count = dir.length - _calculatePointBegin(dir);
+    return count;
+  }
+
   static pushToCloud(BuildContext context, int length, int size) {
     String content = '';
     if (length == 0) {

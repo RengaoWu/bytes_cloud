@@ -139,7 +139,16 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
                   onChanged: onChange,
                   onTap: onTap);
             else
-              return _buildFolderItem(files[index]);
+              return UI.buildFolderItem(
+                  file: files[index],
+                  onTap: () {
+                    // 点进一个文件夹，记录进去之前的offset
+                    // 返回上一层跳回这个offset，再清除该offset
+                    position.add(controller.offset);
+                    print("FileManager ${position.toString()}");
+                    initPathFiles(files[index].path);
+                    jumpToPosition(true);
+                  });
           },
         ),
       );
@@ -158,65 +167,6 @@ class _FilesFragmentState extends State<SysFileSelectorPage>
         filesSize -= file.statSync().size;
       }
     });
-  }
-
-  Widget _buildFolderItem(FileSystemEntity file) {
-    String modifiedTime;
-    try {
-      modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
-          .format(file.statSync().modified.toLocal());
-    } catch (e) {
-      modifiedTime = '';
-    }
-
-    return InkWell(
-      child: Container(
-        decoration: BoxDecoration(
-          border:
-              Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-        ),
-        child: ListTile(
-          leading: Image.asset('assets/images/folder.png'),
-          title: Row(
-            children: <Widget>[
-              Expanded(
-                  child:
-                      Text(file.path.substring(file.parent.path.length + 1))),
-              Text(
-                '${_calculateFilesCountByFolder(file)}项',
-                style: TextStyle(color: Colors.grey),
-              )
-            ],
-          ),
-          subtitle: Text(modifiedTime, style: TextStyle(fontSize: 12.0)),
-          trailing: Icon(Icons.chevron_right),
-        ),
-      ),
-      onTap: () {
-        // 点进一个文件夹，记录进去之前的offset
-        // 返回上一层跳回这个offset，再清除该offset
-        position.add(controller.offset);
-        print("FileManager ${position.toString()}");
-        initPathFiles(file.path);
-        jumpToPosition(true);
-      },
-    );
-  }
-
-  // 计算以 . 开头的文件、文件夹总数
-  int _calculatePointBegin(List<FileSystemEntity> fileList) {
-    int count = 0;
-    for (var v in fileList) {
-      if (p.basename(v.path).substring(0, 1) == '.') count++;
-    }
-    return count;
-  }
-
-  // 计算文件夹内 文件、文件夹的数量，以 . 开头的除外
-  int _calculateFilesCountByFolder(Directory path) {
-    var dir = path.listSync();
-    int count = dir.length - _calculatePointBegin(dir);
-    return count;
   }
 
   void jumpToPosition(bool isEnter) async {

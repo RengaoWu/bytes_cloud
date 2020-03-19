@@ -30,12 +30,25 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
       }
     });
   }
+  double dealtX;
+  double dealtY;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Expanded(child: galleryView()),
+          Expanded(
+              child: GestureDetector(
+            child: galleryView(),
+            onVerticalDragEnd: (DragEndDetails details) {
+              print('y $dealtY , x $dealtX');
+              if (details.velocity.pixelsPerSecond.dy >
+                  details.velocity.pixelsPerSecond.dx) {
+                Navigator.pop(context);
+                return;
+              }
+            },
+          )),
           Align(
             alignment: Alignment.center,
             child: boldText('$currentIndex/${images.length}'),

@@ -19,59 +19,88 @@ class RemoteRoute extends StatefulWidget {
 class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   List<List<CloudFileEntity>> stack = []; // 实现目录结构
-  CloudFileEntity parentDir; //当前的根目录
+  int parentId; //当前的根目录
   List<CloudFileEntity> files = []; //当前目录的全部文件
+
+  ListView listView;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.widgets),
-          onPressed: () {},
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.widgets),
+            onPressed: () {},
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.transform),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.sort),
+              onPressed: () {},
+            )
+          ],
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.transform),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.sort),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: FutureBuilder(
-        future: CloudFileHandle.getAllFile(), // 请求数据，并存DB
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasData) {
-            return handleGetCloudFiles();
-          }
-          return Center(child: Text('error'));
-        },
-      ),
-    );
+        body: WillPopScope(
+          child: listView != null
+              ? handleGetCloudFiles(parentId)
+              : FutureBuilder(
+                  future: CloudFileHandle.getAllFile(), // 请求数据，并存DB
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      print('CloudFileHandle#getAllFile error! ');
+                    }
+                    return handleGetCloudFiles(
+                        CloudFileManager.instance().rootId);
+                  },
+                ),
+          onWillPop: () async {
+            if (stack.isEmpty) {
+              Navigator.pop(context);
+            } else {
+              files = stack.removeLast();
+              setState(() {});
+            }
+            return false;
+          },
+        ));
   }
 
-  handleGetCloudFiles() {
-    files = CloudFileManager.instance().listRootFiles();
-    return ListView.builder(
+  handleGetCloudFiles(int pid) {
+    parentId = pid;
+    files = CloudFileManager.instance().listFiles(parentId);
+    listView = ListView.builder(
         itemCount: files.length,
         itemBuilder: (BuildContext context, int index) {
           CloudFileEntity entity = files[index];
           if (entity.isFolder()) {
-            return UI.buildCloudFolderItem(file: entity, onTap: () {});
+            return UI.buildCloudFolderItem(
+                file: entity,
+                onTap: () {
+                  parentId = entity.id;
+                  stack.add(files);
+                  setState(() {});
+                });
           }
-          return fileItemView(entity);
+          return UI.buildCloudFileItem(file: entity, onTap: () {});
         });
+    return RefreshIndicator(
+      child: listView,
+      onRefresh: () async {
+        await CloudFileHandle.getAllFile();
+        setState(() {});
+      },
+    );
   }
 
   fileItemView(CloudFileEntity entity) {
@@ -90,14 +119,4 @@ class RemoteRouteState extends State<RemoteRoute>
 
   @override
   bool get wantKeepAlive => true;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-  }
 }

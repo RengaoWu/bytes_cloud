@@ -225,7 +225,7 @@ class UI {
       child: Card(
         child: ListTile(
             leading: selectIcon(file.path, true),
-            title: Text(file.path.substring(file.parent.path.length + 1)),
+            title: Text(FileUtil.getFileName(file.path)),
             subtitle: Text(
                 '$modifiedTime  ${FileUtil.getFileSize(file.statSync().size)}',
                 style: TextStyle(fontSize: 12.0)),
@@ -260,9 +260,7 @@ class UI {
           leading: Image.asset('assets/images/folder.png'),
           title: Row(
             children: <Widget>[
-              Expanded(
-                  child:
-                      Text(file.path.substring(file.parent.path.length + 1))),
+              Expanded(child: Text(FileUtil.getFileName(file.path))),
               Text(
                 '${_calculateFilesCountByFolder(file)}项',
                 style: TextStyle(color: Colors.grey),
@@ -275,6 +273,24 @@ class UI {
       )),
       onTap: () {
         onTap();
+      },
+    );
+  }
+
+  static Widget buildCloudFileItem({CloudFileEntity file, Function onTap}) {
+    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+        .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
+
+    return InkWell(
+      child: Card(
+        child: ListTile(
+          leading: selectIcon(file.fileName, false),
+          title: Text(FileUtil.getFileName(file.fileName)),
+          subtitle: Text('$modifiedTime  "', style: TextStyle(fontSize: 12.0)),
+        ),
+      ),
+      onTap: () {
+        onTap(file);
       },
     );
   }

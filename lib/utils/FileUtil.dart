@@ -5,12 +5,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 class FileUtil {
+  static String getFileNameWithExt(String path) {
+    return p.basename(path);
+  }
+
   static String getFileName(String path) {
-    String name = path.substring(path.lastIndexOf('/') + 1);
-    if (name.contains('.')) {
-      return name.substring(0, name.lastIndexOf('.'));
-    }
-    return name;
+    return p.basenameWithoutExtension(path);
   }
 
   static String ext(String path) {

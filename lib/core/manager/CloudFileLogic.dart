@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
@@ -37,15 +38,16 @@ class CloudFileManager {
       CloudFileEntity entity = CloudFileEntity.fromJson(f);
       if (entity.id == 0) {
         _root = entity;
-      } else {
-        temp.add(entity);
+        print('_root 初始化完成');
+        print(_root.toMap());
       }
+      temp.add(entity);
     });
     _entities = temp;
   }
 
   // 存DB
-  saveAll(List<CloudFileEntity> entities) async {
+  saveAllCloudFiles(List<CloudFileEntity> entities) async {
     await DBManager.instance.db.transaction((txn) async {
       Batch batch = txn.batch();
       batch.delete(CloudFileEntity.tableName); // 先 clear 本地数据库
@@ -56,15 +58,32 @@ class CloudFileManager {
     });
   }
 
-  listRootFiles() {
-    return listFiles(_root.id);
+  CloudFileEntity getEntityById(int id) {
+    try {
+      return _entities.firstWhere((e) {
+        print('${e.id} == $id');
+        return e.id == id;
+      });
+    } catch (e) {
+      print('getEntityById ' + e.toString());
+    }
+    print('getEntityById null');
+    return null;
   }
 
-  listFiles(int pId) {
+  listRootFiles({bool justFolder = false}) {
+    return listFiles(_root.id, justFolder: justFolder);
+  }
+
+  listFiles(int pId, {justFolder = false}) {
     List<CloudFileEntity> result = [];
     _entities.forEach((f) {
       if (f.parentId == pId) {
-        result.add(f);
+        if (!justFolder) {
+          result.add(f);
+        } else if (justFolder && f.isFolder()) {
+          result.add(f);
+        }
       }
     });
     print('listFiles ${result.length}');
@@ -74,7 +93,7 @@ class CloudFileManager {
 
 class CloudFileHandle {
   // 获取所有的目录信息
-  static getAllFile() async {
+  static Future reflashCloudFileList() async {
     try {
       Map<String, dynamic> rsp =
           await httpGet(HTTP_GET_ALL_FILES, {'curUid': '0'});
@@ -87,23 +106,29 @@ class CloudFileHandle {
         }
       });
       print('getAllFile ${result.length}');
-      await CloudFileManager.instance().saveAll(result); // 存DB
+      await CloudFileManager.instance().saveAllCloudFiles(result); // 存DB
     } catch (e) {
       print('CloudFileHandle#getAllFile error! $e');
     }
     await CloudFileManager.instance().initDataFromDB(); // 更新内存数据
+    return;
+  }
+
+  static Future newFolder(int curId, String folderName) async {
+    var rsp = await httpPost(HTTP_POST_NEW_FOLDER,
+        form: {'curId': curId, 'foldername': folderName});
+    print("newFolder $rsp");
   }
 
   static Future uploadOneFile(int dirId, String path) async {
     String name = FileUtil.getFileNameWithExt(path);
     print('uploadOneFile ${path}');
-    print(DateTime.now().toString());
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
       print('$sent / $total');
     }, form: {
       'curId': 0,
       'file': await MultipartFile.fromFile(path, filename: name),
     });
-    print(DateTime.now().toString());
+    print(resp.toString());
   }
 }

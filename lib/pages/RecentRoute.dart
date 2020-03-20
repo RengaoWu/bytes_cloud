@@ -6,6 +6,7 @@ import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:bytes_cloud/pages/plugins/ScanPage.dart';
+import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
@@ -301,8 +302,10 @@ class RecentRouteState extends State<RecentRoute>
               FlatButton(
                 child: Text("上传到云"),
                 onPressed: () {
-                  ///
-                  CloudFileHandle.uploadOneFile(0, entities[0].path);
+                  List<String> paths = entities.map((f) {
+                    return f.path;
+                  }).toList();
+                  UI.newPage(context, CloudFolderSelector(paths));
                 },
               ),
               FlatButton(

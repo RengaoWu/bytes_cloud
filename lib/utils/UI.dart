@@ -18,10 +18,11 @@ import 'package:path/path.dart' as p;
 
 import 'Constants.dart';
 
-boldText(String text, {double fontSize = 14}) {
+Widget boldText(String text,
+    {FontWeight fontWeight = FontWeight.bold, double fontSize = 14}) {
   return Text(
     text,
-    style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+    style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
   );
 }
 
@@ -67,8 +68,8 @@ class UI {
       {@required BuildContext context,
       Future<T> future,
       String title,
-      void successCall(String data),
-      void failCall(String errMsg)}) {
+      Function successCall,
+      Function failCall}) {
     showDialog<Null>(
         context: context,
         barrierDismissible: false,
@@ -116,6 +117,37 @@ class UI {
             title: Text(title),
             content: content,
             actions: actions,
+          );
+        });
+  }
+
+  static Future<String> showInputDialog(
+      BuildContext context, String title) async {
+    TextEditingController controller = TextEditingController();
+    return showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: TextField(
+              controller: controller,
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, "");
+                  },
+                  child: Text(
+                    "取消",
+                  )),
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context, controller.text);
+                },
+                child: Text("确定"),
+              )
+            ],
           );
         });
   }

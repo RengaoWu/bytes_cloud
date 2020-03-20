@@ -12,6 +12,7 @@ var dio = Dio(BaseOptions(baseUrl: host));
 
 const String HTTP_GET_ALL_FILES = '/api/file/all';
 const String HTTP_POST_A_FILE = '/api/file/upload';
+const String HTTP_POST_NEW_FOLDER = '/api/file/newFolder';
 
 // GET
 Future<Map<String, dynamic>> httpGet(
@@ -26,7 +27,7 @@ Future<Map<String, dynamic>> httpGet(
 }
 
 // POST form-data
-Future<String> httpPost(String path,
+Future<dynamic> httpPost(String path,
     {Map<String, String> params = const {},
     Map<String, dynamic> form = const {},
     Function call}) async {
@@ -35,11 +36,11 @@ Future<String> httpPost(String path,
     Response response = await dio.post(path,
         queryParameters: params,
         data: data, onSendProgress: (int send, int total) {
-      call(send, total);
+      if (call != null) call(send, total);
     });
     return response.data;
   } catch (e) {
-    return e.toString();
+    return {'error': e};
   }
 }
 

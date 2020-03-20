@@ -52,7 +52,7 @@ class RemoteRouteState extends State<RemoteRoute>
           child: listView != null
               ? handleGetCloudFiles(parentId)
               : FutureBuilder(
-                  future: CloudFileHandle.getAllFile(), // 请求数据，并存DB
+                  future: CloudFileHandle.reflashCloudFileList(), // 请求数据，并存DB
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -97,7 +97,7 @@ class RemoteRouteState extends State<RemoteRoute>
     return RefreshIndicator(
       child: listView,
       onRefresh: () async {
-        await CloudFileHandle.getAllFile();
+        await CloudFileHandle.reflashCloudFileList();
         setState(() {});
       },
     );

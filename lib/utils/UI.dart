@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bytes_cloud/core/manager/CacheManager.dart';
+import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/pages/plugins/MDPage.dart';
 import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -264,6 +265,41 @@ class UI {
                       Text(file.path.substring(file.parent.path.length + 1))),
               Text(
                 '${_calculateFilesCountByFolder(file)}项',
+                style: TextStyle(color: Colors.grey),
+              )
+            ],
+          ),
+          subtitle: Text(modifiedTime, style: TextStyle(fontSize: 12.0)),
+          trailing: Icon(Icons.chevron_right),
+        ),
+      )),
+      onTap: () {
+        onTap();
+      },
+    );
+  }
+
+  static Widget buildCloudFolderItem({
+    CloudFileEntity file,
+    Function onTap,
+  }) {
+    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+        .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
+
+    return InkWell(
+      child: Card(
+          child: Container(
+        decoration: BoxDecoration(
+          border:
+              Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+        ),
+        child: ListTile(
+          leading: Image.asset('assets/images/folder.png'),
+          title: Row(
+            children: <Widget>[
+              Expanded(child: Text(file.fileName)),
+              Text(
+                '1 项',
                 style: TextStyle(color: Colors.grey),
               )
             ],

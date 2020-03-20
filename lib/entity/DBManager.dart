@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'entitys.dart';
 
@@ -7,6 +8,7 @@ class DBManager {
   static DBManager get instance => _getInstance();
   static DBManager _instance;
   Database _db;
+  Database get db => _db;
 
   static DBManager _getInstance() {
     if (_instance == null) {
@@ -33,6 +35,7 @@ class DBManager {
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute(RecentFileEntity.getSQL());
+      await db.execute(CloudFileEntity.getSQL());
     });
   }
 

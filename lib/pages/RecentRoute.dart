@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
-import 'package:bytes_cloud/entity/entitys.dart';
+import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:bytes_cloud/pages/plugins/ScanPage.dart';
 import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
@@ -236,7 +237,7 @@ class RecentRouteState extends State<RecentRoute>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                itemTitleView(group[0]),
+                itemTitleView(group),
                 itemInnerView(group),
                 itemTailView(group[0]),
               ],
@@ -253,10 +254,10 @@ class RecentRouteState extends State<RecentRoute>
     ]);
   }
 
-  itemTitleView(RecentFileEntity file) {
-    String source = RecentFileEntity.fileFrom(file.path);
+  itemTitleView(List<RecentFileEntity> files) {
+    String source = RecentFileEntity.fileFrom(files[0].path);
     String sourceIcon = RecentFileEntity.fileIcon(source);
-    String type = RecentFileEntity.fileType(file.path);
+    String type = RecentFileEntity.fileType(files[0].path);
     GlobalKey key = GlobalKey();
     return Row(
       children: <Widget>[
@@ -280,14 +281,14 @@ class RecentRouteState extends State<RecentRoute>
             size: 18,
           ),
           onTap: () {
-            showMoreWindow(key);
+            showMoreWindow(key, files);
           },
         ),
       ],
     );
   }
 
-  showMoreWindow(GlobalKey key) {
+  showMoreWindow(GlobalKey key, List<RecentFileEntity> entities) {
     PopupWindow.showPopWindow(
       context,
       '',
@@ -299,7 +300,10 @@ class RecentRouteState extends State<RecentRoute>
             children: <Widget>[
               FlatButton(
                 child: Text("上传到云"),
-                onPressed: () {},
+                onPressed: () {
+                  ///
+                  CloudFileHandle.uploadOneFile(0, entities[0].path);
+                },
               ),
               FlatButton(
                 child: Text("分享"),

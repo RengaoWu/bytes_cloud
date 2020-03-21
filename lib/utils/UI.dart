@@ -659,4 +659,11 @@ class UI {
       ),
     );
   }
+
+  static showSnackBar(BuildContext context, String content) {
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(content),
+      duration: Duration(seconds: 1),
+    ));
+  }
 }

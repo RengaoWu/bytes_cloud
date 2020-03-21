@@ -46,9 +46,22 @@ class CloudFileManager {
     _entities = temp;
   }
 
+  Future<CloudFileEntity> insertCloudFile(CloudFileEntity entity) async {
+    CloudFileEntity result = entity;
+    try {
+      _entities.add(result); // 更新缓存
+      result = await DBManager.instance
+          .insert(CloudFileEntity.tableName, entity); // 更新DB
+    } catch (e) {
+      print("insertCloudFile error!");
+      result = null;
+    }
+    return result;
+  }
+
   // 存DB
   saveAllCloudFiles(List<CloudFileEntity> entities) async {
-    await DBManager.instance.db.transaction((txn) async {
+    await (await DBManager.instance.db).transaction((txn) async {
       Batch batch = txn.batch();
       batch.delete(CloudFileEntity.tableName); // 先 clear 本地数据库
       entities.forEach((e) {
@@ -127,18 +140,30 @@ class CloudFileHandle {
     return;
   }
 
-  static Future<Map> newFolder(int curId, String folderName) async {
-    Map<String, dynamic> rsp = {'code': 0, 'data': '', 'errMsg': ''};
+  static Future newFolder(int curId, String folderName,
+      {Function successCall, Function failedCall}) async {
+    Map<String, dynamic> rsp;
+    // 网络创建
     try {
-      rsp['data'] = await httpPost(HTTP_POST_NEW_FOLDER,
+      rsp = await httpPost(HTTP_POST_NEW_FOLDER,
           form: {'curId': curId, 'foldername': folderName});
     } catch (e) {
-      rsp['code'] = 1;
-      rsp['data'] = '';
-      rsp['errMsg'] = e.toString();
+      failedCall({'code': -1, 'data': '', 'errMsg': '创建失败：网络错误'});
+      return;
     }
-    print("newFolder $rsp");
-    return rsp;
+    if (rsp['code'] != 0) {
+      failedCall(rsp);
+      return;
+    }
+    // 刷新DB
+    try {
+      await CloudFileManager.instance()
+          .insertCloudFile(CloudFileEntity.fromJson(rsp['data']));
+    } catch (e) {
+      failedCall({'code': -1, 'data': '', 'errMsg': '插入数据库错误'});
+      return;
+    }
+    successCall(rsp);
   }
 
   static Future uploadOneFile(int dirId, String path) async {

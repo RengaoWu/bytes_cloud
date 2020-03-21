@@ -8,7 +8,10 @@ class DBManager {
   static DBManager get instance => _getInstance();
   static DBManager _instance;
   Database _db;
-  Database get db => _db;
+  Future<Database> get db async {
+    await _init();
+    return _db;
+  }
 
   static DBManager _getInstance() {
     if (_instance == null) {

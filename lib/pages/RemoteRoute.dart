@@ -16,7 +16,7 @@ class RemoteRoute extends StatefulWidget {
 
 class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  List<CloudFileEntity> currentPageFiles = [];
+  List<CloudFileEntity> currentFiles = [];
   List<CloudFileEntity> path = []; // 路径
 
   @override
@@ -31,16 +31,24 @@ class RemoteRouteState extends State<RemoteRoute>
 
   enterFolder(int pid) {
     path.add(CloudFileManager.instance().getEntityById(pid));
-    currentPageFiles = CloudFileManager.instance().listFiles(pid);
+    currentFiles = CloudFileManager.instance().listFiles(pid);
   }
 
-  bool outFolderAndRefresh(int curId) {
-    if (curId == CloudFileManager.instance().rootId) return true;
+  bool outFolderAndRefresh() {
+    if (path.length == 1) return true;
     setState(() {
       path.removeLast();
-      currentPageFiles = CloudFileManager.instance().listFiles(curId);
+      currentFiles = CloudFileManager.instance()
+          .listFiles(path.last.id, justFolder: false);
     });
     return false;
+  }
+
+  refreshList() {
+    setState(() {
+      currentFiles = CloudFileManager.instance()
+          .listFiles(path.last.id, justFolder: false);
+    });
   }
 
   @override
@@ -53,7 +61,10 @@ class RemoteRouteState extends State<RemoteRoute>
             onPressed: () {},
           ),
           actions: <Widget>[
-            IconButton(icon: Icon(Icons.add), onPressed: () {}),
+            Builder(
+                builder: (context) => IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () => newFolder(context))),
             IconButton(
               icon: Icon(Icons.transform),
               onPressed: () {},
@@ -66,18 +77,18 @@ class RemoteRouteState extends State<RemoteRoute>
         ),
         body: WillPopScope(
           child: cloudListView(),
-          onWillPop: () async => outFolderAndRefresh(path.last.id),
+          onWillPop: () async => outFolderAndRefresh(),
         ));
   }
 
   cloudListView() {
     var listView = ListView.separated(
-        itemCount: currentPageFiles.length,
+        itemCount: currentFiles.length,
         separatorBuilder: (BuildContext context, int index) {
           return UI.divider2(left: 80, right: 32);
         },
         itemBuilder: (BuildContext context, int index) {
-          CloudFileEntity entity = currentPageFiles[index];
+          CloudFileEntity entity = currentFiles[index];
           Widget item;
           if (entity.isFolder()) {
             item = UI.buildCloudFolderItem(
@@ -99,10 +110,23 @@ class RemoteRouteState extends State<RemoteRoute>
       child: Scrollbar(child: listView),
       onRefresh: () async {
         await CloudFileHandle.reflashCloudFileList();
-        currentPageFiles = CloudFileManager.instance().listFiles(path.last.id);
+        currentFiles = CloudFileManager.instance().listFiles(path.last.id);
         setState(() {});
       },
     );
+  }
+
+  newFolder(BuildContext context) async {
+    String folderName = await UI.showInputDialog(context, "创建文件夹");
+    if (folderName.trim() == '') {
+      UI.showSnackBar(context, '文件名为空');
+      return;
+    }
+    await CloudFileHandle.newFolder(path.last.id, folderName.trim(),
+        successCall: (_) => refreshList(),
+        failedCall: (Map<String, dynamic> rsp) {
+          UI.showSnackBar(context, rsp['message']);
+        });
   }
 
   @override

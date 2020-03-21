@@ -13,10 +13,11 @@ var dio = Dio(BaseOptions(baseUrl: host));
 const String HTTP_GET_ALL_FILES = '/api/file/all';
 const String HTTP_POST_A_FILE = '/api/file/upload';
 const String HTTP_POST_NEW_FOLDER = '/api/file/newFolder';
+const String HTTP_POST_DOWNLOAD_FILE = '/api/file/download';
 
 // GET
 Future<Map<String, dynamic>> httpGet(
-    String path, Map<String, String> map) async {
+    String path, Map<String, dynamic> map) async {
   try {
     Response response = await dio.get(path, queryParameters: map);
     return response.data;
@@ -44,4 +45,16 @@ Future<dynamic> httpPost(String path,
   }
 }
 
+// 下载文件
+Future httpDownload(
+  String path,
+  Map<String, dynamic> args,
+  String savePath,
+) async {
+  var rsp = await dio.download(path, savePath, queryParameters: args,
+      onReceiveProgress: (download, total) {
+    print('$download / $total');
+  });
+  return rsp;
+}
 // post 多个文件

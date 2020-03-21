@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +101,11 @@ class RemoteRouteState extends State<RemoteRoute>
                   enterFolderAndRefresh(entity.id);
                 });
           } else {
-            item = UI.buildCloudFileItem(file: entity, onTap: () {});
+            item = UI.buildCloudFileItem(
+                file: entity,
+                onTap: (_) {
+                  CloudFileHandle.downloadOneFile(entity.id);
+                });
           }
           return Padding(
             padding: EdgeInsets.only(left: 8, right: 8),
@@ -109,9 +115,14 @@ class RemoteRouteState extends State<RemoteRoute>
     return RefreshIndicator(
       child: Scrollbar(child: listView),
       onRefresh: () async {
-        await CloudFileHandle.reflashCloudFileList();
-        currentFiles = CloudFileManager.instance().listFiles(path.last.id);
-        setState(() {});
+        await CloudFileHandle.reflashCloudFileList(
+            failedCall: () {},
+            successCall: () {
+              setState(() {
+                currentFiles =
+                    CloudFileManager.instance().listFiles(path.last.id);
+              });
+            });
       },
     );
   }

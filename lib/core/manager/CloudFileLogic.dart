@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/http/http.dart';
@@ -119,7 +120,8 @@ class CloudFileManager {
 
 class CloudFileHandle {
   // 获取所有的目录信息
-  static Future reflashCloudFileList() async {
+  static Future reflashCloudFileList(
+      {Function successCall, Function failedCall}) async {
     try {
       Map<String, dynamic> rsp =
           await httpGet(HTTP_GET_ALL_FILES, {'curUid': '0'});
@@ -135,8 +137,10 @@ class CloudFileHandle {
       await CloudFileManager.instance().saveAllCloudFiles(result); // 存DB
     } catch (e) {
       print('CloudFileHandle#getAllFile error! $e');
+      if (failedCall != null) failedCall();
     }
     await CloudFileManager.instance().initDataFromDB(); // 更新内存数据
+    if (successCall != null) successCall();
     return;
   }
 
@@ -176,5 +180,11 @@ class CloudFileHandle {
       'file': await MultipartFile.fromFile(path, filename: name),
     });
     print(resp.toString());
+  }
+
+  static Future downloadOneFile(int id) async {
+    print('downloadOneFile ${id}');
+    var resp = await httpDownload(
+        HTTP_POST_DOWNLOAD_FILE, {'id': id}, Common().appDownload);
   }
 }

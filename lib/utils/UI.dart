@@ -50,6 +50,17 @@ class UI {
     );
   }
 
+  static Widget divider2(
+      {double left = 0, double right = 0, double height = 0.3}) {
+    return Container(
+      child: Container(
+        color: Colors.grey,
+        height: height,
+      ),
+      padding: EdgeInsets.only(left: left, right: right),
+    );
+  }
+
   static appbarBtn(IconData icon,
       {BuildContext context, void call(BuildContext context)}) {
     return Builder(builder: (BuildContext context) {
@@ -97,6 +108,7 @@ class UI {
         });
   }
 
+  @Deprecated('showInputDialog')
   static showMessageDialog(
       {@required BuildContext context,
       String title = '',
@@ -201,31 +213,18 @@ class UI {
           double radius = 10}) =>
       showModalBottomSheet(
           context: context,
+          backgroundColor: Colors.transparent,
           builder: (BuildContext bc) {
             return SizedBox(
                 height: height,
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      height: height,
-                      width: double.infinity,
-                      color: Colors.black54,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(radius),
-                            topRight: Radius.circular(radius),
-                          )),
-                    ),
-                    Container(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(16.0))),
                       child: Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.only(top: 24.0),
-                          child: content),
-                    ),
-                  ],
+                          alignment: Alignment.center, child: content)),
                 ));
           });
 
@@ -322,12 +321,10 @@ class UI {
         .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
 
     return InkWell(
-      child: Card(
-        child: ListTile(
-          leading: selectIcon(file.fileName, false),
-          title: Text(FileUtil.getFileName(file.fileName)),
-          subtitle: Text('$modifiedTime  "', style: TextStyle(fontSize: 12.0)),
-        ),
+      child: ListTile(
+        leading: selectIcon(file.fileName, false),
+        title: Text(FileUtil.getFileName(file.fileName)),
+        subtitle: Text('$modifiedTime  "', style: TextStyle(fontSize: 12.0)),
       ),
       onTap: () {
         onTap(file);
@@ -344,12 +341,7 @@ class UI {
         .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
 
     return InkWell(
-      child: Card(
-          child: Container(
-        decoration: BoxDecoration(
-          border:
-              Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
-        ),
+      child: Container(
         child: ListTile(
           leading: Image.asset('assets/images/folder.png'),
           title: Row(
@@ -364,7 +356,7 @@ class UI {
           subtitle: Text(modifiedTime, style: TextStyle(fontSize: 12.0)),
           trailing: Icon(Icons.chevron_right),
         ),
-      )),
+      ),
       onTap: () {
         onTap();
       },

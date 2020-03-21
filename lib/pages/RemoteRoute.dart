@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
-import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+import 'content/MDListPage.dart';
 
 class RemoteRoute extends StatefulWidget {
   @override
@@ -18,11 +18,35 @@ class RemoteRoute extends StatefulWidget {
 
 class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  List<List<CloudFileEntity>> stack = []; // 实现目录结构
-  int parentId; //当前的根目录
-  List<CloudFileEntity> files = []; //当前目录的全部文件
+  List<CloudFileEntity> currentPageFiles = [];
+  List<CloudFileEntity> path = []; // 路径
+  List<List<CloudFileEntity>> dirStack = []; //列表
 
-  ListView listView;
+  @override
+  void initState() {
+    super.initState();
+    enterFolder(CloudFileManager.instance().rootId);
+  }
+
+  enterFolderAndRefresh(int pid) => setState(() {
+        enterFolder(pid);
+      });
+
+  enterFolder(int pid) {
+    path.add(CloudFileManager.instance().getEntityById(pid));
+    currentPageFiles = CloudFileManager.instance().listFiles(pid);
+    dirStack.add(currentPageFiles);
+  }
+
+  bool outFolderAndRefresh() {
+    if (path.length == 1) return true;
+    setState(() {
+      path.removeLast();
+      dirStack.removeLast();
+      currentPageFiles = dirStack.last;
+    });
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +58,7 @@ class RemoteRouteState extends State<RemoteRoute>
             onPressed: () {},
           ),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {},
-            ),
+            IconButton(icon: Icon(Icons.add), onPressed: () {}),
             IconButton(
               icon: Icon(Icons.transform),
               onPressed: () {},
@@ -49,40 +70,19 @@ class RemoteRouteState extends State<RemoteRoute>
           ],
         ),
         body: WillPopScope(
-          child: listView != null
-              ? handleGetCloudFiles(parentId)
-              : FutureBuilder(
-                  future: CloudFileHandle.reflashCloudFileList(), // 请求数据，并存DB
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      print('CloudFileHandle#getAllFile error! ');
-                    }
-                    return handleGetCloudFiles(
-                        CloudFileManager.instance().rootId);
-                  },
-                ),
-          onWillPop: () async {
-            if (stack.isEmpty) {
-              Navigator.pop(context);
-            } else {
-              files = stack.removeLast();
-              setState(() {});
-            }
-            return false;
-          },
+          child: cloudListView(),
+          onWillPop: () async => outFolderAndRefresh(),
         ));
   }
 
-  handleGetCloudFiles(int pid) {
-    parentId = pid;
-    files = CloudFileManager.instance().listFiles(parentId);
-    listView = ListView.builder(
-        itemCount: files.length,
+  cloudListView() {
+    var listView = ListView.separated(
+        itemCount: currentPageFiles.length,
+        separatorBuilder: (BuildContext context, int index) {
+          return UI.divider2(left: 80, right: 32);
+        },
         itemBuilder: (BuildContext context, int index) {
-          CloudFileEntity entity = files[index];
+          CloudFileEntity entity = currentPageFiles[index];
           Widget item;
           if (entity.isFolder()) {
             item = UI.buildCloudFolderItem(
@@ -90,9 +90,7 @@ class RemoteRouteState extends State<RemoteRoute>
                 childrenCount:
                     CloudFileManager.instance().childrenCount(entity.id),
                 onTap: () {
-                  parentId = entity.id;
-                  stack.add(files);
-                  setState(() {});
+                  enterFolderAndRefresh(entity.id);
                 });
           } else {
             item = UI.buildCloudFileItem(file: entity, onTap: () {});
@@ -108,20 +106,6 @@ class RemoteRouteState extends State<RemoteRoute>
         await CloudFileHandle.reflashCloudFileList();
         setState(() {});
       },
-    );
-  }
-
-  fileItemView(CloudFileEntity entity) {
-    return Text(entity.fileName);
-  }
-
-  folderItemView(CloudFileEntity entity) {
-    return ListTile(
-      leading: Image.asset(
-        Constants.FOLDER,
-        width: 24,
-      ),
-      title: Text(entity.fileName),
     );
   }
 

@@ -246,7 +246,6 @@ class RecentRouteState extends State<RecentRoute>
   }
 
   itemTailView(RecentFileEntity file) {
-    print('itemTailView ${file.modifyTime}');
     return Row(children: <Widget>[
       Text(
         convertTimeToString(

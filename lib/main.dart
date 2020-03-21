@@ -57,9 +57,13 @@ void main() async {
     SPUtil.getSp(), // 初始化 sp
   ]).then((result) {
     SPUtil.sp = result[2] as SharedPreferences;
+    // DBManager 初始化
+    DBManager.instance;
+    // 请求云盘所有文件
     CloudFileHandle.reflashCloudFileList().whenComplete(() {
       print('云盘数据初始化完成');
-    }); // 请求云盘所有文件
+    });
+
     runApp(MyApp());
   });
 }

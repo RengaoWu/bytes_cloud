@@ -5,8 +5,8 @@ class CloudFileEntity extends Entity {
   static const String tableName = 'CloudFileEntity';
   static getSQL() => '''
             CREATE TABLE $tableName(
-            filename TEXT PRIMARY KEY, 
-            id INTEGER, 
+            filename TEXT, 
+            id INTEGER PRIMARY KEY, 
             parent_id INTEGER, 
             path_root TEXT,
             size INTEGER,

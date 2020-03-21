@@ -127,10 +127,18 @@ class CloudFileHandle {
     return;
   }
 
-  static Future newFolder(int curId, String folderName) async {
-    var rsp = await httpPost(HTTP_POST_NEW_FOLDER,
-        form: {'curId': curId, 'foldername': folderName});
+  static Future<Map> newFolder(int curId, String folderName) async {
+    Map<String, dynamic> rsp = {'code': 0, 'data': '', 'errMsg': ''};
+    try {
+      rsp['data'] = await httpPost(HTTP_POST_NEW_FOLDER,
+          form: {'curId': curId, 'foldername': folderName});
+    } catch (e) {
+      rsp['code'] = 1;
+      rsp['data'] = '';
+      rsp['errMsg'] = e.toString();
+    }
     print("newFolder $rsp");
+    return rsp;
   }
 
   static Future uploadOneFile(int dirId, String path) async {

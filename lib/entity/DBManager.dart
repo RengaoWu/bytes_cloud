@@ -18,14 +18,12 @@ class DBManager {
   }
 
   DBManager._internal() {
-//    Future.wait([getDatabasesPath()]).then((onValue) {
-//      Future.wait([_open(onValue[0] + _dbName)]).then((value) {
-//        _db = value[0];
-//      });
-//    });
+    Future.wait([_init()]).whenComplete(() {
+      print('DBManager inited');
+    });
   }
 
-  init() async {
+  Future _init() async {
     if (_db == null) {
       _db = await _open(await getDatabasesPath() + _dbName);
     }
@@ -41,7 +39,7 @@ class DBManager {
 
   // 增
   Future<Entity> insert(String tableName, Entity entity) async {
-    await init();
+    await _init();
     await _db.insert(tableName, entity.toMap());
     return entity;
   }
@@ -49,7 +47,7 @@ class DBManager {
   // 删
   static String pattern = '= ? and';
   Future<int> delete(String tableName, Map<String, String> whereArg) async {
-    await init();
+    await _init();
     String where = '';
     List<String> arg = [];
     whereArg.forEach((k, v) {
@@ -62,14 +60,14 @@ class DBManager {
 
   //  改
   Future<int> update(String tableName, Entity entity, MapEntry whereArg) async {
-    await init();
+    await _init();
     return await _db.update(tableName, entity.toMap(),
         where: '${whereArg.key} = ?', whereArgs: [whereArg.value]);
   }
 
   // 查
   Future<List<Map>> queryAll(String tableName, String orderBy) async {
-    await init();
+    await _init();
     List<Map> maps = await _db.query(tableName, orderBy: orderBy);
     if (maps == null || maps.length == 0) {
       return null;
@@ -81,7 +79,7 @@ class DBManager {
   // 条件查
   Future<List<Map>> getFile(
       String tableName, Map<String, String> whereArg) async {
-    await init();
+    await _init();
     String where = '';
     List<String> arg = [];
     whereArg.forEach((k, v) {

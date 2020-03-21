@@ -52,24 +52,22 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: CloseButton(),
         title: Text('已选择 ${filePaths.length} 项'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.done),
-            onPressed: () {
+          UI.appbarBtn(
+            Icons.done,
+            call: (context) {
               filePaths.forEach((f) {
                 CloudFileHandle.uploadOneFile(0, f);
               });
               Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text("开始上传")));
+              Future.delayed(Duration(seconds: 1)).then((v) {
+                Navigator.pop(context);
+              });
             },
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -88,27 +86,32 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
         onPressed: () async {
           String folderName = await UI.showInputDialog(context, "创建文件夹");
           if (folderName.trim() == '') return;
-          CloudFileHandle.newFolder(path.last.id, folderName.trim());
+          var rsp =
+              await CloudFileHandle.newFolder(path.last.id, folderName.trim());
         },
       ),
     );
   }
 
   bodyView() {
-    return ListView.builder(
-        itemCount: currentPageFolders.length,
-        itemBuilder: (BuildContext context, int index) {
-          CloudFileEntity entity = currentPageFolders[index];
-          return Padding(
-              padding: EdgeInsets.only(left: 8, right: 8),
-              child: UI.buildCloudFolderItem(
-                  file: entity,
-                  childrenCount: CloudFileManager.instance()
-                      .childrenCount(entity.id, justFolder: true),
-                  onTap: () {
-                    enterFolderAndRefresh(entity.id);
-                  }));
-        });
+    return ListView.separated(
+      itemCount: currentPageFolders.length,
+      itemBuilder: (BuildContext context, int index) {
+        CloudFileEntity entity = currentPageFolders[index];
+        return Padding(
+            padding: EdgeInsets.only(left: 8, right: 8),
+            child: UI.buildCloudFolderItem(
+                file: entity,
+                childrenCount: CloudFileManager.instance()
+                    .childrenCount(entity.id, justFolder: true),
+                onTap: () {
+                  enterFolderAndRefresh(entity.id);
+                }));
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return UI.divider2(left: 80, right: 32);
+      },
+    );
   }
 
   headerView() {

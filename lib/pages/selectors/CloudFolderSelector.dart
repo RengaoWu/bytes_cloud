@@ -18,7 +18,6 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
 
   List<CloudFileEntity> currentPageFolders = [];
   List<CloudFileEntity> path = []; // 路径
-  List<List<CloudFileEntity>> dirStack = []; //列表
 
   @override
   void initState() {
@@ -35,15 +34,15 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
     path.add(CloudFileManager.instance().getEntityById(pid));
     currentPageFolders =
         CloudFileManager.instance().listFiles(pid, justFolder: true);
-    dirStack.add(currentPageFolders);
   }
 
-  bool outFolderAndRefresh() {
-    if (path.length == 1) return true;
+  bool outFolderAndRefresh(int curId) {
+    print("$curId");
+    if (curId == CloudFileManager.instance().rootId) return true;
     setState(() {
       path.removeLast();
-      dirStack.removeLast();
-      currentPageFolders = dirStack.last;
+      currentPageFolders =
+          CloudFileManager.instance().listFiles(curId, justFolder: true);
     });
     return false;
   }
@@ -77,7 +76,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
               headerView(),
               Expanded(
                   child: WillPopScope(
-                      onWillPop: () async => outFolderAndRefresh(),
+                      onWillPop: () async => outFolderAndRefresh(path.last.id),
                       child: bodyView())),
             ],
           )),

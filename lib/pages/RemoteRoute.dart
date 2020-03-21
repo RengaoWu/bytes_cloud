@@ -7,8 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import 'content/MDListPage.dart';
-
 class RemoteRoute extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -20,7 +18,6 @@ class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   List<CloudFileEntity> currentPageFiles = [];
   List<CloudFileEntity> path = []; // 路径
-  List<List<CloudFileEntity>> dirStack = []; //列表
 
   @override
   void initState() {
@@ -35,15 +32,13 @@ class RemoteRouteState extends State<RemoteRoute>
   enterFolder(int pid) {
     path.add(CloudFileManager.instance().getEntityById(pid));
     currentPageFiles = CloudFileManager.instance().listFiles(pid);
-    dirStack.add(currentPageFiles);
   }
 
-  bool outFolderAndRefresh() {
-    if (path.length == 1) return true;
+  bool outFolderAndRefresh(int curId) {
+    if (curId == CloudFileManager.instance().rootId) return true;
     setState(() {
       path.removeLast();
-      dirStack.removeLast();
-      currentPageFiles = dirStack.last;
+      currentPageFiles = CloudFileManager.instance().listFiles(curId);
     });
     return false;
   }
@@ -71,7 +66,7 @@ class RemoteRouteState extends State<RemoteRoute>
         ),
         body: WillPopScope(
           child: cloudListView(),
-          onWillPop: () async => outFolderAndRefresh(),
+          onWillPop: () async => outFolderAndRefresh(path.last.id),
         ));
   }
 
@@ -104,6 +99,7 @@ class RemoteRouteState extends State<RemoteRoute>
       child: Scrollbar(child: listView),
       onRefresh: () async {
         await CloudFileHandle.reflashCloudFileList();
+        currentPageFiles = CloudFileManager.instance().listFiles(path.last.id);
         setState(() {});
       },
     );

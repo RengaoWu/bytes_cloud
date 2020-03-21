@@ -18,17 +18,34 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
 
   List<CloudFileEntity> currentPageFolders = [];
   List<CloudFileEntity> path = []; // 路径
-  List<List<CloudFileEntity>> dirList = []; //列表
+  List<List<CloudFileEntity>> dirStack = []; //列表
 
   @override
   void initState() {
     super.initState();
     filePaths = widget.filePaths;
-    path.add(CloudFileManager.instance()
-        .getEntityById(CloudFileManager.instance().rootId));
+    enterFolder(CloudFileManager.instance().rootId);
+  }
+
+  enterFolderAndRefresh(int pid) => setState(() {
+        enterFolder(pid);
+      });
+
+  enterFolder(int pid) {
+    path.add(CloudFileManager.instance().getEntityById(pid));
     currentPageFolders =
-        CloudFileManager.instance().listRootFiles(justFolder: true);
-    dirList.add(currentPageFolders);
+        CloudFileManager.instance().listFiles(pid, justFolder: true);
+    dirStack.add(currentPageFolders);
+  }
+
+  bool outFolderAndRefresh() {
+    if (path.length == 1) return true;
+    setState(() {
+      path.removeLast();
+      dirStack.removeLast();
+      currentPageFolders = dirStack.last;
+    });
+    return false;
   }
 
   @override
@@ -60,7 +77,10 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
           child: Column(
             children: <Widget>[
               headerView(),
-              Expanded(child: bodyView()),
+              Expanded(
+                  child: WillPopScope(
+                      onWillPop: () async => outFolderAndRefresh(),
+                      child: bodyView())),
             ],
           )),
       floatingActionButton: FloatingActionButton(
@@ -79,16 +99,15 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
         itemCount: currentPageFolders.length,
         itemBuilder: (BuildContext context, int index) {
           CloudFileEntity entity = currentPageFolders[index];
-          return UI.buildCloudFolderItem(
-              file: entity,
-              onTap: () {
-                setState(() {
-                  currentPageFolders = CloudFileManager.instance()
-                      .listFiles(entity.id, justFolder: true);
-                  dirList.add(currentPageFolders);
-                  path.add(entity);
-                });
-              });
+          return Padding(
+              padding: EdgeInsets.only(left: 8, right: 8),
+              child: UI.buildCloudFolderItem(
+                  file: entity,
+                  childrenCount: CloudFileManager.instance()
+                      .childrenCount(entity.id, justFolder: true),
+                  onTap: () {
+                    enterFolderAndRefresh(entity.id);
+                  }));
         });
   }
 

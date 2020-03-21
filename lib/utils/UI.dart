@@ -128,42 +128,50 @@ class UI {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(title),
-            content: TextField(
-              controller: controller,
-            ),
-            actions: [
-              FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context, "");
-                  },
-                  child: Text(
-                    "取消",
+          return SimpleDialog(
+            title: boldText(title, fontSize: 18),
+            contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            children: <Widget>[
+              Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16),
+                  child: TextField(
+                    controller: controller,
                   )),
-              FlatButton(
-                onPressed: () {
-                  Navigator.pop(context, controller.text);
-                },
-                child: Text("确定"),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 16, right: 16),
+                          child: FlatButton(
+                            child: Text(
+                              '取消',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ))),
+                  Container(
+                    height: 20,
+                    width: 1,
+                    color: Colors.grey,
+                  ),
+                  Expanded(
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 16, right: 16),
+                          child: FlatButton(
+                            child: Text(
+                              '确定',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            onPressed: () =>
+                                Navigator.pop(context, controller.text),
+                          )))
+                ],
               )
             ],
           );
         });
-  }
-
-  static Widget borderDeco(
-      Widget child, bool left, bool top, bool right, bool bottom) {
-    return DecoratedBox(
-      child: child,
-      decoration: BoxDecoration(
-          border: Border(
-        left: left ? BorderSide(width: 0.5) : BorderSide.none,
-        top: top ? BorderSide(width: 0.5) : BorderSide.none,
-        right: right ? BorderSide(width: 0.5) : BorderSide.none,
-        bottom: bottom ? BorderSide(width: 0.5) : BorderSide.none,
-      )),
-    );
   }
 
   static Widget iconTxtBtn(String image, String title, void call()) {
@@ -329,6 +337,7 @@ class UI {
 
   static Widget buildCloudFolderItem({
     CloudFileEntity file,
+    int childrenCount,
     Function onTap,
   }) {
     String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
@@ -347,7 +356,7 @@ class UI {
             children: <Widget>[
               Expanded(child: Text(file.fileName)),
               Text(
-                '1 项',
+                '$childrenCount 项',
                 style: TextStyle(color: Colors.grey),
               )
             ],

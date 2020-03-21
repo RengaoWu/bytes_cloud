@@ -52,6 +52,7 @@ class CloudFileManager {
       Batch batch = txn.batch();
       batch.delete(CloudFileEntity.tableName); // 先 clear 本地数据库
       entities.forEach((e) {
+        e.uploadTime *= 1000; // 修正时间
         batch.insert(CloudFileEntity.tableName, e.toMap()); // 再批量插入
       });
       await batch.commit(noResult: true);
@@ -71,11 +72,11 @@ class CloudFileManager {
     return null;
   }
 
-  listRootFiles({bool justFolder = false}) {
+  List<CloudFileEntity> listRootFiles({bool justFolder = false}) {
     return listFiles(_root.id, justFolder: justFolder);
   }
 
-  listFiles(int pId, {justFolder = false}) {
+  List<CloudFileEntity> listFiles(int pId, {justFolder = false}) {
     List<CloudFileEntity> result = [];
     _entities.forEach((f) {
       if (f.parentId == pId) {
@@ -83,11 +84,23 @@ class CloudFileManager {
           result.add(f);
         } else if (justFolder && f.isFolder()) {
           result.add(f);
+          print(f.uploadTime);
         }
       }
     });
+    // 排序，文件夹在前，文件在后，uploadTime 由远到近
+    result.sort((a, b) {
+      if (a.isFolder() && !b.isFolder())
+        return -1;
+      else if (!a.isFolder() && b.isFolder()) return 1;
+      return a.uploadTime - b.uploadTime;
+    });
     print('listFiles ${result.length}');
     return result;
+  }
+
+  int childrenCount(int pid, {justFolder = false}) {
+    return listFiles(pid, justFolder: justFolder).length;
   }
 }
 

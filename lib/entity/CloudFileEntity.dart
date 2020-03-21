@@ -37,16 +37,6 @@ class CloudFileEntity extends Entity {
 
   @override
   Map<String, dynamic> toMap() {
-    print({
-      'filename': fileName,
-      'id': id,
-      'parent_id': parentId,
-      'path_root': pathRoot,
-      'size': size,
-      'type_of_node': type,
-      'uid': uid,
-      'upload_time': uploadTime
-    });
     return {
       'filename': fileName,
       'id': id,

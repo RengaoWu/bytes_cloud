@@ -83,19 +83,27 @@ class RemoteRouteState extends State<RemoteRoute>
         itemCount: files.length,
         itemBuilder: (BuildContext context, int index) {
           CloudFileEntity entity = files[index];
+          Widget item;
           if (entity.isFolder()) {
-            return UI.buildCloudFolderItem(
+            item = UI.buildCloudFolderItem(
                 file: entity,
+                childrenCount:
+                    CloudFileManager.instance().childrenCount(entity.id),
                 onTap: () {
                   parentId = entity.id;
                   stack.add(files);
                   setState(() {});
                 });
+          } else {
+            item = UI.buildCloudFileItem(file: entity, onTap: () {});
           }
-          return UI.buildCloudFileItem(file: entity, onTap: () {});
+          return Padding(
+            padding: EdgeInsets.only(left: 8, right: 8),
+            child: item,
+          );
         });
     return RefreshIndicator(
-      child: listView,
+      child: Scrollbar(child: listView),
       onRefresh: () async {
         await CloudFileHandle.reflashCloudFileList();
         setState(() {});

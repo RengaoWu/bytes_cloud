@@ -1,3 +1,4 @@
+import 'package:bytes_cloud/pages/content/DownloadPage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -105,8 +106,8 @@ class SelfRouteState extends State<SelfRoute>
                 UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
                 UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享
                 UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
-                UI.iconTxtBtn(
-                    Constants.DOWNLOADED, "已下载", () => {print("")}), // 已下载文件
+                UI.iconTxtBtn(Constants.DOWNLOADED, "已下载",
+                    () => UI.newPage(context, DownloadPage())), // 已下载文件
               ],
             ),
             context: context,

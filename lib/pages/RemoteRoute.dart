@@ -104,7 +104,7 @@ class RemoteRouteState extends State<RemoteRoute>
             item = UI.buildCloudFileItem(
                 file: entity,
                 onTap: (_) {
-                  CloudFileHandle.downloadOneFile(entity.id);
+                  CloudFileHandle.downloadOneFile(entity.id, entity.fileName);
                 });
           }
           return Padding(

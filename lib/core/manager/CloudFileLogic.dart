@@ -182,9 +182,10 @@ class CloudFileHandle {
     print(resp.toString());
   }
 
-  static Future downloadOneFile(int id) async {
+  static Future downloadOneFile(int id, String fileName) async {
     print('downloadOneFile ${id}');
-    var resp = await httpDownload(
-        HTTP_POST_DOWNLOAD_FILE, {'id': id}, Common().appDownload);
+    print(Common().appDownload);
+    var resp = await httpDownload(HTTP_POST_DOWNLOAD_FILE, {'id': id},
+        Common().appDownload + '/' + fileName);
   }
 }

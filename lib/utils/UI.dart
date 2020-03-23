@@ -413,7 +413,7 @@ class UI {
     }
   }
 
-  static Widget selectIcon(String path, bool preview) {
+  static Widget selectIcon(String path, bool preview, {double size = 40}) {
     int resFlag = 0; // 图片 1, 视频 2
     String ext = p.extension(path);
     String iconImg = Constants.UNKNOW;
@@ -485,15 +485,15 @@ class UI {
       return ClipRect(
         child: ExtendedImage.file(
           File(path),
-          width: 40,
-          height: 40,
+          width: size,
+          height: size,
         ),
       );
     } else {
       return Image.asset(
         iconImg,
-        width: 40,
-        height: 40,
+        width: size,
+        height: size,
       );
     }
   }

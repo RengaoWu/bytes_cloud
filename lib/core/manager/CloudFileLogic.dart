@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/http/http.dart';
@@ -173,8 +174,16 @@ class CloudFileHandle {
   static Future uploadOneFile(int dirId, String path) async {
     String name = FileUtil.getFileNameWithExt(path);
     print('uploadOneFile ${path}');
+    UploadTask task = UploadTask(path: path);
+    TranslateManager.instant().addDownTask(task);
+    int lastTime = DateTime.now().millisecondsSinceEpoch;
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
       print('$sent / $total');
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+      task.v = 1000 * (sent - task.sent) / (currentTime - lastTime);
+      lastTime = currentTime;
+      task.sent = sent;
+      task.total = total;
     }, form: {
       'curId': 0,
       'file': await MultipartFile.fromFile(path, filename: name),
@@ -184,8 +193,20 @@ class CloudFileHandle {
 
   static Future downloadOneFile(int id, String fileName) async {
     print('downloadOneFile ${id}');
-    print(Common().appDownload);
-    var resp = await httpDownload(HTTP_POST_DOWNLOAD_FILE, {'id': id},
-        Common().appDownload + '/' + fileName);
+    DownloadTask task = DownloadTask(
+        id: id,
+        fileName: fileName,
+        path: Common().appDownload + '/' + fileName);
+    TranslateManager.instant().addDoingTask(task);
+    int lastTime = DateTime.now().millisecondsSinceEpoch;
+    var resp = await httpDownload(
+        HTTP_POST_DOWNLOAD_FILE, {'id': task.id}, task.path, (sent, total) {
+      print('$sent / $total');
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+      task.v = 1000 * (sent - task.sent) / (currentTime - lastTime);
+      lastTime = currentTime;
+      task.sent = sent;
+      task.total = total;
+    });
   }
 }

@@ -46,14 +46,11 @@ Future<dynamic> httpPost(String path,
 }
 
 // 下载文件
-Future httpDownload(
-  String path,
-  Map<String, dynamic> args,
-  String savePath,
-) async {
+Future httpDownload(String path, Map<String, dynamic> args, String savePath,
+    Function call) async {
   var rsp = await dio.download(path, savePath, queryParameters: args,
       onReceiveProgress: (download, total) {
-    print('$download / $total');
+    if (call != null) call(download, total);
   });
   return rsp;
 }

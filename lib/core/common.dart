@@ -23,7 +23,7 @@ class Common {
   static String appRoot;
   String get downloadDir => sd + '/Download'; // android 'Download', ios null
   String get appCache => appRoot + '/cache';
-  String get appDownload => sd + '/字节云保存的文件';
+  String get appDownload => sd + '字节云保存的文件';
 
   // wx
   String get WxRoot => sd + '/Tencent/MicroMsg';

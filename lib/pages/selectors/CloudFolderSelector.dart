@@ -96,7 +96,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
   newFolder(BuildContext context) async {
     String folderName = await UI.showInputDialog(context, "创建文件夹");
     if (folderName.trim() == '') {
-      UI.showSnackBar(context, '文件名为空');
+      UI.showSnackBar(context, Text('文件名为空'));
       return;
     }
     await CloudFileHandle.newFolder(path.last.id, folderName.trim(),

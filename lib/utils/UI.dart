@@ -228,6 +228,8 @@ class UI {
                 ));
           });
 
+  //static showCloudBottomSheet
+
   static iconTextBtn(Widget icon, String text, Function call,
       {Function longPressCall}) {
     return InkWell(
@@ -660,10 +662,33 @@ class UI {
     );
   }
 
-  static showSnackBar(BuildContext context, String content) {
+  static showSnackBar(BuildContext context, Widget content,
+      {Duration duration = const Duration(seconds: 1)}) {
     Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text(content),
-      duration: Duration(seconds: 1),
+      content: content,
+      duration: duration,
     ));
+  }
+
+  // flag = 1 just year
+  // flag = 2 year and month
+  // flag = 3 year month day
+  static Widget groupItemCard(DateTime dateTime, {int flag = 2}) {
+    String content = '';
+    if (flag == 1) {
+      content = '${dateTime.year} 年';
+    } else if (flag == 2) {
+      content = '${dateTime.year} 年 ${dateTime.month} 月 ';
+    } else {
+      content = '${dateTime.year} 年 ${dateTime.month} 月 ${dateTime.day} 日';
+    }
+    return Container(
+      margin: const EdgeInsets.all(4),
+      child: Text(
+        '-----------  $content -----------',
+        style: TextStyle(fontSize: 15, color: Colors.black38),
+      ),
+      alignment: Alignment.center,
+    );
   }
 }

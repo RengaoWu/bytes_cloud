@@ -33,6 +33,9 @@ class CloudFileEntity extends Entity {
     type = map['type_of_node'];
     uid = map['uid'];
     uploadTime = map['upload_time'];
+    // Svr 返回的这个时间有时候有问题，这里check一下
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(uploadTime);
+    if (dateTime.year < 2020) uploadTime *= 1000;
   }
 
   @override

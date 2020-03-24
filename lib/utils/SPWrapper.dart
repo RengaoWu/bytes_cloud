@@ -3,6 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SPUtil {
   static SharedPreferences sp;
 
+  // downloaded finished key
+  static const KEY_DOWNLOADED = "DOWNLOADED_ID";
+  static String downloadedKey(int id) => '$KEY_DOWNLOADED $id';
+
   static Future<SharedPreferences> getSp() async {
     return SharedPreferences.getInstance();
   }

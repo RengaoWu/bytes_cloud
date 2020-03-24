@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 ///类似于Android中的PopupWindow
 class PopupWindow extends StatefulWidget {
-  static void showPopWindow(context, String msg, GlobalKey popKey,
+  static Future showPopWindow(context, String msg, GlobalKey popKey,
       [PopDirection popDirection = PopDirection.bottom,
       Widget popWidget,
-      double offset = 0]) {
-    Navigator.push(
+      double offset = 0]) async {
+    return await Navigator.push(
         context,
         PopRoute(
             child: PopupWindow(

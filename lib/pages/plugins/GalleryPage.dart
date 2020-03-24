@@ -21,6 +21,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
   PhotoGalleryPageState(this.arg) {
     List<FileSystemEntity> files = arg['files'];
     FileSystemEntity currentImage = arg['current'];
+    if (files == null) files = [currentImage];
     files.forEach((f) {
       if (FileUtil.isImage(f.path)) {
         images.add(f);

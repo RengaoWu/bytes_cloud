@@ -27,8 +27,7 @@ class RemoteRouteState extends State<RemoteRoute>
   List<CloudFileEntity> currentFiles = [];
   List<CloudFileEntity> path = []; // 路径
   int _sortType = 0; // 0 by time, 1 by a-z
-  int _showFlag = 0;
-  int get showFlag => _showFlag;
+  int _clzType = 0; // 0 列表，1 图片，
 
   @override
   void initState() {
@@ -79,39 +78,41 @@ class RemoteRouteState extends State<RemoteRoute>
         ),
         actions: getActionsByType(),
       ),
-      body: selectShowUI(_showFlag),
+      body: selectShowUI(_clzType),
     );
   }
 
   // 分类视图，过滤掉一些action
   getActionsByType() {
     GlobalKey key2 = GlobalKey();
-    List<Widget> actions = <Widget>[
-      Builder(
-          builder: (context) => IconButton(
-              icon: Icon(Icons.add), onPressed: () => newFolder(context))),
-      IconButton(
-        icon: Icon(Icons.transform),
-        onPressed: () {},
-      ),
-      IconButton(
-        key: key2,
-        enableFeedback: false,
-        icon: Icon(Icons.sort),
-        onPressed: () async {
-          int type = await sortByTypeSelectorView(key2);
-          print('sort type = $type');
-          if (type != null && type != _sortType) {
-            _sortType = type;
-            refreshList();
-          }
-          ;
-        },
-      )
-    ];
-    if (_showFlag != 0) {
-      actions.removeAt(2);
-      actions.removeAt(0);
+    Widget newFolderAction = Builder(
+        builder: (context) => IconButton(
+            icon: Icon(Icons.add), onPressed: () => newFolder(context)));
+    Widget transformAction = IconButton(
+      icon: Icon(Icons.transform),
+      onPressed: () {},
+    );
+    Widget sortActionForm = IconButton(
+      key: key2,
+      enableFeedback: false,
+      icon: Icon(Icons.sort),
+      onPressed: () async {
+        int type = await sortByTypeSelectorView(key2);
+        print('sort type = $type');
+        if (type != null && type != _sortType) {
+          _sortType = type;
+          refreshList();
+        }
+        ;
+      },
+    );
+    List<Widget> actions = <Widget>[];
+    if (_clzType == RemoteRouteHelper.SHOW_TYPE_FILE) {
+      actions.add(newFolderAction);
+      actions.add(transformAction);
+      actions.add(sortActionForm);
+    } else {
+      actions.add(transformAction);
     }
     return actions;
   }
@@ -157,7 +158,7 @@ class RemoteRouteState extends State<RemoteRoute>
               size: 14,
             ),
             onPressed: () async =>
-                RemoteRoutePlugin(this).showBottomSheet(entity),
+                RemoteRouteHelper(context).showBottomSheet(entity),
           );
           if (entity.isFolder()) {
             item = UI.buildCloudFolderItem(
@@ -182,7 +183,7 @@ class RemoteRouteState extends State<RemoteRoute>
                     if (FileUtil.isImage(entity.fileName)) {
                       UI.openCloudFile(context, entity);
                     } else {
-                      RemoteRoutePlugin(this).downloadAction(entity);
+                      RemoteRouteHelper(context).downloadAction(entity);
                     }
                   }
                 },
@@ -192,8 +193,10 @@ class RemoteRouteState extends State<RemoteRoute>
           var inkItem = Builder(builder: (BuildContext context) {
             return InkWell(
               child: item,
-              onLongPress: () async =>
-                  await RemoteRoutePlugin(this).showBottomSheet(entity),
+              onLongPress: () async => await RemoteRouteHelper(context)
+                  .showBottomSheet(entity, callBack: () {
+                refreshList();
+              }),
             );
           });
           return Padding(
@@ -210,28 +213,38 @@ class RemoteRouteState extends State<RemoteRoute>
     );
   }
 
-  typeSelectorView() => Container(
-        width: UI.DISPLAY_WIDTH,
-        color: Colors.transparent,
-        alignment: Alignment.center,
-        height: 220,
-        child: Card(
-            color: Colors.white,
-            child: GridView.count(
-              crossAxisCount: 4,
-              physics: ScrollPhysics(),
-              children: <Widget>[
-                UI.iconTxtBtn(Constants.FOLDER, "列表",
-                    () => setState(() => _showFlag = 0)),
-                UI.iconTxtBtn(
-                    Constants.PHOTO, "图片", () => setState(() => _showFlag = 1)),
-                UI.iconTxtBtn(Constants.VIDEO, "视频", null),
-                UI.iconTxtBtn(Constants.MUSIC, "音乐", null),
-                UI.iconTxtBtn(Constants.DOC, "文档", null),
-                UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", null),
-              ],
-            )),
-      );
+  typeSelectorView() {
+    Function modifyShowType = (int newType) {
+      if (newType != _clzType) {
+        setState(() {
+          _clzType = newType;
+        });
+      }
+      Navigator.pop(context);
+    };
+    return Container(
+      width: UI.DISPLAY_WIDTH,
+      color: Colors.transparent,
+      alignment: Alignment.center,
+      height: 220,
+      child: Card(
+          color: Colors.white,
+          child: GridView.count(
+            crossAxisCount: 4,
+            physics: ScrollPhysics(),
+            children: <Widget>[
+              UI.iconTxtBtn(Constants.FOLDER, "列表",
+                  () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_FILE)),
+              UI.iconTxtBtn(Constants.PHOTO, "图片",
+                  () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_PHOTO)),
+              UI.iconTxtBtn(Constants.VIDEO, "视频", null),
+              UI.iconTxtBtn(Constants.MUSIC, "音乐", null),
+              UI.iconTxtBtn(Constants.DOC, "文档", null),
+              UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", null),
+            ],
+          )),
+    );
+  }
 
   Future<int> sortByTypeSelectorView(GlobalKey key) async {
     Text sortByTime;
@@ -276,45 +289,73 @@ class RemoteRouteState extends State<RemoteRoute>
 }
 
 // 对文件或者文件夹对操作独立出来
-class RemoteRoutePlugin {
-  RemoteRouteState state;
+class RemoteRouteHelper {
+  static const SHOW_TYPE_FILE = 0;
+  static const SHOW_TYPE_PHOTO = 1;
+  static const SHOW_TYPE_VIDEO = 2;
+  static const SHOW_TYPE_MUSIC = 3;
+  static const SHOW_TYPE_DOC = 4;
+  static const SHOW_TYPE_RAR = 5;
 
-  RemoteRoutePlugin(this.state) {
-    context = state.context;
-  }
   BuildContext context;
+  Function cb;
+  RemoteRouteHelper(this.context);
 
-  showBottomSheet(CloudFileEntity entity) async {
-    Widget content = Padding(
-        padding: EdgeInsets.only(left: 8, right: 8),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-                child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () {
-              Navigator.pop(context);
-              downloadAction(entity);
-            }, fontWeight: FontWeight.normal)),
-            Expanded(
-                child: UI.iconTxtBtn(
-                    Constants.SHARE2, '分享', () => shareAction(entity),
-                    fontWeight: FontWeight.normal)),
-            Expanded(
-                child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
-                    fontWeight: FontWeight.normal)),
-            Expanded(
-                child: UI.iconTxtBtn(Constants.DELETE, '删除', null,
-                    fontWeight: FontWeight.normal)),
-            Expanded(
-                child: UI.iconTxtBtn(
-                    Constants.MODIFY, '重命名', () => reNameAction(entity),
-                    fontWeight: FontWeight.normal)),
-            Expanded(
-                child: UI.iconTxtBtn(Constants.MORE, '详情', null,
-                    fontWeight: FontWeight.normal)),
-          ],
-        ));
+  /// [type] 0 文件夹展示：全量显示, !0 分类展示，不显示移动&重命名
+  /// [callBack] 方法执行完成的回调
+  showBottomSheet(CloudFileEntity entity,
+      {int type = 0, Function callBack}) async {
+    if (callBack != null) cb = callBack;
+    List<Widget> content = [];
+    Widget downloadActionWidget = Expanded(
+        child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () {
+      Navigator.pop(context);
+      downloadAction(entity);
+    }, fontWeight: FontWeight.normal));
+    Widget shareActionWidget = Expanded(
+        child: UI.iconTxtBtn(Constants.SHARE2, '分享', () => shareAction(entity),
+            fontWeight: FontWeight.normal));
+    Widget moveActionWidget = Expanded(
+        child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
+            fontWeight: FontWeight.normal));
+    Widget deleteActionWidget = Expanded(
+        child: UI.iconTxtBtn(Constants.DELETE, '删除', null,
+            fontWeight: FontWeight.normal));
+    Widget renameActionWidget = Expanded(
+        child: UI.iconTxtBtn(
+            Constants.MODIFY, '重命名', () => reNameAction(entity),
+            fontWeight: FontWeight.normal));
+    Widget moreActionWidget = Expanded(
+        child: UI.iconTxtBtn(Constants.MORE, '详情', null,
+            fontWeight: FontWeight.normal));
+
+    if (type == RemoteRouteHelper.SHOW_TYPE_FILE) {
+      content.add(downloadActionWidget);
+      content.add(shareActionWidget);
+      content.add(moveActionWidget);
+      content.add(deleteActionWidget);
+      content.add(renameActionWidget);
+      content.add(moreActionWidget);
+    } else {
+      content.add(downloadActionWidget);
+      content.add(shareActionWidget);
+      //content.add(moveActionWidget);
+      content.add(deleteActionWidget);
+      //content.add(renameActionWidget);
+      content.add(moreActionWidget);
+    }
+
     UI.bottomSheet(
-        context: context, content: content, height: 100, radius: 8, padding: 8);
+        context: context,
+        content: Padding(
+          padding: EdgeInsets.only(left: 8, right: 8),
+          child: Row(
+            children: content,
+          ),
+        ),
+        height: 100,
+        radius: 8,
+        padding: 8);
   }
 
   shareAction(CloudFileEntity entity) async {
@@ -345,7 +386,7 @@ class RemoteRoutePlugin {
           onTap: () =>
               UI.openFile(context, File(FileUtil.getDownloadFilePath(entity))),
         ),
-        duration: Duration(seconds: 3));
+        duration: Duration(seconds: 2));
   }
 
   reNameAction(CloudFileEntity entity) async {
@@ -354,9 +395,6 @@ class RemoteRoutePlugin {
     String newName = input + FileUtil.ext(entity.fileName);
     bool success =
         await CloudFileHandle.renameFile(entity.id, newName); // 告诉Svr
-    if (success) {
-      state.refreshList();
-      // refreshList();
-    }
+    if (cb != null && success) cb();
   }
 }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
+import 'package:bytes_cloud/pages/RemoteRoute.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
@@ -109,6 +110,12 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
     }
     return InkWell(
       child: image,
+      onLongPress: () {
+        RemoteRouteHelper(context).showBottomSheet(holder.entity, type: 1,
+            callBack: () {
+          setState(() {});
+        });
+      },
       onTap: () {
         UI.openCloudFile(context, holder.entity, entities: _entities);
       },

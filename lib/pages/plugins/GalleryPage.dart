@@ -146,7 +146,8 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
           );
         } else {
           image = ExtendedImage.network(
-            getPreviewUrl(item.id),
+            getPreviewUrl(item.id, UI.dpi2px(UI.DISPLAY_WIDTH),
+                UI.dpi2px(UI.DISPLAY_WIDTH)),
             fit: BoxFit.contain,
             mode: ExtendedImageMode.gesture,
             cache: true,

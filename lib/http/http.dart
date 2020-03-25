@@ -67,6 +67,8 @@ String getDownloadUrl(int id) {
   return host + HTTP_POST_DOWNLOAD_FILE + '?id=$id';
 }
 
-String getPreviewUrl(int id) {
-  return host + HTTP_GET_PREVIEW + '?id=$id';
+String getPreviewUrl(int id, double width, double height) {
+  return host +
+      HTTP_GET_PREVIEW +
+      '?id=$id&width=${width.toInt()}&height=${height.toInt()}';
 }

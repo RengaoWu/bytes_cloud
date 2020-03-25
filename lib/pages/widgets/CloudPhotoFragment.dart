@@ -98,7 +98,8 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
         print('delete undownloaded file');
       }
       image = ExtendedImage.network(
-        getPreviewUrl(holder.entity.id),
+        getPreviewUrl(holder.entity.id, UI.dpi2px(UI.DISPLAY_WIDTH / 4),
+            UI.dpi2px(UI.DISPLAY_WIDTH / 4)),
         width: UI.DISPLAY_WIDTH / 4,
         height: UI.DISPLAY_WIDTH / 4,
         fit: BoxFit.cover,

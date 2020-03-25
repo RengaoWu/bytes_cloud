@@ -31,6 +31,7 @@ class HomeRouteState extends State<HomeRoute>
     final size = MediaQuery.of(context).size;
     UI.DISPLAY_WIDTH = size.width;
     UI.DISPLAY_HEIGHT = size.height;
+    UI.devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     return Scaffold(
       body: TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),

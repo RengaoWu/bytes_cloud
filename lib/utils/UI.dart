@@ -38,6 +38,9 @@ class UI {
   static const double kTextTabBarHeight = 48.0;
   static double DISPLAY_WIDTH;
   static double DISPLAY_HEIGHT;
+  static double devicePixelRatio;
+
+  static dpi2px(double size) => size * devicePixelRatio;
 
   static newPage(BuildContext context, Widget widget) => Navigator.push(
       context, new MaterialPageRoute(builder: (context) => widget));

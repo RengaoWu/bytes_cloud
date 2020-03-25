@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
-import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
-import 'package:bytes_cloud/entity/DBManager.dart';
+import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
@@ -13,6 +12,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/handler/CloudFileHandler.dart';
 
 class MyApp extends StatelessWidget {
   @override

@@ -192,7 +192,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
   historySearch() {
     List<Widget> widgets = [];
     historyKeys.forEach((key) {
-      widgets.add(UI.iconTextBtn(null, key, changeSearchKey,
+      widgets.add(UI.chipText(null, key, changeSearchKey,
           longPressCall: onChipLongPress));
     });
     widgets = widgets.reversed.toList();

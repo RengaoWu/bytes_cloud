@@ -105,6 +105,12 @@ flutter:
     - assets/images/camera.png
     - assets/images/back.png
     - assets/images/night.png
+    - assets/images/delete.png
+    - assets/images/modify.png
+    - assets/images/more.png
+    - assets/images/move.png
+    - assets/images/share2.png
+
 
 
 

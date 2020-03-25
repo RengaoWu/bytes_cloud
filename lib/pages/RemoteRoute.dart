@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
+import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/pages/widgets/CloudPhotoFragment.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
@@ -9,7 +10,6 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -122,6 +122,13 @@ class RemoteRouteState extends State<RemoteRoute>
         itemBuilder: (BuildContext context, int index) {
           CloudFileEntity entity = currentFiles[index];
           Widget item;
+          Widget trailing = IconButton(
+            icon: Icon(
+              Icons.more_horiz,
+              size: 14,
+            ),
+            onPressed: () async => showBottomSheet(entity),
+          );
           if (entity.isFolder()) {
             item = UI.buildCloudFolderItem(
                 file: entity,
@@ -129,44 +136,24 @@ class RemoteRouteState extends State<RemoteRoute>
                     CloudFileManager.instance().childrenCount(entity.id),
                 onTap: () {
                   enterFolderAndRefresh(entity.id);
-                });
+                },
+                trailing: trailing);
           } else {
-            item = Builder(builder: (BuildContext context) {
-              return UI.buildCloudFileItem(
-                  file: entity,
-                  onTap: (_) async {
-                    UI.showSnackBar(context, Text('开始下载 ${entity.fileName}'));
-                    await CloudFileHandle.downloadOneFile(
-                        entity.id, entity.fileName, CancelToken());
-                    UI.showSnackBar(
-                        context,
-                        InkWell(
-                          child: Text('${entity.fileName} 下载完成'),
-                          onTap: () => UI.openFile(
-                              context,
-                              File(FileUtil.getDownloadFilePath(
-                                  entity.fileName))),
-                        ),
-                        duration: Duration(seconds: 3));
-                  });
-            });
+            return UI.buildCloudFileItem(
+                file: entity,
+                onTap: (_) async => downloadAction(entity),
+                trailing: trailing);
           }
           // 添加长按监听
-          item = InkWell(
-            child: item,
-            onLongPress: () async {
-              //UI.bottomSheet(context: null, content: null)
-              String ext = FileUtil.ext(entity.fileName);
-              String newName = await UI.showInputDialog(context, '重命名');
-              if (newName == null || newName.trim() == '') return;
-              await CloudFileManager.instance()
-                  .renameFile(entity.id, newName + ext);
-              setState(() {});
-            },
-          );
+          var inkItem = Builder(builder: (BuildContext context) {
+            return InkWell(
+              child: item,
+              onLongPress: () async => await showBottomSheet(entity),
+            );
+          });
           return Padding(
             padding: EdgeInsets.only(left: 8, right: 8),
-            child: item,
+            child: inkItem,
           );
         });
     return RefreshIndicator(
@@ -178,7 +165,56 @@ class RemoteRouteState extends State<RemoteRoute>
     );
   }
 
-  showBottomSheet() {}
+  showBottomSheet(CloudFileEntity entity) async {
+    Widget content = Padding(
+        padding: EdgeInsets.only(left: 8, right: 8),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+                child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', null,
+                    fontWeight: FontWeight.normal)),
+            Expanded(
+                child: UI.iconTxtBtn(Constants.SHARE2, '分享', null,
+                    fontWeight: FontWeight.normal)),
+            Expanded(
+                child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
+                    fontWeight: FontWeight.normal)),
+            Expanded(
+                child: UI.iconTxtBtn(Constants.DELETE, '删除', null,
+                    fontWeight: FontWeight.normal)),
+            Expanded(
+                child: UI.iconTxtBtn(Constants.MODIFY, '重命名', null,
+                    fontWeight: FontWeight.normal)),
+            Expanded(
+                child: UI.iconTxtBtn(Constants.MORE, '详情', null,
+                    fontWeight: FontWeight.normal)),
+          ],
+        ));
+    UI.bottomSheet(
+        context: context, content: content, height: 100, radius: 8, padding: 8);
+  }
+
+  downloadAction(CloudFileEntity entity) async {
+    UI.showSnackBar(context, Text('开始下载 ${entity.fileName}'));
+    await CloudFileHandle.downloadOneFile(entity, CancelToken());
+    UI.showSnackBar(
+        context,
+        InkWell(
+          child: Text('${entity.fileName} 下载完成'),
+          onTap: () =>
+              UI.openFile(context, File(FileUtil.getDownloadFilePath(entity))),
+        ),
+        duration: Duration(seconds: 3));
+  }
+
+  reNameAction(CloudFileEntity entity) async {
+    //UI.bottomSheet(context: null, content: null)
+    String ext = FileUtil.ext(entity.fileName);
+    String newName = await UI.showInputDialog(context, '重命名');
+    if (newName == null || newName.trim() == '') return;
+    await CloudFileManager.instance().renameFile(entity.id, newName + ext);
+    setState(() {});
+  }
 
   newFolder(BuildContext context) async {
     String folderName = await UI.showInputDialog(context, "创建文件夹");

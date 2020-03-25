@@ -336,7 +336,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
         String type = types[index];
         return Padding(
             padding: EdgeInsets.only(right: 2, left: 2),
-            child: UI.iconTextBtn(type2Icon[type], type, notifyCurrentType));
+            child: UI.chipText(type2Icon[type], type, notifyCurrentType));
       },
     );
   }

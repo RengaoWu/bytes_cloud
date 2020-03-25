@@ -31,7 +31,6 @@ class HomeRouteState extends State<HomeRoute>
     final size = MediaQuery.of(context).size;
     UI.DISPLAY_WIDTH = size.width;
     UI.DISPLAY_HEIGHT = size.height;
-
     return Scaffold(
       body: TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),
@@ -39,10 +38,10 @@ class HomeRouteState extends State<HomeRoute>
         RemoteRoute(),
         SelfRoute()
       ]),
-      bottomNavigationBar: new Material(
-        child: new TabBar(
+      bottomNavigationBar: Material(
+        child: TabBar(
             controller: tabController,
-            labelColor: Colors.blueAccent,
+            labelColor: Theme.of(context).accentColor,
             unselectedLabelColor: Colors.grey,
             tabs: <Widget>[
               Tab(

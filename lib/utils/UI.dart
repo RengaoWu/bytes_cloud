@@ -186,7 +186,8 @@ class UI {
         });
   }
 
-  static Widget iconTxtBtn(String image, String title, void call()) {
+  static Widget iconTxtBtn(String image, String title, void call(),
+      {double fontSize = 14, FontWeight fontWeight = FontWeight.bold}) {
     return InkWell(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -199,6 +200,8 @@ class UI {
           ),
           boldText(
             "$title",
+            fontSize: fontSize,
+            fontWeight: fontWeight,
           )
         ],
       ),
@@ -210,7 +213,8 @@ class UI {
           {@required BuildContext context,
           @required Widget content,
           double height = 400,
-          double radius = 10}) =>
+          double radius = 10,
+          double padding = 16}) =>
       showModalBottomSheet(
           context: context,
           backgroundColor: Colors.transparent,
@@ -218,11 +222,11 @@ class UI {
             return SizedBox(
                 height: height,
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(padding),
                   child: Card(
                       shape: RoundedRectangleBorder(
                           borderRadius:
-                              BorderRadius.all(Radius.circular(16.0))),
+                              BorderRadius.all(Radius.circular(radius))),
                       child: Container(
                           alignment: Alignment.center, child: content)),
                 ));
@@ -230,7 +234,7 @@ class UI {
 
   //static showCloudBottomSheet
 
-  static iconTextBtn(Widget icon, String text, Function call,
+  static chipText(Widget icon, String text, Function call,
       {Function longPressCall}) {
     return InkWell(
       onTap: () => call(text),
@@ -318,7 +322,11 @@ class UI {
     );
   }
 
-  static Widget buildCloudFileItem({CloudFileEntity file, Function onTap}) {
+  static Widget buildCloudFileItem({
+    CloudFileEntity file,
+    Function onTap,
+    Widget trailing = const SizedBox(),
+  }) {
     String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
         .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
 
@@ -327,6 +335,7 @@ class UI {
         leading: selectIcon(file.fileName, false),
         title: Text(FileUtil.getFileName(file.fileName)),
         subtitle: Text('$modifiedTime  "', style: TextStyle(fontSize: 12.0)),
+        trailing: trailing,
       ),
       onTap: () {
         onTap(file);
@@ -338,25 +347,18 @@ class UI {
     CloudFileEntity file,
     int childrenCount,
     Function onTap,
+    Widget trailing = const SizedBox(),
   }) {
-    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
-        .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
-
+    String subTitle = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+            .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime)) +
+        '   $childrenCount 项';
     return InkWell(
       child: Container(
         child: ListTile(
           leading: Image.asset('assets/images/folder.png'),
-          title: Row(
-            children: <Widget>[
-              Expanded(child: Text(file.fileName)),
-              Text(
-                '$childrenCount 项',
-                style: TextStyle(color: Colors.grey),
-              )
-            ],
-          ),
-          subtitle: Text(modifiedTime, style: TextStyle(fontSize: 12.0)),
-          trailing: Icon(Icons.chevron_right),
+          title: Text(file.fileName),
+          subtitle: Text(subTitle, style: TextStyle(fontSize: 12.0)),
+          trailing: trailing,
         ),
       ),
       onTap: () {

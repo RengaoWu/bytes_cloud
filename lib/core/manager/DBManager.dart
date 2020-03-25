@@ -1,7 +1,7 @@
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
+import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:sqflite/sqflite.dart';
-import 'entitys.dart';
 
 class DBManager {
   static const String _dbName = 'local.db';

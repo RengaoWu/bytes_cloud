@@ -2,7 +2,8 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
-import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
+import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -98,8 +99,7 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
       CancelToken token = CancelToken();
       tokens.add(token);
       return FutureBuilder(
-        future: CloudFileHandle.downloadOneFile(
-            holder.entity.id, holder.entity.fileName, token),
+        future: CloudFileHandle.downloadOneFile(holder.entity, token),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return UnconstrainedBox(

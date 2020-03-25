@@ -4,14 +4,17 @@ import 'dart:io';
 import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/widgets/CloudPhotoFragment.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class RemoteRoute extends StatefulWidget {
   @override
@@ -171,10 +174,13 @@ class RemoteRouteState extends State<RemoteRoute>
         child: Row(
           children: <Widget>[
             Expanded(
-                child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', null,
-                    fontWeight: FontWeight.normal)),
+                child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () {
+              Navigator.pop(context);
+              downloadAction(entity);
+            }, fontWeight: FontWeight.normal)),
             Expanded(
-                child: UI.iconTxtBtn(Constants.SHARE2, '分享', null,
+                child: UI.iconTxtBtn(
+                    Constants.SHARE2, '分享', () => shareAction(entity),
                     fontWeight: FontWeight.normal)),
             Expanded(
                 child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
@@ -183,7 +189,8 @@ class RemoteRouteState extends State<RemoteRoute>
                 child: UI.iconTxtBtn(Constants.DELETE, '删除', null,
                     fontWeight: FontWeight.normal)),
             Expanded(
-                child: UI.iconTxtBtn(Constants.MODIFY, '重命名', null,
+                child: UI.iconTxtBtn(
+                    Constants.MODIFY, '重命名', () => reNameAction(entity),
                     fontWeight: FontWeight.normal)),
             Expanded(
                 child: UI.iconTxtBtn(Constants.MORE, '详情', null,
@@ -194,7 +201,25 @@ class RemoteRouteState extends State<RemoteRoute>
         context: context, content: content, height: 100, radius: 8, padding: 8);
   }
 
+  shareAction(CloudFileEntity entity) async {
+    Navigator.pop(context);
+    UI.showContentDialog(context, '分享文件: ${entity.fileName}',
+        QrImage(data: getDownloadUrl(entity.id)),
+        left: '保存到本地', leftCall: () {}, right: '分享', rightCall: () {});
+    // QrImage
+  }
+
   downloadAction(CloudFileEntity entity) async {
+    if (entity.isFolder()) {
+      UI.showSnackBar(context, Text('文件夹暂时不支持批量下载'));
+      return;
+    }
+    File localFile = File(FileUtil.getDownloadFilePath(entity));
+    if (SPUtil.getBool(SPUtil.downloadedKey(entity.id), false) &&
+        localFile.existsSync()) {
+      UI.openFile(context, localFile);
+      return;
+    }
     UI.showSnackBar(context, Text('开始下载 ${entity.fileName}'));
     await CloudFileHandle.downloadOneFile(entity, CancelToken());
     UI.showSnackBar(
@@ -208,12 +233,14 @@ class RemoteRouteState extends State<RemoteRoute>
   }
 
   reNameAction(CloudFileEntity entity) async {
-    //UI.bottomSheet(context: null, content: null)
-    String ext = FileUtil.ext(entity.fileName);
-    String newName = await UI.showInputDialog(context, '重命名');
-    if (newName == null || newName.trim() == '') return;
-    await CloudFileManager.instance().renameFile(entity.id, newName + ext);
-    setState(() {});
+    String input = await UI.showInputDialog(context, '重命名');
+    if (input == null || input.trim() == '') return;
+    String newName = input + FileUtil.ext(entity.fileName);
+    bool success =
+        await CloudFileHandle.renameFile(entity.id, newName); // 告诉Svr
+    if (success) {
+      refreshList();
+    }
   }
 
   newFolder(BuildContext context) async {

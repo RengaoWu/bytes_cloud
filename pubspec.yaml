@@ -38,6 +38,7 @@ dependencies:
   thumbnails: ^1.0.1 # 视频缩略图
   barcode_scan: ^2.0.1 # 二维码
   flutter_qr_reader: ^1.0.3
+  qr_flutter: ^3.2.0  # 生成二维码
 
 
 

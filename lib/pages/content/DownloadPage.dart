@@ -77,7 +77,7 @@ class DownloadPageState extends State<DownloadPage>
     if (task.progress == 1) {
       content = '已完成';
     } else {
-      content = '${FileUtil.getFileSize(task.v.toInt())} / s';
+      content = '${FileUtil.getFileSize(task.v?.toInt())} / s';
     }
     return Card(
       child: Stack(

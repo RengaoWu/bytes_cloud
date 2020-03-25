@@ -33,7 +33,7 @@ Future<Map<String, dynamic>> httpGet(
 
 // POST form-data
 Future<dynamic> httpPost(String path,
-    {Map<String, String> params = const {},
+    {Map<String, dynamic> params = const {},
     Map<String, dynamic> form = const {},
     Function call}) async {
   try {
@@ -59,3 +59,7 @@ Future httpDownload(String path, Map<String, dynamic> args, String savePath,
   return rsp;
 }
 // post 多个文件
+
+String getDownloadUrl(int id) {
+  return host + HTTP_POST_DOWNLOAD_FILE + '?id=$id';
+}

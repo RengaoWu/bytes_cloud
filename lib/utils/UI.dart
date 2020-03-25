@@ -136,9 +136,26 @@ class UI {
   static Future<String> showInputDialog(
       BuildContext context, String title) async {
     TextEditingController controller = TextEditingController();
+    Widget content = TextField(
+      controller: controller,
+    );
+    return await UI.showContentDialog(context, title, content,
+        left: '取消',
+        leftCall: () => Navigator.pop(context),
+        right: '确定',
+        rightCall: () => Navigator.pop(context, controller.text));
+  }
+
+  static Future<String> showContentDialog(
+      BuildContext context, String title, Widget content,
+      {String left,
+      Function leftCall,
+      String right,
+      Function rightCall,
+      bool dismiss = true}) async {
     return showDialog<String>(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: dismiss,
         builder: (BuildContext context) {
           return SimpleDialog(
             title: boldText(title, fontSize: 18),
@@ -147,10 +164,8 @@ class UI {
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16),
-                  child: TextField(
-                    controller: controller,
-                  )),
+                  padding: EdgeInsets.only(left: 16, top: 8, right: 16),
+                  child: content),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -158,10 +173,10 @@ class UI {
                           padding: EdgeInsets.only(left: 16, right: 16),
                           child: FlatButton(
                             child: Text(
-                              '取消',
+                              left,
                               style: TextStyle(color: Colors.blue),
                             ),
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => leftCall(),
                           ))),
                   Container(
                     height: 20,
@@ -173,11 +188,10 @@ class UI {
                           padding: EdgeInsets.only(left: 16, right: 16),
                           child: FlatButton(
                             child: Text(
-                              '确定',
+                              right,
                               style: TextStyle(color: Colors.blue),
                             ),
-                            onPressed: () =>
-                                Navigator.pop(context, controller.text),
+                            onPressed: () => rightCall(),
                           )))
                 ],
               )

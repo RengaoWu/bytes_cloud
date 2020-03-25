@@ -58,6 +58,26 @@ class CloudFileHandle {
     successCall(rsp);
   }
 
+  static Future<bool> renameFile(int id, String newName) async {
+    try {
+      var resp = await httpPost(
+        HTTP_POST_RENAME,
+        params: {
+          'id': id,
+          'newName': newName,
+        },
+      );
+      print('renameFile $resp');
+      bool success = resp['code'] == 0;
+      if (success) {
+        await CloudFileManager.instance().renameFile(id, newName);
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
+  }
+
   static Future uploadOneFile(int dirId, String path) async {
     String name = FileUtil.getFileNameWithExt(path);
     print('uploadOneFile ${path}');

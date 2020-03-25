@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'DBManager.dart';
@@ -136,10 +138,17 @@ class CloudFileManager {
   renameFile(int id, String newName) async {
     CloudFileEntity entity = getEntityById(id);
     if (entity == null) {
+      print('renameFile entity is null');
       return;
     }
-    entity.fileName = newName; // update memory
-    await DBManager.instance.update(
-        CloudFileEntity.tableName, entity, MapEntry('id', id)); // update db
+    // 文件重命名，只需要更新名字
+    if (!entity.isFolder()) {
+      String ext = FileUtil.ext(entity.fileName);
+      entity.fileName = newName + ext; // update memory
+      await DBManager.instance.update(
+          CloudFileEntity.tableName, entity, MapEntry('id', id)); // update db
+    }
+    // 文件夹重命名，更新名字，还要更新路径，太麻烦了，直接全量刷新
+    await CloudFileHandle.reflashCloudFileList();
   }
 }

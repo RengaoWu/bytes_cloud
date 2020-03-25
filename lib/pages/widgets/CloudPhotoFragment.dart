@@ -1,13 +1,10 @@
 import 'dart:collection';
 import 'dart:io';
 
-import 'package:bytes_cloud/core/common.dart';
-import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
@@ -27,6 +24,9 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   List<CloudFileEntity> _entities = [];
   List<_ViewHolder> uiDate = [];
   List<CancelToken> tokens = [];
+
+  static double _imageWidgetSize = UI.DISPLAY_WIDTH / 4;
+  static double _imagePxSize = UI.dpi2px(_imageWidgetSize);
 
   @override
   void initState() {
@@ -88,8 +88,10 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
       image = Image.file(
         file,
         fit: BoxFit.cover,
-        width: UI.DISPLAY_WIDTH / 4,
-        height: UI.DISPLAY_WIDTH / 4,
+        width: _imageWidgetSize,
+        height: _imageWidgetSize,
+        cacheWidth: _imagePxSize.toInt(),
+        cacheHeight: _imagePxSize.toInt(),
       );
     } else {
       print('haveDownloaded not');
@@ -98,10 +100,9 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
         print('delete undownloaded file');
       }
       image = ExtendedImage.network(
-        getPreviewUrl(holder.entity.id, UI.dpi2px(UI.DISPLAY_WIDTH / 4),
-            UI.dpi2px(UI.DISPLAY_WIDTH / 4)),
-        width: UI.DISPLAY_WIDTH / 4,
-        height: UI.DISPLAY_WIDTH / 4,
+        getPreviewUrl(holder.entity.id, _imagePxSize, _imagePxSize),
+        width: _imageWidgetSize,
+        height: _imageWidgetSize,
         fit: BoxFit.cover,
         cache: true,
       );

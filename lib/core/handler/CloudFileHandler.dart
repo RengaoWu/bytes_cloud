@@ -92,7 +92,7 @@ class CloudFileHandle {
       task.sent = sent;
       task.total = total;
     }, form: {
-      'curId': 0,
+      'curId': dirId,
       'file': await MultipartFile.fromFile(path, filename: name),
     });
     print(resp.toString());

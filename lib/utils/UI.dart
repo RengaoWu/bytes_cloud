@@ -348,9 +348,22 @@ class UI {
     String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
         .format(DateTime.fromMillisecondsSinceEpoch(file.uploadTime));
 
+    Widget leading;
+    if (FileUtil.isImage(file.fileName)) {
+      leading = ExtendedImage.network(
+        getPreviewUrl(file.id, UI.dpi2px(40), UI.dpi2px(40)),
+        width: 40,
+        height: 40,
+        fit: BoxFit.cover,
+        cache: true,
+      );
+    } else {
+      leading = selectIcon(file.fileName, true);
+    }
+
     return InkWell(
       child: ListTile(
-        leading: selectIcon(file.fileName, false),
+        leading: leading,
         title: Text(FileUtil.getFileName(file.fileName)),
         subtitle: Text('$modifiedTime  "', style: TextStyle(fontSize: 12.0)),
         trailing: trailing,

@@ -64,7 +64,8 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
             Icons.done,
             call: (context) {
               filePaths.forEach((f) {
-                CloudFileHandle.uploadOneFile(0, f);
+                print('cloud folder selector upload ${path.last.id}');
+                CloudFileHandle.uploadOneFile(path.last.id, f);
               });
               Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text("开始上传")));

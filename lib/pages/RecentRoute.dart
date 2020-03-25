@@ -304,6 +304,7 @@ class RecentRouteState extends State<RecentRoute>
                   List<String> paths = entities.map((f) {
                     return f.path;
                   }).toList();
+                  Navigator.pop(context);
                   UI.newPage(context, CloudFolderSelector(paths));
                 },
               ),

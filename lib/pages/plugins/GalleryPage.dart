@@ -58,7 +58,7 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
   initNetworkMode() {
     CloudFileEntity currentImage = arg['current'];
     List<CloudFileEntity> files = arg['files'];
-    if (files == null) networkImages = [currentImage];
+    if (files == null) files = [currentImage];
     files.forEach((f) {
       if (FileUtil.isImage(f.fileName)) {
         print('${currentImage.id} ${f.id}');

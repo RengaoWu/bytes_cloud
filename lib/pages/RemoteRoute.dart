@@ -171,8 +171,21 @@ class RemoteRouteState extends State<RemoteRoute>
           } else {
             return UI.buildCloudFileItem(
                 file: entity,
-                onTap: (_) async =>
-                    RemoteRoutePlugin(this).downloadAction(entity),
+                onTap: (_) async {
+                  // 如果已下载，直接打开
+                  if (FileUtil.haveDownloaded(entity)) {
+                    UI.openFile(
+                        context, File(FileUtil.getDownloadFilePath(entity)));
+                    return;
+                  } else {
+                    // 如果是图片直接预览
+                    if (FileUtil.isImage(entity.fileName)) {
+                      UI.openCloudFile(context, entity);
+                    } else {
+                      RemoteRoutePlugin(this).downloadAction(entity);
+                    }
+                  }
+                },
                 trailing: trailing);
           }
           // 添加长按监听

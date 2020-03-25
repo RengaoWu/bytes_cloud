@@ -132,8 +132,6 @@ class CloudFileManager {
         return a.fileName.toLowerCase().compareTo(b.fileName.toLowerCase());
       });
     }
-
-    print('listFiles ${result.length}');
     return result;
   }
 

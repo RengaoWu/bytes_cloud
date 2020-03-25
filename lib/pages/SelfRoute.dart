@@ -1,5 +1,6 @@
 import 'package:bytes_cloud/pages/content/DownloadPage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
+import 'package:bytes_cloud/pages/content/SettingPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,7 +37,7 @@ class SelfRouteState extends State<SelfRoute>
       child: Card(
         child: Column(
           children: <Widget>[
-            listTitle(
+            UI.iconTxtListItem(
                 Constants.NIGHT,
                 '夜间模式',
                 Switch(
@@ -51,36 +52,17 @@ class SelfRouteState extends State<SelfRoute>
               indent: 8,
               endIndent: 8,
             ),
-            listTitle(Constants.SETTING, '设置', null, null,
+            UI.iconTxtListItem(Constants.SETTING, '设置', null,
+                () => UI.newPage(context, SettingPage()),
                 left: 8, right: 8, top: 8, bottom: 8),
             Divider(
               indent: 8,
               endIndent: 8,
             ),
-            listTitle(Constants.FACEBACK, '反馈', null, null,
+            UI.iconTxtListItem(Constants.FACEBACK, '反馈', null, null,
                 left: 8, right: 8, bottom: 16, top: 16),
           ],
         ),
-      ),
-    );
-  }
-
-  listTitle(String icon, String content, Widget tail, Function call,
-      {double top = 0, double left = 0, double right = 0, double bottom = 0}) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(left, top, right, bottom),
-      child: Row(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(left: 8, right: 8),
-            child: Image.asset(
-              icon,
-              width: 24,
-            ),
-          ),
-          Expanded(child: boldText(content)),
-          tail != null ? tail : SizedBox()
-        ],
       ),
     );
   }

@@ -691,4 +691,27 @@ class UI {
       alignment: Alignment.center,
     );
   }
+
+  static iconTxtListItem(String icon, String content, Widget tail, Function tap,
+      {double top = 0, double left = 0, double right = 0, double bottom = 0}) {
+    return InkWell(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(left, top, right, bottom),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 8, right: 8),
+              child: Image.asset(
+                icon,
+                width: 24,
+              ),
+            ),
+            Expanded(child: boldText(content)),
+            tail != null ? tail : SizedBox()
+          ],
+        ),
+      ),
+      onTap: tap,
+    );
+  }
 }

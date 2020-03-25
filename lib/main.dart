@@ -4,27 +4,49 @@ import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/core/manager/CloudFileLogic.dart';
 import 'package:bytes_cloud/entity/DBManager.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
-import 'package:bytes_cloud/test/TestRoute.dart';
+import 'package:bytes_cloud/pages/content/SettingPage.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
-import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'NotoSansSC',
+    return MultiProvider(
+      providers: <SingleChildWidget>[
+        ChangeNotifierProvider.value(value: ThemeModel()),
+//        ChangeNotifierProvider.value(value: UserModel()),
+//        ChangeNotifierProvider.value(value: LocaleModel()),
+      ],
+      child: Consumer<ThemeModel>(
+        builder: (BuildContext context, themeModel, Widget child) {
+          return MaterialApp(
+            theme: ThemeData(
+              primarySwatch: themeModel.theme,
+              fontFamily: 'NotoSansSC',
+            ),
+            home: HomeRoute(), //应用主页
+          );
+        },
       ),
-      home: HomeRoute(),
     );
   }
+//  @override
+//  Widget build(BuildContext context) {
+//    return MaterialApp(
+//      title: 'Flutter Demo',
+//      theme: ThemeData(
+//        primarySwatch: Colors.blue,
+//        fontFamily: 'NotoSansSC',
+//      ),
+//      home: HomeRoute(),
+//    );
+//  }
 }
 
 void main() async {

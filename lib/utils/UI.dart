@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/plugins/MDPage.dart';
 import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -414,8 +415,12 @@ class UI {
       return;
     }
     if (FileUtil.isImage(currentFile.path)) {
-      UI.newPage(context,
-          PhotoGalleryPage({"files": files, "current": currentFile})); // 图片
+      UI.newPage(
+          context,
+          PhotoGalleryPage({
+            'current': currentFile,
+            'files': files,
+          })); // 图片
     } else if (FileUtil.isVideo(currentFile.path)) {
       UI.newPage(context, VideoPlayerPage({'path': currentFile.path})); // 视频
     } else if (FileUtil.isPDF(currentFile.path)) {
@@ -428,6 +433,19 @@ class UI {
 //      UI.newPage(context, FileReaderPage({'path': currentFile.path})); // Android 10 不兼容
     } else {
       OpenFile.open(currentFile.path); // 手机其他APP
+    }
+  }
+
+  static openCloudFile(BuildContext context, CloudFileEntity current,
+      {List<CloudFileEntity> entities}) {
+//    File local = File(FileUtil.getDownloadFilePath(current));
+//    if (local.existsSync()) {
+//      UI.openFile(context, local);
+//      return;
+//    }
+    if (FileUtil.isImage(current.fileName)) {
+      UI.newPage(context,
+          PhotoGalleryPage({'current': current, 'files': entities})); // 图片
     }
   }
 
@@ -701,7 +719,7 @@ class UI {
     return Container(
       margin: const EdgeInsets.all(4),
       child: Text(
-        '-----------  $content -----------',
+        '-  $content -',
         style: TextStyle(fontSize: 15, color: Colors.black38),
       ),
       alignment: Alignment.center,

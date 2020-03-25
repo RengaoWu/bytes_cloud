@@ -8,6 +8,8 @@ import 'package:flutter/cupertino.dart';
 /// http://116.62.177.146:5000/api/file/upload?  name	folder1 Bodyfile 上传文件
 ///
 /// http://116.62.177.146:5000/api/file/reName?id=1&newName=newFolderName 重命名
+///
+/// http://116.62.177.146:5000/api/file/preview?id=55 // 预览
 
 String host = "http://116.62.177.146:5000"; // host
 var dio = Dio(BaseOptions(
@@ -18,6 +20,7 @@ const String HTTP_POST_A_FILE = '/api/file/upload';
 const String HTTP_POST_NEW_FOLDER = '/api/file/newFolder';
 const String HTTP_POST_DOWNLOAD_FILE = '/api/file/download';
 const String HTTP_POST_RENAME = '/api/file/reName';
+const String HTTP_GET_PREVIEW = '/api/file/preview';
 
 // GET
 Future<Map<String, dynamic>> httpGet(
@@ -62,4 +65,8 @@ Future httpDownload(String path, Map<String, dynamic> args, String savePath,
 
 String getDownloadUrl(int id) {
   return host + HTTP_POST_DOWNLOAD_FILE + '?id=$id';
+}
+
+String getPreviewUrl(int id) {
+  return host + HTTP_GET_PREVIEW + '?id=$id';
 }

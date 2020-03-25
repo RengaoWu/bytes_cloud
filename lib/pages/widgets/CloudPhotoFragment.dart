@@ -5,9 +5,12 @@ import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/http/http.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -28,7 +31,6 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   @override
   void initState() {
     super.initState();
-    print('cloud photo fragment initState');
     _entities = CloudFileManager.instance().photos;
     _entities.sort((e1, e2) => e2.uploadTime - e1.uploadTime);
     for (int i = 0; i < _entities.length; i++) {
@@ -79,47 +81,36 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
 
   Widget loadImage(_ViewHolder holder) {
     print(holder.entity.fileName);
-    bool flag = SPUtil.getBool(SPUtil.downloadedKey(holder.entity.id), false);
-    FileSystemEntity file =
-        File(Common().appDownload + '/' + holder.entity.fileName);
-    if (flag && file.existsSync()) {
-      return InkWell(
-          onTap: () => UI.openFile(context, file),
-          child: Image.file(
-            file,
-            fit: BoxFit.cover,
-            width: UI.DISPLAY_WIDTH / 4,
-            height: UI.DISPLAY_WIDTH / 4,
-          ));
+    FileSystemEntity file = File(FileUtil.getDownloadFilePath(holder.entity));
+    Widget image;
+    if (FileUtil.haveDownloaded(holder.entity)) {
+      print('haveDownloaded');
+      image = Image.file(
+        file,
+        fit: BoxFit.cover,
+        width: UI.DISPLAY_WIDTH / 4,
+        height: UI.DISPLAY_WIDTH / 4,
+      );
     } else {
+      print('haveDownloaded not');
       if (file.existsSync()) {
         file.deleteSync();
         print('delete undownloaded file');
       }
-      CancelToken token = CancelToken();
-      tokens.add(token);
-      return FutureBuilder(
-        future: CloudFileHandle.downloadOneFile(holder.entity, token),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return UnconstrainedBox(
-                child: SizedBox(
-                    width: 48, height: 48, child: CircularProgressIndicator()));
-          }
-          if (snapshot.hasError) {
-            return SizedBox();
-          }
-          return InkWell(
-              onTap: () => UI.openFile(context, file),
-              child: Image.file(
-                file,
-                fit: BoxFit.cover,
-                width: UI.DISPLAY_WIDTH / 4,
-                height: UI.DISPLAY_WIDTH / 4,
-              ));
-        },
+      image = ExtendedImage.network(
+        getPreviewUrl(holder.entity.id),
+        width: UI.DISPLAY_WIDTH / 4,
+        height: UI.DISPLAY_WIDTH / 4,
+        fit: BoxFit.cover,
+        cache: true,
       );
     }
+    return InkWell(
+      child: image,
+      onTap: () {
+        UI.openCloudFile(context, holder.entity, entities: _entities);
+      },
+    );
   }
 
   @override

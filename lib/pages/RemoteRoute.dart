@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
@@ -268,13 +267,14 @@ class RemoteRouteState extends State<RemoteRoute>
               crossAxisCount: 4,
               physics: ScrollPhysics(),
               children: <Widget>[
+                UI.iconTxtBtn(Constants.FOLDER, "列表",
+                    () => setState(() => _showFlag = 0)),
                 UI.iconTxtBtn(
                     Constants.PHOTO, "图片", () => setState(() => _showFlag = 1)),
                 UI.iconTxtBtn(Constants.VIDEO, "视频", null),
                 UI.iconTxtBtn(Constants.MUSIC, "音乐", null),
                 UI.iconTxtBtn(Constants.DOC, "文档", null),
                 UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", null),
-                UI.iconTxtBtn(Constants.UNKNOW, "其他", () => {print("")}),
               ],
             )),
       );

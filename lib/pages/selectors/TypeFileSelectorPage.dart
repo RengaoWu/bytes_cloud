@@ -242,7 +242,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     return Container(
       margin: const EdgeInsets.all(4),
       child: Text(
-        '-----------  ${holder.dataTime.year} 年 ${holder.dataTime.month} 月 -----------',
+        '-  ${holder.dataTime.year} 年 ${holder.dataTime.month} 月 -',
         style: TextStyle(fontSize: 15, color: Colors.black38),
       ),
       alignment: Alignment.center,

@@ -26,38 +26,40 @@ class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   List<CloudFileEntity> currentFiles = [];
   List<CloudFileEntity> path = []; // 路径
-  int sortType = 0; // 0 by time, 1 by a-z
+  int _sortType = 0; // 0 by time, 1 by a-z
   int _showFlag = 0;
+  int get showFlag => _showFlag;
 
   @override
   void initState() {
     super.initState();
-    enterFolder(CloudFileManager.instance().rootId);
+    _enterFolder(CloudFileManager.instance().rootId);
   }
 
-  enterFolderAndRefresh(int pid) => setState(() {
-        enterFolder(pid);
+  _enterFolderAndRefresh(int pid) => setState(() {
+        _enterFolder(pid);
       });
 
-  enterFolder(int pid) {
+  _enterFolder(int pid) {
     path.add(CloudFileManager.instance().getEntityById(pid));
-    currentFiles = CloudFileManager.instance().listFiles(pid, type: sortType);
+    currentFiles = CloudFileManager.instance().listFiles(pid, type: _sortType);
   }
 
-  bool outFolderAndRefresh() {
+  bool _outFolderAndRefresh() {
     if (path.length == 1) return true;
     setState(() {
       path.removeLast();
       currentFiles = CloudFileManager.instance()
-          .listFiles(path.last.id, justFolder: false, type: sortType);
+          .listFiles(path.last.id, justFolder: false, type: _sortType);
     });
     return false;
   }
 
+  // public
   refreshList() {
     setState(() {
       currentFiles = CloudFileManager.instance()
-          .listFiles(path.last.id, justFolder: false, type: sortType);
+          .listFiles(path.last.id, justFolder: false, type: _sortType);
     });
   }
 
@@ -65,7 +67,6 @@ class RemoteRouteState extends State<RemoteRoute>
   Widget build(BuildContext context) {
     super.build(context);
     GlobalKey key1 = GlobalKey();
-    GlobalKey key2 = GlobalKey();
 
     return Scaffold(
       appBar: AppBar(
@@ -76,31 +77,57 @@ class RemoteRouteState extends State<RemoteRoute>
                 context, '', key1, PopDirection.bottom, typeSelectorView(), 16);
           },
         ),
-        actions: <Widget>[
-          Builder(
-              builder: (context) => IconButton(
-                  icon: Icon(Icons.add), onPressed: () => newFolder(context))),
-          IconButton(
-            icon: Icon(Icons.transform),
-            onPressed: () {},
-          ),
-          IconButton(
-            key: key2,
-            icon: Icon(Icons.sort),
-            onPressed: () async {
-              int type = await sortByTypeSelectorView(key2);
-              print('sort type = $type');
-              if (type != null && type != sortType) {
-                sortType = type;
-                refreshList();
-              }
-              ;
-            },
-          )
-        ],
+        actions: getActionsByType(),
       ),
       body: selectShowUI(_showFlag),
     );
+  }
+
+  // 分类视图，过滤掉一些action
+  getActionsByType() {
+    GlobalKey key2 = GlobalKey();
+    List<Widget> actions = <Widget>[
+      Builder(
+          builder: (context) => IconButton(
+              icon: Icon(Icons.add), onPressed: () => newFolder(context))),
+      IconButton(
+        icon: Icon(Icons.transform),
+        onPressed: () {},
+      ),
+      IconButton(
+        key: key2,
+        enableFeedback: false,
+        icon: Icon(Icons.sort),
+        onPressed: () async {
+          int type = await sortByTypeSelectorView(key2);
+          print('sort type = $type');
+          if (type != null && type != _sortType) {
+            _sortType = type;
+            refreshList();
+          }
+          ;
+        },
+      )
+    ];
+    if (_showFlag != 0) {
+      actions.removeAt(2);
+      actions.removeAt(0);
+    }
+    return actions;
+  }
+
+  newFolder(BuildContext context, {Function finishedCall}) async {
+    String folderName = await UI.showInputDialog(context, "创建文件夹");
+    if (folderName == null) return;
+    if (folderName.trim() == '') {
+      UI.showSnackBar(context, Text('文件名为空'));
+      return;
+    }
+    await CloudFileHandle.newFolder(path.last.id, folderName.trim(),
+        successCall: (_) => refreshList(),
+        failedCall: (Map<String, dynamic> rsp) {
+          UI.showSnackBar(context, rsp['message']);
+        });
   }
 
   /// showFlag
@@ -108,7 +135,7 @@ class RemoteRouteState extends State<RemoteRoute>
     if (showFlag == 0) {
       return WillPopScope(
         child: cloudListView(),
-        onWillPop: () async => outFolderAndRefresh(),
+        onWillPop: () async => _outFolderAndRefresh(),
       );
     } else if (showFlag == 1) {
       return CloudPhotoFragment();
@@ -129,7 +156,8 @@ class RemoteRouteState extends State<RemoteRoute>
               Icons.more_horiz,
               size: 14,
             ),
-            onPressed: () async => showBottomSheet(entity),
+            onPressed: () async =>
+                RemoteRoutePlugin(this).showBottomSheet(entity),
           );
           if (entity.isFolder()) {
             item = UI.buildCloudFolderItem(
@@ -137,20 +165,22 @@ class RemoteRouteState extends State<RemoteRoute>
                 childrenCount:
                     CloudFileManager.instance().childrenCount(entity.id),
                 onTap: () {
-                  enterFolderAndRefresh(entity.id);
+                  _enterFolderAndRefresh(entity.id);
                 },
                 trailing: trailing);
           } else {
             return UI.buildCloudFileItem(
                 file: entity,
-                onTap: (_) async => downloadAction(entity),
+                onTap: (_) async =>
+                    RemoteRoutePlugin(this).downloadAction(entity),
                 trailing: trailing);
           }
           // 添加长按监听
           var inkItem = Builder(builder: (BuildContext context) {
             return InkWell(
               child: item,
-              onLongPress: () async => await showBottomSheet(entity),
+              onLongPress: () async =>
+                  await RemoteRoutePlugin(this).showBottomSheet(entity),
             );
           });
           return Padding(
@@ -166,6 +196,80 @@ class RemoteRouteState extends State<RemoteRoute>
       },
     );
   }
+
+  typeSelectorView() => Container(
+        width: UI.DISPLAY_WIDTH,
+        color: Colors.transparent,
+        alignment: Alignment.center,
+        height: 220,
+        child: Card(
+            color: Colors.white,
+            child: GridView.count(
+              crossAxisCount: 4,
+              physics: ScrollPhysics(),
+              children: <Widget>[
+                UI.iconTxtBtn(Constants.FOLDER, "列表",
+                    () => setState(() => _showFlag = 0)),
+                UI.iconTxtBtn(
+                    Constants.PHOTO, "图片", () => setState(() => _showFlag = 1)),
+                UI.iconTxtBtn(Constants.VIDEO, "视频", null),
+                UI.iconTxtBtn(Constants.MUSIC, "音乐", null),
+                UI.iconTxtBtn(Constants.DOC, "文档", null),
+                UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", null),
+              ],
+            )),
+      );
+
+  Future<int> sortByTypeSelectorView(GlobalKey key) async {
+    Text sortByTime;
+    Text sortByName;
+    if (_sortType == 0) {
+      sortByTime = Text(
+        '时间排序',
+        style: TextStyle(color: Colors.blue),
+      );
+      sortByName = Text('名称排序');
+    } else {
+      sortByName = Text(
+        '名称排序',
+        style: TextStyle(color: Colors.blue),
+      );
+      sortByTime = Text('时间排序');
+    }
+    return await PopupWindow.showPopWindow(
+        context,
+        '',
+        key,
+        PopDirection.bottom,
+        Card(
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                FlatButton(
+                  child: sortByTime,
+                  onPressed: () => Navigator.pop(context, 0),
+                ),
+                FlatButton(
+                  child: sortByName,
+                  onPressed: () => Navigator.pop(context, 1),
+                ),
+              ],
+            )),
+        0);
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+// 对文件或者文件夹对操作独立出来
+class RemoteRoutePlugin {
+  RemoteRouteState state;
+
+  RemoteRoutePlugin(this.state) {
+    context = state.context;
+  }
+  BuildContext context;
 
   showBottomSheet(CloudFileEntity entity) async {
     Widget content = Padding(
@@ -238,85 +342,8 @@ class RemoteRouteState extends State<RemoteRoute>
     bool success =
         await CloudFileHandle.renameFile(entity.id, newName); // 告诉Svr
     if (success) {
-      refreshList();
+      state.refreshList();
+      // refreshList();
     }
   }
-
-  newFolder(BuildContext context) async {
-    String folderName = await UI.showInputDialog(context, "创建文件夹");
-    if (folderName == null) return;
-    if (folderName.trim() == '') {
-      UI.showSnackBar(context, Text('文件名为空'));
-      return;
-    }
-    await CloudFileHandle.newFolder(path.last.id, folderName.trim(),
-        successCall: (_) => refreshList(),
-        failedCall: (Map<String, dynamic> rsp) {
-          UI.showSnackBar(context, rsp['message']);
-        });
-  }
-
-  typeSelectorView() => Container(
-        width: UI.DISPLAY_WIDTH,
-        color: Colors.transparent,
-        alignment: Alignment.center,
-        height: 220,
-        child: Card(
-            color: Colors.white,
-            child: GridView.count(
-              crossAxisCount: 4,
-              physics: ScrollPhysics(),
-              children: <Widget>[
-                UI.iconTxtBtn(Constants.FOLDER, "列表",
-                    () => setState(() => _showFlag = 0)),
-                UI.iconTxtBtn(
-                    Constants.PHOTO, "图片", () => setState(() => _showFlag = 1)),
-                UI.iconTxtBtn(Constants.VIDEO, "视频", null),
-                UI.iconTxtBtn(Constants.MUSIC, "音乐", null),
-                UI.iconTxtBtn(Constants.DOC, "文档", null),
-                UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", null),
-              ],
-            )),
-      );
-
-  Future<int> sortByTypeSelectorView(GlobalKey key) async {
-    Text sortByTime;
-    Text sortByName;
-    if (sortType == 0) {
-      sortByTime = Text(
-        '时间排序',
-        style: TextStyle(color: Colors.blue),
-      );
-      sortByName = Text('名称排序');
-    } else {
-      sortByName = Text(
-        '名称排序',
-        style: TextStyle(color: Colors.blue),
-      );
-      sortByTime = Text('时间排序');
-    }
-    return await PopupWindow.showPopWindow(
-        context,
-        '',
-        key,
-        PopDirection.bottom,
-        Card(
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                FlatButton(
-                  child: sortByTime,
-                  onPressed: () => Navigator.pop(context, 0),
-                ),
-                FlatButton(
-                  child: sortByName,
-                  onPressed: () => Navigator.pop(context, 1),
-                ),
-              ],
-            )),
-        0);
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }

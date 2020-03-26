@@ -67,8 +67,7 @@ class SelfRouteState extends State<SelfRoute>
     );
   }
 
-  callMarkDownPage() => Navigator.push(
-      context, MaterialPageRoute(builder: (context) => new MarkDownListPage()));
+  callMarkDownPage() => UI.newPage(context, MarkDownListPage());
 
   Widget bodyView() {
     return Container(

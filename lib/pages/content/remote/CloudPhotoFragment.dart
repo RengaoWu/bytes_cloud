@@ -110,7 +110,10 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
       );
     }
     return InkWell(
-      child: image,
+      child: Hero(
+        tag: holder.entity.id,
+        child: image,
+      ),
       onLongPress: () {
         RemoteRouteHelper(context).showBottomSheet(holder.entity, type: 1,
             callBack: () {

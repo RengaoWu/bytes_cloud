@@ -11,6 +11,7 @@ import 'package:bytes_cloud/pages/plugins/PdfReaderPage.dart';
 import 'package:bytes_cloud/pages/plugins/GalleryPage.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -41,9 +42,24 @@ class UI {
   static double devicePixelRatio;
 
   static dpi2px(double size) => size * devicePixelRatio;
+  // 一般效果
+  static newPage(BuildContext context, Widget widget) =>
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => widget));
 
-  static newPage(BuildContext context, Widget widget) => Navigator.push(
-      context, new MaterialPageRoute(builder: (context) => widget));
+//  static newPage(BuildContext context, Widget widget) => Navigator.push(
+//        context,
+//        PageRouteBuilder(
+//          transitionDuration: Duration(milliseconds: 500), //动画时间为500毫秒
+//          pageBuilder: (BuildContext context, Animation animation,
+//              Animation secondaryAnimation) {
+//            return new FadeTransition(
+//              //使用渐隐渐入过渡,
+//              opacity: animation,
+//              child: widget, //路由B
+//            );
+//          },
+//        ),
+//      );
 
   static Widget divider({Color color, double padding = 0, double width = 0.5}) {
     return Divider(
@@ -350,13 +366,15 @@ class UI {
 
     Widget leading;
     if (FileUtil.isImage(file.fileName)) {
-      leading = ExtendedImage.network(
-        getPreviewUrl(file.id, UI.dpi2px(40), UI.dpi2px(40)),
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        cache: true,
-      );
+      leading = Hero(
+          tag: file.id,
+          child: ExtendedImage.network(
+            getPreviewUrl(file.id, UI.dpi2px(40), UI.dpi2px(40)),
+            width: 40,
+            height: 40,
+            fit: BoxFit.cover,
+            cache: true,
+          ));
     } else {
       leading = selectIcon(file.fileName, true);
     }

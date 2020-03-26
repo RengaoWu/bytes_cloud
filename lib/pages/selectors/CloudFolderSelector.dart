@@ -62,13 +62,11 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
         actions: <Widget>[
           UI.appbarBtn(
             Icons.done,
-            call: (context) {
-              filePaths.forEach((f) {
-                print('cloud folder selector upload ${path.last.id}');
-                CloudFileHandle.uploadOneFile(path.last.id, f);
-              });
+            call: (context) async {
               Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text("开始上传")));
+              await CloudFileManager.instance()
+                  .uploadFile(path.last.id, filePaths);
               Future.delayed(Duration(seconds: 1)).then((v) {
                 Navigator.pop(context);
               });
@@ -101,11 +99,12 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
       UI.showSnackBar(context, Text('文件名为空'));
       return;
     }
-    await CloudFileHandle.newFolder(path.last.id, folderName.trim(),
-        successCall: (_) => refreshList(),
-        failedCall: (Map<String, dynamic> rsp) {
-          UI.showSnackBar(context, rsp['message']);
-        });
+    bool success = await CloudFileManager.instance()
+        .newFolder(path.last.id, folderName.trim());
+    if (success)
+      refreshList();
+    else
+      UI.showSnackBar(context, Text('创建文件夹失败'));
   }
 
   bodyView() {

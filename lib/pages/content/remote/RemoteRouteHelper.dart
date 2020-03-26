@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
@@ -101,7 +102,7 @@ class RemoteRouteHelper {
       return;
     }
     UI.showSnackBar(context, Text('开始下载 ${entity.fileName}'));
-    await CloudFileHandle.downloadOneFile(entity, CancelToken());
+    await CloudFileManager.instance().downloadFile([entity]);
     UI.showSnackBar(
         context,
         InkWell(
@@ -116,8 +117,8 @@ class RemoteRouteHelper {
     String input = await UI.showInputDialog(context, '重命名');
     if (input == null || input.trim() == '') return;
     String newName = input + FileUtil.ext(entity.fileName);
-    bool success =
-        await CloudFileHandle.renameFile(entity.id, newName); // 告诉Svr
+    bool success = await CloudFileManager.instance()
+        .renameFile(entity.id, newName); // 告诉Svr
     if (cb != null && success) cb();
   }
 }

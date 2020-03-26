@@ -55,4 +55,21 @@ class CloudFileEntity extends Entity {
   isFolder() {
     return type == 'dir';
   }
+
+  // sort type
+  // type = 0 time default
+  // type = 1 A-z
+  static int sortByTime(a, b) {
+    if (a.isFolder() && !b.isFolder())
+      return -1;
+    else if (!a.isFolder() && b.isFolder()) return 1;
+    return a.uploadTime - b.uploadTime;
+  }
+
+  static int sortByName(a, b) {
+    if (a.isFolder() && !b.isFolder())
+      return -1;
+    else if (!a.isFolder() && b.isFolder()) return 1;
+    return a.fileName.toLowerCase().compareTo(b.fileName.toLowerCase());
+  }
 }

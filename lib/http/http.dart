@@ -10,6 +10,8 @@ import 'package:flutter/cupertino.dart';
 /// http://116.62.177.146:5000/api/file/reName?id=1&newName=newFolderName 重命名
 ///
 /// http://116.62.177.146:5000/api/file/preview?id=55 // 预览
+///
+/// http://116.62.177.146:5000/api/file/delete?id=1 删除
 
 String host = "http://116.62.177.146:5000"; // host
 var dio = Dio(BaseOptions(
@@ -20,6 +22,7 @@ const String HTTP_POST_A_FILE = '/api/file/upload';
 const String HTTP_POST_NEW_FOLDER = '/api/file/newFolder';
 const String HTTP_POST_DOWNLOAD_FILE = '/api/file/download';
 const String HTTP_POST_RENAME = '/api/file/reName';
+const String HTTP_GET_RENAME = '/api/file/delete';
 const String HTTP_GET_PREVIEW = '/api/file/preview';
 
 // GET

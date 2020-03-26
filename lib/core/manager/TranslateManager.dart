@@ -81,7 +81,9 @@ class DownloadTask extends Task {
 }
 
 class UploadTask extends Task {
-  UploadTask({@required this.path, @required token}) : super(token);
+  UploadTask({@required this.path, @required this.pid, @required token})
+      : super(token);
+  int pid;
   String path; // 文件地址
 
   @override

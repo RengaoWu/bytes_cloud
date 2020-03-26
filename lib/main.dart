@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
@@ -72,7 +73,7 @@ void main() async {
     // DBManager 初始化
     DBManager.instance;
     // 请求云盘所有文件
-    CloudFileHandle.reflashCloudFileList().whenComplete(() {
+    CloudFileManager.instance().reflashCloudFileList().whenComplete(() {
       print('云盘数据初始化完成');
     });
 

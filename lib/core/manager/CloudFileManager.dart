@@ -1,24 +1,14 @@
-import 'dart:io';
-
 import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
+import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:dio/dio.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'DBManager.dart';
 
 class CloudFileManager {
   List<CloudFileEntity> _entities = []; // 初始化
-  List<CloudFileEntity> get photos {
-    List<CloudFileEntity> _photos = [];
-    _entities.forEach((f) {
-      if (f.type == 'png' || f.type == 'jpg' || f.type == 'jpeg') {
-        _photos.add(f);
-      }
-    });
-    return _photos;
-  }
-
   CloudFileEntity _root;
   int get rootId => _root.id;
   static CloudFileManager _instance;
@@ -37,118 +27,150 @@ class CloudFileManager {
     });
   }
 
-  // 读取数据库的数据
-  Future initDataFromDB() async {
-    List es =
-        await DBManager.instance.queryAll(CloudFileEntity.tableName, null);
-    if (es == null) return;
-    List<CloudFileEntity> temp = [];
-    es.forEach((f) {
-      CloudFileEntity entity = CloudFileEntity.fromJson(f);
-      if (entity.id == 0) {
-        _root = entity;
-        print('_root 初始化完成');
-        print(_root.toMap());
+  List<CloudFileEntity> get photos {
+    List<CloudFileEntity> _photos = [];
+    _entities.forEach((f) {
+      if (f.type == 'png' || f.type == 'jpg' || f.type == 'jpeg') {
+        _photos.add(f);
       }
-      temp.add(entity);
     });
-    _entities = temp;
+    return _photos;
   }
 
-  Future<CloudFileEntity> insertCloudFile(CloudFileEntity entity) async {
-    CloudFileEntity result = entity;
-    try {
-      _entities.add(result); // 更新缓存
-      result = await DBManager.instance
-          .insert(CloudFileEntity.tableName, entity); // 更新DB
-    } catch (e) {
-      print("insertCloudFile error!");
-      result = null;
-    }
-    return result;
+  CloudFileEntity getEntityById(int id) =>
+      _entities.firstWhere((e) => e.id == id);
+
+  List<CloudFileEntity> listRootFiles(
+      {bool justFolder = false, bool r = false}) {
+    return listFiles(_root.id, justFolder: justFolder, r: false);
   }
 
-  // 存DB
-  saveAllCloudFiles(List<CloudFileEntity> entities) async {
-    await (await DBManager.instance.db).transaction((txn) async {
-      Batch batch = txn.batch();
-      batch.delete(CloudFileEntity.tableName); // 先 clear 本地数据库
-      entities.forEach((e) {
-        batch.insert(CloudFileEntity.tableName, e.toMap()); // 再批量插入
-      });
-      await batch.commit(noResult: true);
-    });
-  }
-
-  CloudFileEntity getEntityById(int id) {
-    try {
-      return _entities.firstWhere((e) {
-        print('${e.id} == $id');
-        return e.id == id;
-      });
-    } catch (e) {
-      print('getEntityById ' + e.toString());
-    }
-    print('getEntityById null');
-    return null;
-  }
-
-  List<CloudFileEntity> listRootFiles({bool justFolder = false}) {
-    return listFiles(_root.id, justFolder: justFolder);
-  }
-
-  // sort type
-  // type = 0 time default
-  // type = 1 A-z
-  List<CloudFileEntity> listFiles(int pId, {justFolder = false, type = 0}) {
+  List<CloudFileEntity> listFiles(int pId,
+      {justFolder = false,
+      Function sortFunc = CloudFileEntity.sortByTime,
+      bool r = false}) {
     List<CloudFileEntity> result = [];
     _entities.forEach((f) {
       if (f.parentId == pId) {
         if (!justFolder) {
           result.add(f);
         } else if (justFolder && f.isFolder()) {
-          result.add(f);
-          print(f.uploadTime);
+          if (r) {
+            result.addAll(listFiles(f.id,
+                justFolder: justFolder, sortFunc: sortFunc, r: r));
+          } else {
+            result.add(f);
+          }
         }
       }
     });
-    // 排序，文件夹在前，文件在后，uploadTime 由远到近
-    if (type == 0) {
-      result.sort((a, b) {
-        if (a.isFolder() && !b.isFolder())
-          return -1;
-        else if (!a.isFolder() && b.isFolder()) return 1;
-        return a.uploadTime - b.uploadTime;
-      });
-    } else if (type == 1) {
-      result.sort((a, b) {
-        if (a.isFolder() && !b.isFolder())
-          return -1;
-        else if (!a.isFolder() && b.isFolder()) return 1;
-        return a.fileName.toLowerCase().compareTo(b.fileName.toLowerCase());
-      });
-    }
+    result.sort(sortFunc);
     return result;
   }
 
-  int childrenCount(int pid, {justFolder = false}) {
-    return listFiles(pid, justFolder: justFolder).length;
+  int childrenCount(int pid, {justFolder = false, bool r = false}) {
+    return listFiles(pid, justFolder: justFolder, r: r).length;
   }
 
-  renameFile(int id, String newName) async {
+  Future<bool> reflashCloudFileList() async {
+    List<CloudFileEntity> es = await CloudFileHandle.reflashCloudFileList();
+    if (es == null) return false;
+    await CloudFileManager.instance().initDataFromDB(); // 更新内存数据
+    await CloudFileManager.instance().saveAllCloudFiles(es); // 存DB
+    return true;
+  }
+
+  // 查询所有
+  Future initDataFromDB() async {
+    List<Map> es =
+        await DBManager.instance.queryAll(CloudFileEntity.tableName, null);
+    if (es == null) return;
+    List<CloudFileEntity> temp =
+        es.map((f) => CloudFileEntity.fromJson(f)).toList();
+    _root = temp.firstWhere((t) => t.id == 0);
+    _entities = temp;
+  }
+
+  // 增加
+  Future<CloudFileEntity> insertCloudFile(CloudFileEntity entity) async {
+    CloudFileEntity result = entity;
+    _entities.add(result); // 更新缓存
+    return await DBManager.instance
+        .insert(CloudFileEntity.tableName, entity); // 更新DB
+  }
+
+  // 全量写
+  Future saveAllCloudFiles(List<CloudFileEntity> entities) async {
+    await (await DBManager.instance.db).transaction((txn) async {
+      Batch batch = txn.batch();
+      batch.delete(CloudFileEntity.tableName); // 先 clear 本地数据库
+      entities.forEach(
+          (e) => batch.insert(CloudFileEntity.tableName, e.toMap()) // 再批量插入
+          );
+      await batch.commit(noResult: true);
+    });
+  }
+
+  Future<bool> renameFile(int id, String newName) async {
     CloudFileEntity entity = getEntityById(id);
-    if (entity == null) {
-      print('renameFile entity is null');
-      return;
-    }
+    if (entity == null) return false;
+
+    bool success = await CloudFileHandle.renameFile(id, newName);
+    if (!success) return false;
     // 文件重命名，只需要更新名字
     if (!entity.isFolder()) {
-      String ext = FileUtil.ext(entity.fileName);
-      entity.fileName = newName + ext; // update memory
+      entity.fileName =
+          newName + FileUtil.ext(entity.fileName); // update memory
       await DBManager.instance.update(
           CloudFileEntity.tableName, entity, MapEntry('id', id)); // update db
+    } else {
+      // 文件夹重命名，更新名字，还要更新路径，太麻烦了，直接全量刷新
+      await reflashCloudFileList();
     }
-    // 文件夹重命名，更新名字，还要更新路径，太麻烦了，直接全量刷新
-    await CloudFileHandle.reflashCloudFileList();
+    return success;
+  }
+
+  deleteFile(int id) async {
+    CloudFileEntity entity = getEntityById(id);
+    if (entity == null) {
+      print('deleteFile entity is null');
+      return;
+    }
+    bool success = await CloudFileHandle.deleteFile(entity.id);
+    if (!success) return false;
+    // 文件删除，只需要删除一个文件
+    if (!entity.isFolder()) {
+      _entities.remove(entity); // 删除缓存
+      await DBManager.instance.delete(
+          CloudFileEntity.tableName, {'id': entity.id.toString()}); // 删除DB
+    } else {
+      await reflashCloudFileList();
+    }
+    return success;
+  }
+
+  Future newFolder(int pid, String name) async {
+    CloudFileEntity entity = await CloudFileHandle.newFolder(pid, name);
+    return entity != null;
+  }
+
+  Future<bool> downloadFile(List<CloudFileEntity> es) {
+    es.forEach((e) async {
+      DownloadTask task = DownloadTask(
+          id: e.id,
+          fileName: e.fileName,
+          path: FileUtil.getDownloadFilePath(e),
+          token: CancelToken());
+      TranslateManager.instant().addDoingTask(task);
+      await CloudFileHandle.downloadOneFile(task);
+    });
+  }
+
+  Future<bool> uploadFile(int pid, List<String> paths) async {
+    paths.forEach((f) async {
+      UploadTask task = UploadTask(path: f, pid: pid, token: CancelToken());
+      TranslateManager.instant().addDownTask(task);
+      await CloudFileHandle.uploadOneFile(task);
+    });
   }
 }

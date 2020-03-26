@@ -23,7 +23,7 @@ class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   List<CloudFileEntity> currentFiles = [];
   List<CloudFileEntity> path = []; // 路径
-  int _sortType = 0; // 0 by time, 1 by a-z
+  Function _sortType = CloudFileEntity.sortByTime; // 0 by time, 1 by a-z
   int _clzType = 0; // 0 列表，1 图片，
 
   @override
@@ -38,7 +38,9 @@ class RemoteRouteState extends State<RemoteRoute>
 
   _enterFolder(int pid) {
     path.add(CloudFileManager.instance().getEntityById(pid));
-    currentFiles = CloudFileManager.instance().listFiles(pid, type: _sortType);
+    currentFiles = CloudFileManager.instance().listFiles(
+      pid,
+    );
   }
 
   bool _outFolderAndRefresh() {
@@ -46,7 +48,7 @@ class RemoteRouteState extends State<RemoteRoute>
     setState(() {
       path.removeLast();
       currentFiles = CloudFileManager.instance()
-          .listFiles(path.last.id, justFolder: false, type: _sortType);
+          .listFiles(path.last.id, justFolder: false, sortFunc: _sortType);
     });
     return false;
   }
@@ -54,7 +56,7 @@ class RemoteRouteState extends State<RemoteRoute>
   _refreshList() {
     setState(() {
       currentFiles = CloudFileManager.instance()
-          .listFiles(path.last.id, justFolder: false, type: _sortType);
+          .listFiles(path.last.id, justFolder: false, sortFunc: _sortType);
     });
   }
 
@@ -102,7 +104,7 @@ class RemoteRouteState extends State<RemoteRoute>
       enableFeedback: false,
       icon: Icon(Icons.sort),
       onPressed: () async {
-        int type = await _sortByTypeSelectorView(key2);
+        Function type = await _sortByTypeSelectorView(key2);
         print('sort type = $type');
         if (type != null && type != _sortType) {
           _sortType = type;
@@ -129,11 +131,12 @@ class RemoteRouteState extends State<RemoteRoute>
       UI.showSnackBar(context, Text('文件名为空'));
       return;
     }
-    await CloudFileHandle.newFolder(path.last.id, folderName.trim(),
-        successCall: (_) => _refreshList(),
-        failedCall: (Map<String, dynamic> rsp) {
-          UI.showSnackBar(context, rsp['message']);
-        });
+    bool success = await CloudFileManager.instance()
+        .newFolder(path.last.id, folderName.trim());
+    if (success)
+      _refreshList();
+    else
+      UI.showSnackBar(context, Text('创建失败'));
   }
 
   //
@@ -201,8 +204,8 @@ class RemoteRouteState extends State<RemoteRoute>
     return RefreshIndicator(
       child: Scrollbar(child: listView),
       onRefresh: () async {
-        await CloudFileHandle.reflashCloudFileList(
-            failedCall: () {}, successCall: () => (_) => _refreshList());
+        bool success = await CloudFileManager.instance().reflashCloudFileList();
+        if (success) _refreshList();
       },
     );
   }
@@ -241,7 +244,7 @@ class RemoteRouteState extends State<RemoteRoute>
     );
   }
 
-  Future<int> _sortByTypeSelectorView(GlobalKey key) async {
+  Future<Function> _sortByTypeSelectorView(GlobalKey key) async {
     Text sortByTime;
     Text sortByName;
     if (_sortType == 0) {
@@ -268,11 +271,13 @@ class RemoteRouteState extends State<RemoteRoute>
               children: <Widget>[
                 FlatButton(
                   child: sortByTime,
-                  onPressed: () => Navigator.pop(context, 0),
+                  onPressed: () =>
+                      Navigator.pop(context, CloudFileEntity.sortByTime),
                 ),
                 FlatButton(
                   child: sortByName,
-                  onPressed: () => Navigator.pop(context, 1),
+                  onPressed: () =>
+                      Navigator.pop(context, CloudFileEntity.sortByTime),
                 ),
               ],
             )),

@@ -36,7 +36,7 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   }
 
   initData() {
-    Provider.of<CloudFileModel>(context);
+    uiDate.clear();
     _entities = CloudFileManager.instance().photos;
     _entities.sort((e1, e2) => e2.uploadTime - e1.uploadTime);
     for (int i = 0; i < _entities.length; i++) {
@@ -60,6 +60,8 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<CloudFileModel>(context);
+    print('cloud photo fragment build');
     initData();
     Widget photoView = StaggeredGridView.countBuilder(
       crossAxisCount: 4,
@@ -85,11 +87,9 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   }
 
   Widget loadImage(_ViewHolder holder) {
-    print(holder.entity.fileName);
     FileSystemEntity file = File(FileUtil.getDownloadFilePath(holder.entity));
     Widget image;
     if (FileUtil.haveDownloaded(holder.entity)) {
-      print('haveDownloaded');
       image = Image.file(
         file,
         fit: BoxFit.cover,
@@ -99,10 +99,8 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
         cacheHeight: _imagePxSize.toInt(),
       );
     } else {
-      print('haveDownloaded not');
       if (file.existsSync()) {
         file.deleteSync();
-        print('delete undownloaded file');
       }
       image = ExtendedImage.network(
         getPreviewUrl(holder.entity.id, _imagePxSize, _imagePxSize),
@@ -118,10 +116,10 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
         child: image,
       ),
       onLongPress: () {
-        RemoteRouteHelper(context).showBottomSheet(holder.entity, type: 1,
-            callBack: () {
-          setState(() {});
-        });
+        RemoteRouteHelper(context).showBottomSheet(
+          holder.entity,
+          type: RemoteRouteHelper.SHOW_TYPE_PHOTO,
+        );
       },
       onTap: () {
         UI.openCloudFile(context, holder.entity, entities: _entities);

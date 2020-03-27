@@ -49,13 +49,10 @@ class CloudFileModel extends ChangeNotifier {
 class CloudFileManager {
   CloudFileModel _cloudFileModel = CloudFileModel([]);
   CloudFileModel get model => _cloudFileModel;
-  // 引用 CloudFileModel， 兼容老逻辑
-  List<CloudFileEntity> get _entities => _cloudFileModel.entitis; // 初始化
 
   CloudFileEntity _root;
   int get rootId => _root.id;
   static CloudFileManager _instance;
-  static bool _isInit = false;
 
   static CloudFileManager instance() {
     if (_instance == null) {
@@ -65,24 +62,23 @@ class CloudFileManager {
   }
 
   CloudFileManager._init() {
-    initDataFromDB().whenComplete(() {
-      _isInit = true;
-    });
+    initDataFromDB();
   }
 
   List<CloudFileEntity> get photos {
     List<CloudFileEntity> _photos = [];
-    _entities.forEach((f) {
+    model.entitis.forEach((f) {
       if (f.type == 'png' || f.type == 'jpg' || f.type == 'jpeg') {
         _photos.add(f);
       }
     });
+    print(_photos.length);
     return _photos;
   }
 
   CloudFileEntity getEntityById(int id) {
     try {
-      return _entities.firstWhere((e) => e.id == id);
+      return model.entitis.firstWhere((e) => e.id == id);
     } catch (e) {
       print('getEntityById ${e}');
       return null;
@@ -99,7 +95,7 @@ class CloudFileManager {
       Function sortFunc = CloudFileEntity.sortByTime,
       bool r = false}) {
     List<CloudFileEntity> result = [];
-    _entities.forEach((f) {
+    model.entitis.forEach((f) {
       if (f.parentId == pId) {
         if (!justFolder) {
           result.add(f);

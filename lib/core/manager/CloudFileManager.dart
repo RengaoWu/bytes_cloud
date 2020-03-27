@@ -12,8 +12,8 @@ class CloudFileModel extends ChangeNotifier {
   List<CloudFileEntity> _entities = [];
   CloudFileModel(this._entities);
 
-  List<CloudFileEntity> get entitis => _entities;
-  set entitis(List<CloudFileEntity> es) {
+  List<CloudFileEntity> get entities => _entities;
+  set entities(List<CloudFileEntity> es) {
     this._entities = es;
     print('set ===== >   notifyListeners');
     notifyListeners();
@@ -67,7 +67,7 @@ class CloudFileManager {
 
   List<CloudFileEntity> get photos {
     List<CloudFileEntity> _photos = [];
-    model.entitis.forEach((f) {
+    model.entities.forEach((f) {
       if (f.type == 'png' || f.type == 'jpg' || f.type == 'jpeg') {
         _photos.add(f);
       }
@@ -78,7 +78,7 @@ class CloudFileManager {
 
   CloudFileEntity getEntityById(int id) {
     try {
-      return model.entitis.firstWhere((e) => e.id == id);
+      return model.entities.firstWhere((e) => e.id == id);
     } catch (e) {
       print('getEntityById ${e}');
       return null;
@@ -95,7 +95,7 @@ class CloudFileManager {
       Function sortFunc = CloudFileEntity.sortByTime,
       bool r = false}) {
     List<CloudFileEntity> result = [];
-    model.entitis.forEach((f) {
+    model.entities.forEach((f) {
       if (f.parentId == pId) {
         if (!justFolder) {
           result.add(f);
@@ -133,7 +133,7 @@ class CloudFileManager {
     List<CloudFileEntity> temp =
         es.map((f) => CloudFileEntity.fromJson(f)).toList();
     _root = temp.firstWhere((t) => t.id == 0);
-    _cloudFileModel.entitis = temp;
+    _cloudFileModel.entities = temp;
   }
 
   // 增加

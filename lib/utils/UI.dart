@@ -621,21 +621,7 @@ class UI {
         break;
     }
     if (resFlag == 1) {
-      return FutureBuilder(
-        future: loadImage(<String, dynamic>{'path': path, 'size': size}),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox(
-              width: size,
-              height: size,
-            );
-          }
-          if (snapshot.hasData) {
-            return snapshot.data;
-          }
-          return Text('error');
-        },
-      );
+      return loadImage(path, size);
     } else if (resFlag == 2) {
       return SizedBox(width: size, height: size, child: getThumbWidget(path));
     }
@@ -647,9 +633,7 @@ class UI {
     );
   }
 
-  static loadImage(Map<String, dynamic> map) async {
-    double size = map['size'];
-    String path = map['path'];
+  static loadImage(String path, double size) {
     return ExtendedImage.file(
       File(path),
       fit: BoxFit.cover,

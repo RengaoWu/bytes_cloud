@@ -336,38 +336,35 @@ class RecentRouteState extends State<RecentRoute>
     int i = 0;
     var widgets = showData.map((f) {
       i++;
+      Widget image = Hero(
+        child: UI.selectPreview(f.path, itemInnerViewPhotoSize),
+        tag: f.path,
+      );
+
       if (i == PIC_MAX_SHOW_LENGTH) {
-        return SizedBox(
+        image = SizedBox(
           width: itemInnerViewPhotoSize,
           height: itemInnerViewPhotoSize,
           child: Stack(
             children: <Widget>[
-              UI.selectPreview(f.path, itemInnerViewPhotoSize),
-              InkWell(
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  width: itemInnerViewPhotoSize,
-                  height: itemInnerViewPhotoSize,
-                  child: Icon(
-                    Icons.more_horiz,
-                    color: Colors.white,
-                    size: 84,
-                  ),
+              image,
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                width: itemInnerViewPhotoSize,
+                height: itemInnerViewPhotoSize,
+                child: Icon(
+                  Icons.more_horiz,
+                  color: Colors.white,
+                  size: 32,
                 ),
-                onTap: () => openFile(f, group),
-              )
+              ),
             ],
           ),
         );
       }
       return InkWell(
-        child: Hero(
-          child: UI.selectPreview(f.path, itemInnerViewPhotoSize),
-          tag: f.path,
-        ),
-        onTap: () {
-          openFile(f, group);
-        },
+        child: image,
+        onTap: () => openFile(f, group),
       );
     }).toList();
     return Container(
@@ -418,16 +415,20 @@ class RecentRouteState extends State<RecentRoute>
       SysFileSelectorPage({'root': Common().screamShot, 'rootName': '截图'}));
   callCameraSelector() => UI.newPage(context,
       SysFileSelectorPage({'root': Common().camera, 'rootName': '相机'}));
-  headerGridView() => GridView.count(
-        shrinkWrap: true,
-        crossAxisCount: 5,
+  headerGridView() => Row(
         children: <Widget>[
           // 快捷访问
-          UI.iconTxtBtn(Constants.WECHAT, '微信', callWxSelector),
-          UI.iconTxtBtn(Constants.QQ, 'QQ', callQQSelector),
-          UI.iconTxtBtn(Constants.DOWNLOADED, '下载', callDownloadSelector),
-          UI.iconTxtBtn(Constants.SCREAMSHOT, '截图', callScreamShotSelector),
-          UI.iconTxtBtn(Constants.CAMERA, '相机', callCameraSelector),
+          Expanded(
+              child: UI.iconTxtBtn(Constants.WECHAT, '微信', callWxSelector)),
+          Expanded(child: UI.iconTxtBtn(Constants.QQ, 'QQ', callQQSelector)),
+          Expanded(
+              child: UI.iconTxtBtn(
+                  Constants.DOWNLOADED, '下载', callDownloadSelector)),
+          Expanded(
+              child: UI.iconTxtBtn(
+                  Constants.SCREAMSHOT, '截图', callScreamShotSelector)),
+          Expanded(
+              child: UI.iconTxtBtn(Constants.CAMERA, '相机', callCameraSelector)),
         ],
       );
 

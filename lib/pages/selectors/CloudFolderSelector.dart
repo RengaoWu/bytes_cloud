@@ -55,11 +55,11 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
             call: (context) async {
               Scaffold.of(context)
                   .showSnackBar(SnackBar(content: Text("开始上传")));
-              await CloudFileManager.instance()
-                  .uploadFile(path.last.id, filePaths);
               Future.delayed(Duration(seconds: 1)).then((v) {
                 Navigator.pop(context);
               });
+              await CloudFileManager.instance()
+                  .uploadFile(path.last.id, filePaths);
             },
           ),
         ],

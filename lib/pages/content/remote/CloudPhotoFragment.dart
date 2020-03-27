@@ -13,6 +13,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
 class CloudPhotoFragment extends StatefulWidget {
   @override
@@ -22,7 +23,6 @@ class CloudPhotoFragment extends StatefulWidget {
 }
 
 class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
-  Widget photoView;
   List<CloudFileEntity> _entities = [];
   List<_ViewHolder> uiDate = [];
   List<CancelToken> tokens = [];
@@ -33,6 +33,10 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   @override
   void initState() {
     super.initState();
+  }
+
+  initData() {
+    Provider.of<CloudFileModel>(context);
     _entities = CloudFileManager.instance().photos;
     _entities.sort((e1, e2) => e2.uploadTime - e1.uploadTime);
     for (int i = 0; i < _entities.length; i++) {
@@ -56,9 +60,8 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
 
   @override
   Widget build(BuildContext context) {
-    print('cloud photo fragment build');
-    if (photoView != null) return photoView;
-    photoView = StaggeredGridView.countBuilder(
+    initData();
+    Widget photoView = StaggeredGridView.countBuilder(
       crossAxisCount: 4,
       itemCount: uiDate.length,
       itemBuilder: (BuildContext context, int index) {

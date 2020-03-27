@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
@@ -8,10 +10,10 @@ import 'package:dio/dio.dart';
 
 class CloudFileHandle {
   // 获取所有的目录信息
-  static Future<List<CloudFileEntity>> reflashCloudFileList() async {
+  static Future<List<CloudFileEntity>> refreshCloudFileList() async {
     try {
       Map<String, dynamic> rsp =
-          await httpGet(HTTP_GET_ALL_FILES, {'curUid': '0'});
+          await httpGet(HTTP_GET_ALL_FILES, params: {'curUid': '0'});
       List maps = rsp['data'];
       List<CloudFileEntity> result = [];
       maps.forEach((json) {
@@ -46,16 +48,17 @@ class CloudFileHandle {
   }
 
   static Future<bool> deleteFile(int id) async {
-    var resp = await httpPost(
-      HTTP_GET_RENAME,
+    var resp = await httpGet(
+      HTTP_GET_DELETE,
       params: {
         'id': id,
       },
     );
+    print('deleteFile id = ${id} resp = ${resp.toString()}');
     return resp['code'] == 0;
   }
 
-  static Future uploadOneFile(UploadTask task) async {
+  static Future<CloudFileEntity> uploadOneFile(UploadTask task) async {
     int lastTime = DateTime.now().millisecondsSinceEpoch;
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
       int currentTime = DateTime.now().millisecondsSinceEpoch;
@@ -69,11 +72,15 @@ class CloudFileHandle {
           filename: FileUtil.getFileNameWithExt(task.path)),
     });
     print('uploadOneFile ${resp.toString()}');
+    if (resp['code'] == 0)
+      return CloudFileEntity.fromJson(resp['data']);
+    else
+      return null;
   }
 
   static Future downloadOneFile(DownloadTask task) async {
     int lastTime = DateTime.now().millisecondsSinceEpoch;
-    var resp = await httpDownload(
+    Response<ResponseBody> resp = await httpDownload(
         HTTP_POST_DOWNLOAD_FILE, {'id': task.id}, task.path, (sent, total) {
       int currentTime = DateTime.now().millisecondsSinceEpoch;
       task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
@@ -81,10 +88,8 @@ class CloudFileHandle {
       task.sent = sent;
       task.total = total;
     });
-    if (resp['code'] == 0) {
-      SPUtil.setBool(SPUtil.downloadedKey(task.id), true);
-      return true;
+    if (resp.statusCode == 200) {
+      print('下载请求成功');
     }
-    return false;
   }
 }

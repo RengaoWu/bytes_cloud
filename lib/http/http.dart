@@ -22,14 +22,14 @@ const String HTTP_POST_A_FILE = '/api/file/upload';
 const String HTTP_POST_NEW_FOLDER = '/api/file/newFolder';
 const String HTTP_POST_DOWNLOAD_FILE = '/api/file/download';
 const String HTTP_POST_RENAME = '/api/file/reName';
-const String HTTP_GET_RENAME = '/api/file/delete';
+const String HTTP_GET_DELETE = '/api/file/delete';
 const String HTTP_GET_PREVIEW = '/api/file/preview';
 
 // GET
-Future<Map<String, dynamic>> httpGet(
-    String path, Map<String, dynamic> map) async {
+Future<Map<String, dynamic>> httpGet(String path,
+    {Map<String, dynamic> params}) async {
   try {
-    Response response = await dio.get(path, queryParameters: map);
+    Response response = await dio.get(path, queryParameters: params);
     return response.data;
   } catch (e) {
     print(e.toString());

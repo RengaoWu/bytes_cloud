@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/pages/content/remote/CloudPhotoFragment.dart';
@@ -11,6 +10,7 @@ import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 
 class RemoteRoute extends StatefulWidget {
   @override
@@ -21,6 +21,7 @@ class RemoteRoute extends StatefulWidget {
 
 class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  CloudFileModel model;
   List<CloudFileEntity> currentFiles = [];
   List<CloudFileEntity> path = []; // 路径
   Function _sortType = CloudFileEntity.sortByTime; // 0 by time, 1 by a-z
@@ -29,40 +30,33 @@ class RemoteRouteState extends State<RemoteRoute>
   @override
   void initState() {
     super.initState();
-    _enterFolder(CloudFileManager.instance().rootId);
+    path.add(CloudFileManager.instance()
+        .getEntityById(CloudFileManager.instance().rootId));
   }
 
   _enterFolderAndRefresh(int pid) => setState(() {
-        _enterFolder(pid);
+        path.add(CloudFileManager.instance().getEntityById(pid));
       });
-
-  _enterFolder(int pid) {
-    path.add(CloudFileManager.instance().getEntityById(pid));
-    currentFiles = CloudFileManager.instance().listFiles(
-      pid,
-    );
-  }
 
   bool _outFolderAndRefresh() {
     if (path.length == 1) return true;
     setState(() {
       path.removeLast();
-      currentFiles = CloudFileManager.instance()
-          .listFiles(path.last.id, justFolder: false, sortFunc: _sortType);
     });
     return false;
   }
 
   _refreshList() {
-    setState(() {
-      currentFiles = CloudFileManager.instance()
-          .listFiles(path.last.id, justFolder: false, sortFunc: _sortType);
-    });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    model = Provider.of<CloudFileModel>(context); // 需要引用一下，才能更新UI
+    print('RemoteRouteState build');
+    currentFiles = CloudFileManager.instance()
+        .listFiles(path.last.id, justFolder: false, sortFunc: _sortType);
     GlobalKey key1 = GlobalKey();
 
     Widget selectShowUI(int showFlag) {
@@ -105,10 +99,9 @@ class RemoteRouteState extends State<RemoteRoute>
       icon: Icon(Icons.sort),
       onPressed: () async {
         Function type = await _sortByTypeSelectorView(key2);
-        print('sort type = $type');
         if (type != null && type != _sortType) {
           _sortType = type;
-          _refreshList();
+          _refreshList(); // 切换展示的方式
         }
         ;
       },
@@ -133,13 +126,9 @@ class RemoteRouteState extends State<RemoteRoute>
     }
     bool success = await CloudFileManager.instance()
         .newFolder(path.last.id, folderName.trim());
-    if (success)
-      _refreshList();
-    else
-      UI.showSnackBar(context, Text('创建失败'));
+    if (!success) UI.showSnackBar(context, Text('创建失败'));
   }
 
-  //
   cloudListView() {
     var listView = ListView.separated(
         itemCount: currentFiles.length,
@@ -190,10 +179,8 @@ class RemoteRouteState extends State<RemoteRoute>
           var inkItem = Builder(builder: (BuildContext context) {
             return InkWell(
               child: item,
-              onLongPress: () async => await RemoteRouteHelper(context)
-                  .showBottomSheet(entity, callBack: () {
-                _refreshList();
-              }),
+              onLongPress: () async =>
+                  await RemoteRouteHelper(context).showBottomSheet(entity),
             );
           });
           return Padding(
@@ -204,8 +191,7 @@ class RemoteRouteState extends State<RemoteRoute>
     return RefreshIndicator(
       child: Scrollbar(child: listView),
       onRefresh: () async {
-        bool success = await CloudFileManager.instance().reflashCloudFileList();
-        if (success) _refreshList();
+        bool success = await CloudFileManager.instance().refreshCloudFileList();
       },
     );
   }
@@ -247,7 +233,7 @@ class RemoteRouteState extends State<RemoteRoute>
   Future<Function> _sortByTypeSelectorView(GlobalKey key) async {
     Text sortByTime;
     Text sortByName;
-    if (_sortType == 0) {
+    if (_sortType == CloudFileEntity.sortByTime) {
       sortByTime = Text(
         '时间排序',
         style: TextStyle(color: Colors.blue),
@@ -277,7 +263,7 @@ class RemoteRouteState extends State<RemoteRoute>
                 FlatButton(
                   child: sortByName,
                   onPressed: () =>
-                      Navigator.pop(context, CloudFileEntity.sortByTime),
+                      Navigator.pop(context, CloudFileEntity.sortByName),
                 ),
               ],
             )),

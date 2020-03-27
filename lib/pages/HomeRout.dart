@@ -1,6 +1,8 @@
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'NativeRoute.dart';
 import 'content/remote/RemoteRoute.dart';
@@ -36,7 +38,10 @@ class HomeRouteState extends State<HomeRoute>
       body: TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),
         NativeRoute(),
-        RemoteRoute(),
+        ListenableProvider.value(
+          value: CloudFileManager.instance().model,
+          child: RemoteRoute(),
+        ),
         SelfRoute()
       ]),
       bottomNavigationBar: Material(

@@ -48,16 +48,18 @@ class DBManager {
   }
 
   // 删
-  static String pattern = '= ? and';
+  static const String AND = ' and ';
   Future<int> delete(String tableName, Map<String, String> whereArg) async {
     await _init();
+
     String where = '';
     List<String> arg = [];
     whereArg.forEach((k, v) {
-      where += k + pattern;
+      where += k + ' = ? ' + AND;
       arg.add(v);
     });
-    where = where.substring(0, where.length - pattern.length);
+    where = where.substring(0, where.length - AND.length);
+    print('DBManager delete where = ${where} , args = ${arg.toString()}');
     return await _db.delete(tableName, where: where, whereArgs: arg);
   }
 
@@ -86,10 +88,10 @@ class DBManager {
     String where = '';
     List<String> arg = [];
     whereArg.forEach((k, v) {
-      where += k + pattern;
+      where += k + AND;
       arg.add(v);
     });
-    where = where.substring(0, where.length - pattern.length);
+    where = where.substring(0, where.length - AND.length);
 
     return await _db.query(tableName, where: where, whereArgs: arg);
   }

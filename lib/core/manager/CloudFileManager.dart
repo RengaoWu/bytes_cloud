@@ -3,12 +3,55 @@ import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'DBManager.dart';
 
+class CloudFileModel extends ChangeNotifier {
+  List<CloudFileEntity> _entities = [];
+  CloudFileModel(this._entities);
+
+  List<CloudFileEntity> get entitis => _entities;
+  set entitis(List<CloudFileEntity> es) {
+    this._entities = es;
+    print('set ===== >   notifyListeners');
+    notifyListeners();
+  }
+
+  add(CloudFileEntity entity) {
+    this._entities.add(entity);
+    print('add ===== >   notifyListeners');
+    notifyListeners();
+  }
+
+  remove(CloudFileEntity entity) {
+    this._entities.removeWhere((e) => e.id == entity.id);
+    print('remove ===== >   notifyListeners');
+    notifyListeners();
+  }
+
+  update(CloudFileEntity entity) {
+    try {
+      print('update ===== >   notifyListeners');
+      int index = _entities.indexWhere((e) => e.id == entity.id);
+      _entities[index] = entity;
+      notifyListeners();
+    } catch (e) {}
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+  }
+}
+
 class CloudFileManager {
-  List<CloudFileEntity> _entities = []; // 初始化
+  CloudFileModel _cloudFileModel = CloudFileModel([]);
+  CloudFileModel get model => _cloudFileModel;
+  // 引用 CloudFileModel， 兼容老逻辑
+  List<CloudFileEntity> get _entities => _cloudFileModel.entitis; // 初始化
+
   CloudFileEntity _root;
   int get rootId => _root.id;
   static CloudFileManager _instance;
@@ -37,8 +80,14 @@ class CloudFileManager {
     return _photos;
   }
 
-  CloudFileEntity getEntityById(int id) =>
-      _entities.firstWhere((e) => e.id == id);
+  CloudFileEntity getEntityById(int id) {
+    try {
+      return _entities.firstWhere((e) => e.id == id);
+    } catch (e) {
+      print('getEntityById ${e}');
+      return null;
+    }
+  }
 
   List<CloudFileEntity> listRootFiles(
       {bool justFolder = false, bool r = false}) {
@@ -72,11 +121,11 @@ class CloudFileManager {
     return listFiles(pid, justFolder: justFolder, r: r).length;
   }
 
-  Future<bool> reflashCloudFileList() async {
-    List<CloudFileEntity> es = await CloudFileHandle.reflashCloudFileList();
+  Future<bool> refreshCloudFileList() async {
+    List<CloudFileEntity> es = await CloudFileHandle.refreshCloudFileList();
     if (es == null) return false;
-    await CloudFileManager.instance().initDataFromDB(); // 更新内存数据
     await CloudFileManager.instance().saveAllCloudFiles(es); // 存DB
+    await CloudFileManager.instance().initDataFromDB(); // 更新内存数据
     return true;
   }
 
@@ -88,13 +137,13 @@ class CloudFileManager {
     List<CloudFileEntity> temp =
         es.map((f) => CloudFileEntity.fromJson(f)).toList();
     _root = temp.firstWhere((t) => t.id == 0);
-    _entities = temp;
+    _cloudFileModel.entitis = temp;
   }
 
   // 增加
   Future<CloudFileEntity> insertCloudFile(CloudFileEntity entity) async {
     CloudFileEntity result = entity;
-    _entities.add(result); // 更新缓存
+    _cloudFileModel.add(result); // 更新缓存
     return await DBManager.instance
         .insert(CloudFileEntity.tableName, entity); // 更新DB
   }
@@ -111,6 +160,7 @@ class CloudFileManager {
     });
   }
 
+  // 重命名
   Future<bool> renameFile(int id, String newName) async {
     CloudFileEntity entity = getEntityById(id);
     if (entity == null) return false;
@@ -121,11 +171,12 @@ class CloudFileManager {
     if (!entity.isFolder()) {
       entity.fileName =
           newName + FileUtil.ext(entity.fileName); // update memory
+      _cloudFileModel.update(entity);
       await DBManager.instance.update(
           CloudFileEntity.tableName, entity, MapEntry('id', id)); // update db
     } else {
       // 文件夹重命名，更新名字，还要更新路径，太麻烦了，直接全量刷新
-      await reflashCloudFileList();
+      await refreshCloudFileList();
     }
     return success;
   }
@@ -137,25 +188,33 @@ class CloudFileManager {
       return;
     }
     bool success = await CloudFileHandle.deleteFile(entity.id);
+    print('deleteFile $success');
     if (!success) return false;
     // 文件删除，只需要删除一个文件
     if (!entity.isFolder()) {
-      _entities.remove(entity); // 删除缓存
+      _cloudFileModel.remove(entity); // 删除缓存
       await DBManager.instance.delete(
           CloudFileEntity.tableName, {'id': entity.id.toString()}); // 删除DB
     } else {
-      await reflashCloudFileList();
+      await refreshCloudFileList();
     }
     return success;
   }
 
   Future newFolder(int pid, String name) async {
     CloudFileEntity entity = await CloudFileHandle.newFolder(pid, name);
-    return entity != null;
+    print('newFolder ${entity.toMap()}');
+    bool success = entity != null;
+    if (success) {
+      _cloudFileModel.add(entity);
+      DBManager.instance.insert(CloudFileEntity.tableName, entity);
+    }
+    return success;
   }
 
-  Future<bool> downloadFile(List<CloudFileEntity> es) {
-    es.forEach((e) async {
+  Future<bool> downloadFile(List<CloudFileEntity> es) async {
+    for (int i = 0; i < es.length; i++) {
+      CloudFileEntity e = es[i];
       DownloadTask task = DownloadTask(
           id: e.id,
           fileName: e.fileName,
@@ -163,14 +222,19 @@ class CloudFileManager {
           token: CancelToken());
       TranslateManager.instant().addDoingTask(task);
       await CloudFileHandle.downloadOneFile(task);
-    });
+    }
+    return true;
   }
 
   Future<bool> uploadFile(int pid, List<String> paths) async {
-    paths.forEach((f) async {
+    for (int i = 0; i < paths.length; i++) {
+      String f = paths[i];
       UploadTask task = UploadTask(path: f, pid: pid, token: CancelToken());
       TranslateManager.instant().addDownTask(task);
-      await CloudFileHandle.uploadOneFile(task);
-    });
+      CloudFileEntity entity = await CloudFileHandle.uploadOneFile(task);
+      model.add(entity);
+      await DBManager.instance.insert(CloudFileEntity.tableName, entity);
+    }
+    return true;
   }
 }

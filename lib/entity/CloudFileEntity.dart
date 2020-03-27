@@ -56,7 +56,11 @@ class CloudFileEntity extends Entity {
     return type == 'dir';
   }
 
-  // sort type
+  @override
+  String toString() {
+    return 'CloudFileEntity{fileName: $fileName, id: $id, parentId: $parentId, pathRoot: $pathRoot, size: $size, type: $type, uid: $uid, uploadTime: $uploadTime}';
+  } // sort type
+
   // type = 0 time default
   // type = 1 A-z
   static int sortByTime(a, b) {

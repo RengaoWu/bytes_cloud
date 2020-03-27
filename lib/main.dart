@@ -73,7 +73,7 @@ void main() async {
     // DBManager 初始化
     DBManager.instance;
     // 请求云盘所有文件
-    CloudFileManager.instance().reflashCloudFileList().whenComplete(() {
+    CloudFileManager.instance().refreshCloudFileList().whenComplete(() {
       print('云盘数据初始化完成');
     });
 

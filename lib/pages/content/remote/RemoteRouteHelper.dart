@@ -10,6 +10,7 @@ import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 // 对文件或者文件夹对操作独立出来
@@ -32,23 +33,28 @@ class RemoteRouteHelper {
     if (callBack != null) cb = callBack;
     List<Widget> content = [];
     Widget downloadActionWidget = Expanded(
-        child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () {
+        child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () async {
+      await downloadAction(entity);
       Navigator.pop(context);
-      downloadAction(entity);
     }, fontWeight: FontWeight.normal));
     Widget shareActionWidget = Expanded(
-        child: UI.iconTxtBtn(Constants.SHARE2, '分享', () => shareAction(entity),
-            fontWeight: FontWeight.normal));
+        child: UI.iconTxtBtn(Constants.SHARE2, '分享', () async {
+      await shareAction(entity);
+      Navigator.pop(context);
+    }, fontWeight: FontWeight.normal));
     Widget moveActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
             fontWeight: FontWeight.normal));
     Widget deleteActionWidget = Expanded(
-        child: UI.iconTxtBtn(Constants.DELETE, '删除', null,
-            fontWeight: FontWeight.normal));
+        child: UI.iconTxtBtn(Constants.DELETE, '删除', () async {
+      await deleteAction(entity);
+      Navigator.pop(context);
+    }, fontWeight: FontWeight.normal));
     Widget renameActionWidget = Expanded(
-        child: UI.iconTxtBtn(
-            Constants.MODIFY, '重命名', () => reNameAction(entity),
-            fontWeight: FontWeight.normal));
+        child: UI.iconTxtBtn(Constants.MODIFY, '重命名', () async {
+      await reNameAction(entity);
+      Navigator.pop(context);
+    }, fontWeight: FontWeight.normal));
     Widget moreActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.MORE, '详情', null,
             fontWeight: FontWeight.normal));
@@ -82,14 +88,15 @@ class RemoteRouteHelper {
         padding: 8);
   }
 
+  // 分享 ACTION
   shareAction(CloudFileEntity entity) async {
     Navigator.pop(context);
     UI.showContentDialog(context, '分享文件: ${entity.fileName}',
         QrImage(data: getDownloadUrl(entity.id)),
         left: '保存到本地', leftCall: () {}, right: '分享', rightCall: () {});
-    // QrImage
   }
 
+  // 下载 ACTION
   downloadAction(CloudFileEntity entity) async {
     if (entity.isFolder()) {
       UI.showSnackBar(context, Text('文件夹暂时不支持批量下载'));
@@ -113,12 +120,18 @@ class RemoteRouteHelper {
         duration: Duration(seconds: 2));
   }
 
+  // 重命名 ACTION
   reNameAction(CloudFileEntity entity) async {
     String input = await UI.showInputDialog(context, '重命名');
     if (input == null || input.trim() == '') return;
     String newName = input + FileUtil.ext(entity.fileName);
     bool success = await CloudFileManager.instance()
         .renameFile(entity.id, newName); // 告诉Svr
-    if (cb != null && success) cb();
+  }
+
+  // 删除 ACTION
+  deleteAction(CloudFileEntity entity) async {
+    bool success = await CloudFileManager.instance().deleteFile(entity.id);
+    return success;
   }
 }

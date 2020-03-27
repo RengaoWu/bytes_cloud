@@ -24,37 +24,27 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
   void initState() {
     super.initState();
     filePaths = widget.filePaths;
-    enterFolder(CloudFileManager.instance().rootId);
+    path.add(CloudFileManager.instance()
+        .getEntityById(CloudFileManager.instance().rootId));
   }
 
-  enterFolderAndRefresh(int pid) => setState(() {
-        enterFolder(pid);
-      });
-
-  enterFolder(int pid) {
-    path.add(CloudFileManager.instance().getEntityById(pid));
-    currentFiles = CloudFileManager.instance().listFiles(pid, justFolder: true);
-  }
+  enterFolderAndRefresh(int pid) =>
+      setState(() => path.add(CloudFileManager.instance().getEntityById(pid)));
 
   bool outFolderAndRefresh() {
     if (path.length == 1) return true;
     setState(() {
       path.removeLast();
-      currentFiles =
-          CloudFileManager.instance().listFiles(path.last.id, justFolder: true);
     });
     return false;
   }
 
-  refreshList() {
-    setState(() {
-      currentFiles =
-          CloudFileManager.instance().listFiles(path.last.id, justFolder: true);
-    });
-  }
+  refresh() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
+    currentFiles =
+        CloudFileManager.instance().listFiles(path.last.id, justFolder: true);
     return Scaffold(
       appBar: AppBar(
         leading: CloseButton(),
@@ -75,7 +65,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
         ],
       ),
       body: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(8),
           child: Column(
             children: <Widget>[
               headerView(),
@@ -102,7 +92,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
     bool success = await CloudFileManager.instance()
         .newFolder(path.last.id, folderName.trim());
     if (success)
-      refreshList();
+      refresh();
     else
       UI.showSnackBar(context, Text('创建文件夹失败'));
   }
@@ -113,7 +103,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
       itemBuilder: (BuildContext context, int index) {
         CloudFileEntity entity = currentFiles[index];
         return Padding(
-            padding: EdgeInsets.only(left: 8, right: 8),
+            padding: EdgeInsets.only(left: 0, right: 0),
             child: UI.buildCloudFolderItem(
                 file: entity,
                 childrenCount: CloudFileManager.instance()
@@ -123,7 +113,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
                 }));
       },
       separatorBuilder: (BuildContext context, int index) {
-        return UI.divider2(left: 80, right: 32);
+        return UI.divider2(left: 72, right: 32);
       },
     );
   }

@@ -5,6 +5,7 @@ import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
+import 'package:bytes_cloud/pages/login/LoginRoute.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -32,7 +33,8 @@ class MyApp extends StatelessWidget {
               primarySwatch: themeModel.theme,
               fontFamily: 'NotoSansSC',
             ),
-            home: HomeRoute(), //应用主页
+            //home: HomeRoute(), //应用主页
+            home: LoginRoute(),
           );
         },
       ),

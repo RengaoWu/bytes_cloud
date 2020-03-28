@@ -246,8 +246,8 @@ class LoginRouteState extends State<LoginRoute> {
         _loginUserController.text, _loginPasswordController.text);
     print('_onLogin ${success}');
     if (success) {
-      //UI.newPage(context, HomeRoute());
-      //UI.showMsgDialog(context, '', '注册成功');
+      UI.newPage(context, HomeRoute());
+      UI.showMsgDialog(context, '', '注册成功');
     } else {
       Navigator.pop(context);
       UI.showMsgDialog(context, '', '登陆失败');

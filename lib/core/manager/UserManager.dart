@@ -22,15 +22,10 @@ class UserManager {
   }
 
   static Future login(String userName, String password) async {
+    print(cookieJar.loadForRequest(Uri.parse(host)));
     var rsp = await httpPost(HTTP_POST_LOGIN,
         form: {'email': userName, 'password': password});
     print('login rsp ${rsp.toString()}');
-    if (rsp['code'] == 0) {
-      var cookieJar = CookieJar();
-      dio.interceptors.add(CookieManager(cookieJar));
-      cookieJar.saveFromResponse(Uri.parse(host), rsp);
-      print('login success save cookie');
-    }
     return rsp['code'] == 0;
   }
 }

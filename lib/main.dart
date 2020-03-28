@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
+import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
 import 'package:bytes_cloud/pages/login/LoginRoute.dart';
@@ -71,6 +72,8 @@ void main() async {
     getPermission(), // 初始化权限
     SPUtil.getSp(), // 初始化 sp
   ]).then((result) {
+    // init http
+    initHttp();
     SPUtil.sp = result[2] as SharedPreferences;
     // DBManager 初始化
     DBManager.instance;

@@ -1,5 +1,8 @@
+import 'dart:io';
+
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 
 // https://github.com/flutterchina/dio/blob/master/README-ZH.md
 
@@ -15,9 +18,14 @@ import 'package:flutter/cupertino.dart';
 ///
 /// http://116.62.177.146:5000/api/register?email=test1@163.com&password=123456 注册
 
-String host = "http://116.62.177.146:5000"; // host
-var dio = Dio(BaseOptions(
+const String host = "http://116.62.177.146:5000"; // host
+Dio dio = Dio(BaseOptions(
     baseUrl: host, connectTimeout: Duration(hours: 1).inMilliseconds));
+CookieJar cookieJar = CookieJar();
+
+initHttp() {
+  dio.interceptors.add(CookieManager(cookieJar));
+}
 
 const String HTTP_GET_ALL_FILES = '/api/file/all';
 const String HTTP_POST_A_FILE = '/api/file/upload';

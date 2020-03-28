@@ -95,35 +95,13 @@ class UI {
     });
   }
 
-  static showProgressDialog<T>(
-      {@required BuildContext context,
-      Future<T> future,
-      String title,
-      Function successCall,
-      Function failCall}) {
-    showDialog<Null>(
+  static showProgressDialog<T>({@required BuildContext context}) async {
+    return await showDialog<T>(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
           return Center(
-            child: FutureBuilder(
-              future: future,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                // 请求已结束
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasError) {
-                    failCall(snapshot.error);
-                  } else {
-                    successCall(snapshot.data);
-                  }
-                  Navigator.pop(context);
-                  return CircularProgressIndicator();
-                } else {
-                  // 请求未结束，显示loading
-                  return CircularProgressIndicator();
-                }
-              },
-            ),
+            child: CircularProgressIndicator(),
           );
         });
   }
@@ -164,6 +142,28 @@ class UI {
         leftCall: () => Navigator.pop(context),
         right: '确定',
         rightCall: () => Navigator.pop(context, controller.text));
+  }
+
+  static showMsgDialog(BuildContext context, String title, String content) {
+    Future.delayed(Duration(seconds: 1))
+        .whenComplete(() => Navigator.pop(context));
+    return showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: title.isEmpty ? null : Text(title),
+            contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            backgroundColor: Colors.white70,
+            content: SizedBox(
+                height: 200,
+                child: Center(
+                    child: boldText(content,
+                        fontSize: 16, fontWeight: FontWeight.normal))),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+          );
+        });
   }
 
   static Future<String> showContentDialog(

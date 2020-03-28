@@ -23,6 +23,9 @@ dependencies:
   provider: ^4.0.4
   sqflite: ^1.2.0
   dio: 3.0.9 #latest version
+  dio_cookie_manager: 1.0.0
+  cookie_jar: ^1.0.0
+
   image_picker: ^0.6.3+4
   multi_image_picker: ^4.6.2
   extended_image: ^0.7.1  # 图片查看器
@@ -39,6 +42,9 @@ dependencies:
   barcode_scan: ^2.0.1 # 二维码
   flutter_qr_reader: ^1.0.3
   qr_flutter: ^3.2.0  # 生成二维码
+
+  font_awesome_flutter: ^8.8.0 #Flutter的图标库
+
 
 
 
@@ -57,7 +63,6 @@ flutter:
           weight: 700
 
   assets:
-    - images/logo.png
     # 不要包含中文
     - assets/images/folder.png
     - assets/images/image.png
@@ -111,6 +116,8 @@ flutter:
     - assets/images/more.png
     - assets/images/move.png
     - assets/images/share2.png
+    - assets/images/login_bg.jpeg
+    - assets/images/avator.jpg
 
 
 

@@ -1,9 +1,17 @@
+import 'dart:ui';
+
+import 'package:bytes_cloud/core/manager/UserManager.dart';
+import 'package:bytes_cloud/http/http.dart';
+import 'package:bytes_cloud/pages/HomeRout.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
-import 'package:extended_image/extended_image.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
 class LoginRoute extends StatefulWidget {
   @override
@@ -13,46 +21,45 @@ class LoginRoute extends StatefulWidget {
 }
 
 class LoginRouteState extends State<LoginRoute> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  SharedPreferences sp;
-  bool _pwdVisible = false;
-  GlobalKey globalKey = new GlobalKey<FormState>();
-  bool _isSavePw = true;
-  bool _isAutoLogin = true;
+  int currentPage = 0; // 0 登陆 1 注册
+  PageController controller = PageController(initialPage: 0);
+  bool _pwdInVisible = true;
 
+  // 登陆
   String _user = "";
   String _pwd = "";
+  TextEditingController _loginUserController = TextEditingController();
+  TextEditingController _loginPasswordController = TextEditingController();
+  GlobalKey _loginKey = new GlobalKey<FormState>();
+
+  // 注册
+  TextEditingController _registerUserController = TextEditingController();
+  TextEditingController _registerPasswordController1 = TextEditingController();
+  TextEditingController _registerPasswordController2 = TextEditingController();
+  GlobalKey _registerKey = new GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     initData();
-    autoLogin();
   }
 
   initData() {
-    _isSavePw = SPUtil.getBool('_isSavePw', true);
-    _isAutoLogin = SPUtil.getBool('_isAutoLogin', true);
     _user = SPUtil.getString('_user', "");
     _pwd = SPUtil.getString('_pwd', "");
-    setState(() {
-      _nameController.text = _user;
-      _passwordController.text = _pwd;
-    });
+    _loginUserController.text = _user;
+    _loginPasswordController.text = _pwd;
   }
 
-  autoLogin() {
-    if (_isAutoLogin) _onLogin();
-  }
-
-  String loginImageBg =
-      'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585324947949&di=71d540a83c4babf2cf20bc13c4556b75&imgtype=0&src=http%3A%2F%2Fd.paper.i4.cn%2Fmax%2F2017%2F01%2F16%2F15%2F1484552215970_903809.jpg';
-  icon() {
-    return Image(
-      image: AssetImage("images/logo.png"),
-      width: 100,
-      height: 100,
+  avatorIcon() {
+    return ClipOval(
+      child: Image.asset(
+        Constants.AVATOR,
+        color: Colors.white60,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
@@ -60,136 +67,191 @@ class LoginRouteState extends State<LoginRoute> {
   Widget build(BuildContext context) {
     print(_user);
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(16, 128, 16, 16),
-        child: Form(
-          autovalidate: true,
-          key: globalKey,
-          child: Column(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          padding: EdgeInsets.only(top: 100),
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(Constants.LOGIN_BG))),
+          child: PageView(
             children: <Widget>[
-              icon(),
-              // 账号
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                    labelText: "用户名",
-                    hintText: "手机号/邮箱",
-                    prefixIcon: Icon(Icons.person)),
-                validator: (v) {
-                  return v.trim().isNotEmpty ? null : v.trim();
-                },
-              ),
-              // 密码
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: "密码",
-                  hintText: "密码",
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                        _pwdVisible ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _pwdVisible = !_pwdVisible;
-                      });
-                    },
-                  ),
-                ),
-                obscureText: !_pwdVisible,
-                validator: (v) {
-                  return v.trim().isNotEmpty ? null : v.trim();
-                },
-              ),
-              // 登陆按钮
-              Row(
-                children: <Widget>[
-                  checkBox('保存密码', _isSavePw, (bool val) {
-                    setState(() {
-                      _isSavePw = val;
-                    });
-                  }),
-                  checkBox('自动登陆', _isAutoLogin, (bool val) {
-                    setState(() {
-                      _isAutoLogin = val;
-                    });
-                  })
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 24),
-                child: Row(
-                  children: <Widget>[
-                    btn('注册', () {}, right: 16),
-                    btn('登陆', () {}, left: 16),
-                  ],
-                ),
-              )
+              loginView(),
+              registerView(),
             ],
+            controller: controller,
+            onPageChanged: (int index) {
+              currentPage = index;
+            },
           ),
-        ),
-      ),
-    );
+        ));
   }
 
-  checkBox(String msg, bool isCheck, Function call) {
-    return Expanded(
-      child: Row(
-        children: <Widget>[
-          Checkbox(
-            value: isCheck,
-            onChanged: (bool val) => call(val),
-          ),
-          Text(msg)
-        ],
-      ),
-    );
-  }
-
-  btn(String msg, Function call, {double left = 0, double right = 0}) {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.only(left: left, right: right),
-        child: RaisedButton(
-          color: Theme.of(context).primaryColor,
-          onPressed: _onLogin,
-          textColor: Colors.white,
-          child: Text(msg),
+  loginView() {
+    return Column(children: [
+      avatorIcon(),
+      Padding(
+        padding: EdgeInsets.fromLTRB(16, 32, 16, 16),
+        child: Container(
+          decoration: ShapeDecoration(
+              color: Colors.white70,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)))),
+          padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+          child: SizedBox(
+              child: Form(
+            key: _loginKey,
+            autovalidate: true,
+            child: Column(children: <Widget>[
+              inputBtn(
+                  _loginUserController, '用户名', '邮箱/手机号', Icons.person_outline),
+              Divider(
+                indent: 48,
+                endIndent: 16,
+                height: 1,
+              ),
+              inputBtn(_loginPasswordController, '密码', '', Icons.lock_outline,
+                  suffix: obscureTextSwitch(_pwdInVisible),
+                  obscureText: _pwdInVisible),
+            ]),
+          )),
         ),
       ),
+      Row(children: [Expanded(child: btn('登陆', _onLogin))]),
+      bottomHintText('没有账号', 1),
+    ]);
+  }
+
+  registerView() {
+    return Column(children: [
+      avatorIcon(),
+      Padding(
+        padding: EdgeInsets.fromLTRB(16, 32, 16, 16),
+        child: Container(
+          decoration: ShapeDecoration(
+              color: Colors.white70,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)))),
+          padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+          child: SizedBox(
+              child: Form(
+            key: _registerKey,
+            autovalidate: true,
+            child: Column(children: <Widget>[
+              inputBtn(_registerUserController, '用户名', '邮箱/手机号',
+                  Icons.person_outline),
+              Divider(
+                indent: 48,
+                endIndent: 16,
+                height: 1,
+              ),
+              inputBtn(
+                  _registerPasswordController1, '密码', '', Icons.lock_outline,
+                  suffix: obscureTextSwitch(_pwdInVisible),
+                  obscureText: _pwdInVisible),
+              inputBtn(
+                  _registerPasswordController2, '确认密码', '', Icons.lock_outline,
+                  suffix: obscureTextSwitch(_pwdInVisible),
+                  obscureText: _pwdInVisible),
+            ]),
+          )),
+        ),
+      ),
+      Row(children: [Expanded(child: btn('注册', _register))]),
+      bottomHintText('已有账号？', 0),
+    ]);
+  }
+
+  bottomHintText(String content, int targetPage) {
+    return InkWell(
+        onTap: () => controller.animateToPage(targetPage,
+            duration: Duration(milliseconds: 500), curve: Curves.ease),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+          alignment: Alignment.centerRight,
+          child: Text(
+            content,
+            style: TextStyle(color: Colors.white),
+          ),
+        ));
+  }
+
+  inputBtn(TextEditingController controller, String label, String hint,
+      IconData prefix,
+      {Widget suffix, bool obscureText = false}) {
+    return TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          labelText: label,
+          hintText: hint,
+          prefixIcon: Icon(prefix),
+          suffixIcon: suffix,
+        ),
+        obscureText: obscureText,
+        validator: (v) {
+          return null;
+        });
+  }
+
+  Widget obscureTextSwitch(bool b) => IconButton(
+        icon: Icon(b ? Icons.visibility : Icons.visibility_off),
+        onPressed: () {
+          setState(() {
+            _pwdInVisible = !_pwdInVisible;
+          });
+        },
+      );
+
+  btn(String msg, Function call, {double left = 16, double right = 16}) {
+    return Builder(
+        builder: (BuildContext context) => Container(
+              padding: EdgeInsets.only(left: left, right: right),
+              child: RaisedButton(
+                color: Colors.white70,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                onPressed: call,
+                textColor: Colors.black,
+                child: Text(
+                  msg,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ));
+  }
+
+  void _register() async {
+    if (!(_registerKey.currentState as FormState).validate()) return;
+
+    UI.showProgressDialog<bool>(
+      context: context,
     );
+    bool success = await UserManager.register(
+        _registerUserController.text, _registerPasswordController1.text);
+    Navigator.pop(context);
+    if (success) {
+      UI.showMsgDialog(context, '', '注册成功');
+    } else {
+      UI.showMsgDialog(context, '', '注册失败');
+    }
   }
 
   /// 登陆
   void _onLogin() async {
-    if (!(globalKey.currentState as FormState).validate()) return;
-    SPUtil.setBool("_isSavePw", _isSavePw);
-    SPUtil.setBool("_isAutoLogin", _isAutoLogin);
-
-    if (_isSavePw) {
-      SPUtil.setString("_user", _nameController.value.text);
-      SPUtil.setString("_pwd", _passwordController.value.text);
+    if (!(_loginKey.currentState as FormState).validate()) return;
+    UI.showProgressDialog<bool>(
+      context: context,
+    );
+    bool success = await UserManager.login(
+        _loginUserController.text, _loginPasswordController.text);
+    print('_onLogin ${success}');
+    if (success) {
+      //UI.newPage(context, HomeRoute());
+      //UI.showMsgDialog(context, '', '注册成功');
+    } else {
+      Navigator.pop(context);
+      UI.showMsgDialog(context, '', '登陆失败');
     }
-
-    // login
-    UI.showProgressDialog(
-        context: context,
-        future: getToken(),
-        title: '登陆',
-        successCall: saveToken,
-        failCall: (String errMsg) {
-          print('token fail $errMsg');
-        });
-  }
-
-  getToken() async {
-    return Future.delayed(Duration(seconds: 2), () {
-      //return Future.error('error');
-      return "123456";
-    }).catchError((onError) {
-      return Future.error('error');
-    });
   }
 
   saveToken(String token) {

@@ -12,6 +12,8 @@ import 'package:flutter/cupertino.dart';
 /// http://116.62.177.146:5000/api/file/preview?id=55 // 预览
 ///
 /// http://116.62.177.146:5000/api/file/delete?id=1 删除
+///
+/// http://116.62.177.146:5000/api/register?email=test1@163.com&password=123456 注册
 
 String host = "http://116.62.177.146:5000"; // host
 var dio = Dio(BaseOptions(
@@ -24,6 +26,8 @@ const String HTTP_POST_DOWNLOAD_FILE = '/api/file/download';
 const String HTTP_POST_RENAME = '/api/file/reName';
 const String HTTP_GET_DELETE = '/api/file/delete';
 const String HTTP_GET_PREVIEW = '/api/file/preview';
+const String HTTP_POST_REGISTER = '/api/register';
+const String HTTP_POST_LOGIN = '/api/login';
 
 // GET
 Future<Map<String, dynamic>> httpGet(String path,

@@ -39,7 +39,7 @@ class CloudFileHandle {
   static Future<bool> renameFile(int id, String newName) async {
     var resp = await httpPost(
       HTTP_POST_RENAME,
-      params: {
+      form: {
         'id': id,
         'newName': newName,
       },

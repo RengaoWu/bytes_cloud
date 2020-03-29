@@ -1,3 +1,4 @@
+import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:bytes_cloud/entity/User.dart';
@@ -10,24 +11,18 @@ class DBManager {
   static DBManager _instance;
   Database _db;
   Future<Database> get db async {
-    await _init();
+    await init();
     return _db;
   }
 
   static DBManager _getInstance() {
     if (_instance == null) {
-      _instance = DBManager._internal();
+      _instance = DBManager();
     }
     return _instance;
   }
 
-  DBManager._internal() {
-    Future.wait([_init()]).whenComplete(() {
-      print('DBManager inited');
-    });
-  }
-
-  Future _init() async {
+  Future init() async {
     if (_db == null) {
       _db = await _open(await getDatabasesPath() + _dbName);
     }
@@ -38,13 +33,16 @@ class DBManager {
         onCreate: (Database db, int version) async {
       await db.execute(RecentFileEntity.getSQL());
       await db.execute(CloudFileEntity.getSQL());
+      await db.execute(DownloadTask.getSQL());
+      await db.execute(UploadTask.getSQL());
+
 //      await db.execute(UserEntity.getSQL());
     });
   }
 
   // 增
   Future<Entity> insert(String tableName, Entity entity) async {
-    await _init();
+    await init();
     await _db.insert(tableName, entity.toMap());
     return entity;
   }
@@ -52,7 +50,7 @@ class DBManager {
   // 删
   static const String AND = ' and ';
   Future<int> delete(String tableName, Map<String, String> whereArg) async {
-    await _init();
+    await init();
 
     String where = '';
     List<String> arg = [];
@@ -67,14 +65,14 @@ class DBManager {
 
   //  改
   Future<int> update(String tableName, Entity entity, MapEntry whereArg) async {
-    await _init();
+    await init();
     return await _db.update(tableName, entity.toMap(),
         where: '${whereArg.key} = ?', whereArgs: [whereArg.value]);
   }
 
   // 查
   Future<List<Map>> queryAll(String tableName, String orderBy) async {
-    await _init();
+    await init();
     List<Map> maps = await _db.query(tableName, orderBy: orderBy);
     if (maps == null || maps.length == 0) {
       return null;
@@ -86,7 +84,7 @@ class DBManager {
   // 条件查
   Future<List<Map>> getFile(
       String tableName, Map<String, String> whereArg) async {
-    await _init();
+    await init();
     String where = '';
     List<String> arg = [];
     whereArg.forEach((k, v) {

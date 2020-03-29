@@ -1,41 +1,37 @@
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
+import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class DownloadPage extends StatefulWidget {
+class TranslatePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return DownloadPageState();
+    return TranslatePageState();
   }
 }
 
-class DownloadPageState extends State<DownloadPage>
+class TranslatePageState extends State<TranslatePage>
     with SingleTickerProviderStateMixin {
   static const List<String> tabs = [
-    '正在传输',
-    '已完成',
+    '下载列表',
+    '上传列表',
   ];
   TabController controller;
-  List<DownloadTask> _doingTasks;
-  List<UploadTask> _downTasks;
   TranslateManager translateManager;
   @override
   void initState() {
     super.initState();
     controller = TabController(length: tabs.length, vsync: this);
     translateManager = TranslateManager.instant();
-    _doingTasks = translateManager.doingTasks;
-    _downTasks = translateManager.downTasks;
   }
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 1)).then((_) {
-      setState(() {});
-    });
+    print('TranslatePageState build');
     return Scaffold(
       appBar: AppBar(
         title: Text('传输列表'),
@@ -52,13 +48,25 @@ class DownloadPageState extends State<DownloadPage>
           controller: controller,
           children: tabs.map((t) {
             return tabs.indexOf(t) == 0
-                ? _taskListView(_doingTasks)
-                : _taskListView(_downTasks);
+                ? ListenableProvider.value(
+                    child: _taskListView(t),
+                    value: translateManager.downloadTask,
+                  )
+                : ListenableProvider.value(
+                    child: _taskListView(t),
+                    value: translateManager.uploadTask,
+                  );
           }).toList()),
     );
   }
 
-  Widget _taskListView(List<Task> tasks) {
+  Widget _taskListView(String t) {
+    List<Task> tasks;
+    if (tabs[0] == t) {
+      tasks = Provider.of<ListModel<DownloadTask>>(context).list;
+    } else {
+      tasks = Provider.of<ListModel<UploadTask>>(context).list;
+    }
     return GridView.builder(
         itemCount: tasks.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -69,10 +77,6 @@ class DownloadPageState extends State<DownloadPage>
   }
 
   Widget _taskItemView(Task task) {
-//    double progress = task.progress;
-//    String fileName = task.name;
-//    int time = task.time;
-//    double v = task.v;
     String content;
     if (task.progress == 1) {
       content = '已完成';

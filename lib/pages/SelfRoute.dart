@@ -1,5 +1,5 @@
 import 'package:bytes_cloud/core/manager/UserManager.dart';
-import 'package:bytes_cloud/pages/content/DownloadPage.dart';
+import 'package:bytes_cloud/pages/content/TranslatePage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
 import 'package:bytes_cloud/pages/login/LoginRoute.dart';
@@ -90,7 +90,7 @@ class SelfRouteState extends State<SelfRoute>
                 UI.iconTxtBtn(Constants.SHARE, "分享", () => {print("")}), // 分享
                 UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
                 UI.iconTxtBtn(Constants.DOWNLOADED, "已下载",
-                    () => UI.newPage(context, DownloadPage())), // 已下载文件
+                    () => UI.newPage(context, TranslatePage())), // 已下载文件
               ],
             ),
             context: context,

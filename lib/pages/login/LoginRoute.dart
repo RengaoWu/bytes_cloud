@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
+import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
@@ -317,9 +318,12 @@ class LoginRouteState extends State<LoginRoute> {
       //print('token = ${getToken()}');
       // 请求云盘所有文件
       await CloudFileManager.instance().refreshCloudFileList().whenComplete(() {
-        print('云盘数据初始化完成');
+        print('CloudFileManager 初始化完成');
       });
-      UI.newPage(context, HomeRoute());
+      await TranslateManager.instant().initFromDB().whenComplete(() {
+        print('TranslateManager 初始化完成');
+      });
+      UI.newPage(context, HomeRoute(), isClearTop: true);
     } else {
       Navigator.pop(context);
       UI.showMsgDialog(context, '', '登陆失败');

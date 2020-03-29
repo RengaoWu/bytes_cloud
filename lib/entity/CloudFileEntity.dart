@@ -27,7 +27,7 @@ class CloudFileEntity extends Entity {
 
   CloudFileEntity(this.id, {this.fileName}) : super.fromMap(null);
 
-  CloudFileEntity.fromJson(Map map) : super.fromMap(null) {
+  CloudFileEntity.fromMap(Map map) : super.fromMap(null) {
     fileName = map['filename'];
     id = map['id'];
     parentId = map['parent_id'];

@@ -1,11 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:dio/dio.dart';
 
 class CloudFileHandle {
@@ -13,7 +11,7 @@ class CloudFileHandle {
   static Future<List<CloudFileEntity>> refreshCloudFileList() async {
     try {
       Map<String, dynamic> rsp = await httpGet(HTTP_GET_ALL_FILES);
-      print('refreshCloudFileList ${rsp.toString()}');
+      print('CloudFileHandle#refreshCloudFileList ${rsp.toString()}');
       if (rsp['code'] != 0) {
         return null;
       }
@@ -21,7 +19,7 @@ class CloudFileHandle {
       List<CloudFileEntity> result = [];
       maps.forEach((json) {
         if (json['filename'] != null) {
-          result.add(CloudFileEntity.fromJson(json));
+          result.add(CloudFileEntity.fromMap(json));
         }
       });
       return result;
@@ -36,8 +34,9 @@ class CloudFileHandle {
     // 网络创建
     rsp = await httpPost(HTTP_POST_NEW_FOLDER,
         form: {'curId': curId, 'foldername': folderName});
+    print('CloudFileHandler newFolder ${rsp.toString()}');
     if (rsp['code'] != 0) return null;
-    return CloudFileEntity.fromJson(rsp['data']);
+    return CloudFileEntity.fromMap(rsp['data']['file']);
   }
 
   static Future<bool> renameFile(int id, String newName) async {
@@ -67,10 +66,14 @@ class CloudFileHandle {
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
       print('uploadOneFile ${sent} / ${total}');
       int currentTime = DateTime.now().millisecondsSinceEpoch;
-      task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
+      if (currentTime - lastTime > 500) {
+        task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
+        lastTime = currentTime;
+      }
+      print('uploadOneFile v = ${task.v}');
       task.sent = sent;
       task.total = total;
-      lastTime = currentTime;
+      TranslateManager.instant().uploadTask.update(task, (t) => t == task);
     }, form: {
       'curId': task.pid,
       'file': await MultipartFile.fromFile(task.path,
@@ -78,7 +81,7 @@ class CloudFileHandle {
     });
     print('uploadOneFile ${resp.toString()}');
     if (resp['code'] == 0)
-      return CloudFileEntity.fromJson(resp['data']['file']);
+      return CloudFileEntity.fromMap(resp['data']['file']);
     else
       return null;
   }
@@ -88,10 +91,14 @@ class CloudFileHandle {
     Response<ResponseBody> resp = await httpDownload(
         HTTP_POST_DOWNLOAD_FILE, {'id': task.id}, task.path, (sent, total) {
       int currentTime = DateTime.now().millisecondsSinceEpoch;
-      task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
+      if (currentTime - lastTime > 500) {
+        task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
+        lastTime = currentTime;
+      }
       lastTime = currentTime;
       task.sent = sent;
       task.total = total;
+      TranslateManager.instant().downloadTask.update(task, (t) => t == task);
     });
     if (resp.statusCode == 200) {
       print('下载请求成功');

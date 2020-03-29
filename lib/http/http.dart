@@ -23,6 +23,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 const String host = "http://116.62.177.146:5000"; // host
 Dio dio = Dio(BaseOptions(
     baseUrl: host, connectTimeout: Duration(hours: 1).inMilliseconds));
+
 CookieJar cookieJar = CookieJar();
 
 initHttp() {
@@ -101,6 +102,6 @@ String getPreviewUrl(int id, double width, double height) {
   String url = host +
       HTTP_GET_PREVIEW +
       '?id=$id&width=${width.toInt()}&height=${height.toInt()}&token=${getToken()}';
-  print('getPreviewUrl $url');
+  //print('getPreviewUrl $url');
   return url;
 }

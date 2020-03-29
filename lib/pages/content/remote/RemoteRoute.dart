@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/pages/content/remote/CloudPhotoFragment.dart';
 import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
@@ -21,7 +22,7 @@ class RemoteRoute extends StatefulWidget {
 
 class RemoteRouteState extends State<RemoteRoute>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  CloudFileModel model;
+  ListModel<CloudFileEntity> model;
   List<CloudFileEntity> currentFiles = [];
   List<CloudFileEntity> path = []; // 路径
   Function _sortType = CloudFileEntity.sortByTime; // 0 by time, 1 by a-z
@@ -52,7 +53,7 @@ class RemoteRouteState extends State<RemoteRoute>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    model = Provider.of<CloudFileModel>(context); // 需要引用一下，才能更新UI
+    model = Provider.of<ListModel<CloudFileEntity>>(context); // 需要引用一下，才能更新UI
     print('RemoteRouteState build');
     currentFiles = CloudFileManager.instance()
         .listFiles(path.last.id, justFolder: false, sortFunc: _sortType);

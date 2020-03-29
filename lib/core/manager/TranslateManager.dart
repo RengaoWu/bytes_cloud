@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
+import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,37 +12,48 @@ import 'package:flutter/cupertino.dart';
 ///
 
 class TranslateManager {
+  ListModel<DownloadTask> _downloadTask = ListModel([]);
+  ListModel<UploadTask> _uploadTask = ListModel([]);
+
+  ListModel<DownloadTask> get downloadTask => _downloadTask;
+  ListModel<UploadTask> get uploadTask => _uploadTask;
+
   static TranslateManager _manager;
   TranslateManager._init() {
-    // todo 在 main 中初始化
-    // todo 读取数据库，初始化列表
+    initFromDB().whenComplete(() {
+      print('TranslateManager 初始化完成');
+    });
   }
+
+  Future initFromDB() async {
+    List<Map> downloads =
+        await DBManager.instance.queryAll(DownloadTask.tableName, null);
+    if (downloads != null) {
+      _downloadTask.list =
+          downloads.map((d) => DownloadTask.formMap(d)).toList();
+    }
+    List<Map> uploads =
+        await DBManager.instance.queryAll(UploadTask.tableName, null);
+    if (uploads != null) {
+      _uploadTask.list = uploads.map((u) => UploadTask.formMap(u)).toList();
+    }
+  }
+
   static TranslateManager instant() {
     if (_manager == null) {
       _manager = TranslateManager._init();
     }
     return _manager;
   }
-
-  List<Task> _doingTasks = [];
-  List<Task> get doingTasks => _doingTasks;
-  List<Task> _downTasks = [];
-  List<Task> get downTasks => _downTasks;
-
-  void addDoingTask(Task task) {
-    _doingTasks.add(task);
-  }
-
-  void addDownTask(Task task) {
-    _downTasks.add(task);
-  }
 }
 
-abstract class Task {
-  CancelToken token; // 任务id
+abstract class Task extends Entity {
+  int uuid;
+  // CancelToken token; // 任务id
   int time;
   int sent = 0;
   int total = 0;
+  double v = 0; //速度
   double get progress {
     if (total == 0)
       return 0;
@@ -48,45 +61,113 @@ abstract class Task {
       return sent / total;
   }
 
-  double v; //速度
-
-  Task(this.token, {this.time}) {
+  Task({this.time}) : super.fromMap(null) {
     time = DateTime.now().millisecondsSinceEpoch;
+    uuid = generateUUid(time);
   }
 
+  generateUUid(int time) => (time - Random(time).nextInt(2000)).hashCode;
+
   String get name;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Task && runtimeType == other.runtimeType && token == other.token;
+      other is Task && runtimeType == other.runtimeType && uuid == other.uuid;
 
   @override
-  int get hashCode => token.hashCode;
+  int get hashCode => uuid.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'uuid': uuid,
+      'time': time,
+      'sent': sent,
+      'total': total,
+    };
+  }
+
+  Task.fromMap(Map map) : super.fromMap(null) {
+    this.uuid = generateUUid(time);
+    this.uuid = map['uuid'];
+    this.time = map['time'];
+    this.sent = map['sent'];
+    this.total = map['total'];
+  }
 }
 
 class DownloadTask extends Task {
+  static const String tableName = 'DownloadTask';
+  static getSQL() => '''
+            CREATE TABLE $tableName(
+            id INTEGER, 
+            filename TEXT, 
+            path TEXT,
+            time INTEGER, 
+            sent INTEGER,
+            total INTEGER)
+  ''';
   int id;
-  String fileName;
+  String filename;
   String path;
 
   DownloadTask(
-      {@required this.id,
-      @required this.fileName,
-      @required this.path,
-      @required token})
-      : super(token);
+      {@required this.id, @required this.filename, @required this.path})
+      : super();
 
   @override
-  String get name => FileUtil.getFileNameWithExt(fileName); // 下载地址
+  String get name => FileUtil.getFileNameWithExt(filename);
+
+  @override
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> result = super.toMap();
+    result.addAll({
+      'id': id,
+      'filename': filename,
+      'path': path,
+    });
+    return result;
+  }
+
+  DownloadTask.formMap(Map map) : super.fromMap(map) {
+    this.id = map[id];
+    this.filename = map['filename'];
+    this.path = map['path'];
+  }
 }
 
 class UploadTask extends Task {
-  UploadTask({@required this.path, @required this.pid, @required token})
-      : super(token);
+  static const String tableName = 'UploadTask';
+  static getSQL() => '''
+            CREATE TABLE $tableName(
+            pid INTEGER, 
+            path TEXT, 
+            time INTEGER, 
+            sent INTEGER,
+            total INTEGER)
+  ''';
+
   int pid;
   String path; // 文件地址
 
-  @override
-  String get name => FileUtil.getFileNameWithExt(path); // 下载地址
+  UploadTask({@required this.path, @required this.pid}) : super();
 
+  @override
+  String get name => FileUtil.getFileNameWithExt(path);
+
+  @override
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> result = super.toMap();
+    result.addAll({
+      'pid': pid,
+      'path': path,
+    });
+    return result;
+  }
+
+  UploadTask.formMap(Map map) : super.fromMap(map) {
+    pid = map['pid'];
+    path = map['path'];
+  }
 }

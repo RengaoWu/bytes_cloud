@@ -30,8 +30,7 @@ class RemoteRouteState extends State<RemoteRoute>
   @override
   void initState() {
     super.initState();
-    path.add(CloudFileManager.instance()
-        .getEntityById(CloudFileManager.instance().rootId));
+    path.add(CloudFileManager.instance().root);
   }
 
   _enterFolderAndRefresh(int pid) => setState(() {

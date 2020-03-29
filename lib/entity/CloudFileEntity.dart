@@ -1,4 +1,5 @@
 import 'package:bytes_cloud/entity/entitys.dart';
+import 'package:flutter/cupertino.dart';
 
 // ID = 0 表示根目录
 class CloudFileEntity extends Entity {
@@ -23,6 +24,8 @@ class CloudFileEntity extends Entity {
   String type; // dir or 具体的文件类型
   int uid; // 0 暂时没用
   int uploadTime; // 上传时间
+
+  CloudFileEntity(this.id, {this.fileName}) : super.fromMap(null);
 
   CloudFileEntity.fromJson(Map map) : super.fromMap(null) {
     fileName = map['filename'];

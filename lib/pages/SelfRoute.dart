@@ -1,6 +1,8 @@
+import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/pages/content/DownloadPage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
+import 'package:bytes_cloud/pages/login/LoginRoute.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -138,7 +140,15 @@ class SelfRouteState extends State<SelfRoute>
                 size: 28,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: () async {
+                await UserManager.logout();
+                UI.newPage(
+                    context,
+                    LoginRoute(
+                      isAutologin: false,
+                    ),
+                    isClearTop: true);
+              },
             ),
           )
         ],

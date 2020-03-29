@@ -41,10 +41,25 @@ class UI {
   static double DISPLAY_HEIGHT;
   static double devicePixelRatio;
 
+  static initSize(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    UI.DISPLAY_WIDTH = size.width;
+    UI.DISPLAY_HEIGHT = size.height;
+    UI.devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+  }
+
   static dpi2px(double size) => size * devicePixelRatio;
   // 一般效果
-  static newPage(BuildContext context, Widget widget) =>
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => widget));
+  static newPage(BuildContext context, Widget widget,
+      {bool isClearTop = false}) {
+    Route route = CupertinoPageRoute(builder: (context) => widget);
+    if (isClearTop) {
+      print('newPage isClearTop ${isClearTop}');
+      Navigator.pushAndRemoveUntil(context, route, (check) => !isClearTop);
+    } else {
+      Navigator.push(context, route);
+    }
+  }
 
 //  static newPage(BuildContext context, Widget widget) => Navigator.push(
 //        context,
@@ -383,7 +398,8 @@ class UI {
       child: ListTile(
         leading: leading,
         title: Text(FileUtil.getFileName(file.fileName)),
-        subtitle: Text('$modifiedTime  "', style: TextStyle(fontSize: 12.0)),
+        subtitle: Text('$modifiedTime  ${FileUtil.getFileSize(file.size)}',
+            style: TextStyle(fontSize: 12.0)),
         trailing: trailing,
       ),
       onTap: () {

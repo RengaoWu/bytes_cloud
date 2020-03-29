@@ -133,7 +133,7 @@ class _PopupWindowState extends State<PopupWindow> {
 }
 
 class PopRoute extends PopupRoute {
-  final Duration _duration = Duration(milliseconds: 200);
+  final Duration _duration = Duration(milliseconds: 100);
   Widget child;
 
   PopRoute({@required this.child});

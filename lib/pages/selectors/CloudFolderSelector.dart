@@ -24,8 +24,7 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
   void initState() {
     super.initState();
     filePaths = widget.filePaths;
-    path.add(CloudFileManager.instance()
-        .getEntityById(CloudFileManager.instance().rootId));
+    path.add(CloudFileManager.instance().root);
   }
 
   enterFolderAndRefresh(int pid) =>

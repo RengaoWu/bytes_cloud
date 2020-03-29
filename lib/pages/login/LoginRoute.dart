@@ -1,19 +1,21 @@
 import 'dart:ui';
 
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
+import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/SPWrapper.dart';
 import 'package:bytes_cloud/utils/UI.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 class LoginRoute extends StatefulWidget {
+  final bool isAutologin;
+  LoginRoute({this.isAutologin = true});
   @override
   State<StatefulWidget> createState() {
     return LoginRouteState();
@@ -26,11 +28,10 @@ class LoginRouteState extends State<LoginRoute> {
   bool _pwdInVisible = true;
 
   // 登陆
-  String _user = "";
-  String _pwd = "";
   TextEditingController _loginUserController = TextEditingController();
   TextEditingController _loginPasswordController = TextEditingController();
   GlobalKey _loginKey = new GlobalKey<FormState>();
+  GlobalKey _popKey = GlobalKey();
 
   // 注册
   TextEditingController _registerUserController = TextEditingController();
@@ -42,13 +43,26 @@ class LoginRouteState extends State<LoginRoute> {
   void initState() {
     super.initState();
     initData();
+    autoLogin();
   }
 
+  List<String> _accounts = []; //['1', '2', '3', '4', '5', '6'];
+  List<String> _passwords = []; //['1', '2', '3', '4', '5', '6'];
   initData() {
-    _user = SPUtil.getString('_user', "");
-    _pwd = SPUtil.getString('_pwd', "");
-    _loginUserController.text = _user;
-    _loginPasswordController.text = _pwd;
+    _accounts = SPUtil.getArray(SPUtil.KEY_ACCOUNT, []);
+    _passwords = SPUtil.getArray(SPUtil.KEY_PASSWORD, []);
+    print('login _accounts = ${_accounts.toString()}');
+    print('login _accounts = ${_passwords.toString()}');
+    _loginUserController.text = _accounts.length > 0 ? _accounts[0] : '';
+    _loginPasswordController.text = _passwords.length > 0 ? _passwords[0] : '';
+  }
+
+  autoLogin() {
+    if (widget.isAutologin && _accounts.length > 0 && _passwords.length > 0) {
+      Future.delayed(Duration(seconds: 1)).whenComplete(() {
+        _onLogin();
+      });
+    }
   }
 
   avatorIcon() {
@@ -65,7 +79,7 @@ class LoginRouteState extends State<LoginRoute> {
 
   @override
   Widget build(BuildContext context) {
-    print(_user);
+    UI.initSize(context);
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
@@ -102,11 +116,14 @@ class LoginRouteState extends State<LoginRoute> {
             key: _loginKey,
             autovalidate: true,
             child: Column(children: <Widget>[
-              inputBtn(
-                  _loginUserController, '用户名', '邮箱/手机号', Icons.person_outline),
+              Builder(
+                  key: _popKey,
+                  builder: (_) => inputBtn(_loginUserController, '用户名',
+                      '邮箱/手机号', Icons.person_outline,
+                      suffix: accountsSwitcher())),
               Divider(
                 indent: 48,
-                endIndent: 16,
+                endIndent: 24,
                 height: 1,
               ),
               inputBtn(_loginPasswordController, '密码', '', Icons.lock_outline,
@@ -141,7 +158,7 @@ class LoginRouteState extends State<LoginRoute> {
                   Icons.person_outline),
               Divider(
                 indent: 48,
-                endIndent: 16,
+                endIndent: 24,
                 height: 1,
               ),
               inputBtn(
@@ -191,6 +208,55 @@ class LoginRouteState extends State<LoginRoute> {
         validator: (v) {
           return null;
         });
+  }
+
+  Widget accountsSwitcher() {
+    getItem(String account) {
+      return ListTile(
+        contentPadding: EdgeInsets.only(left: 16),
+        title: Text(account),
+        onTap: () async {
+          Navigator.pop(context, account);
+        },
+        trailing: IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () async {
+            _accounts.remove(account);
+            Navigator.pop(context);
+            //Navigator.pop(context, account);
+          },
+        ),
+      );
+    }
+
+    getList() => SizedBox(
+        height: 300,
+        width: _popKey.currentContext.size.width,
+        child: Padding(
+            padding: EdgeInsets.only(left: 40, right: 24),
+            child: Card(
+                color: Colors.white70,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView(
+                      children: _accounts.map((a) => getItem(a)).toList(),
+                    )))));
+    return IconButton(
+      icon: Icon(Icons.keyboard_arrow_down),
+      onPressed: () async {
+        String account = await PopupWindow.showPopWindow(
+            context, '', _popKey, PopDirection.bottom, getList(), 0);
+        if (account != null) {
+          int index = _accounts.indexOf(account);
+          _loginUserController.text = _accounts[index];
+          _loginPasswordController.text = _passwords[index];
+          setState(() {});
+        }
+      },
+    );
   }
 
   Widget obscureTextSwitch(bool b) => IconButton(
@@ -246,12 +312,35 @@ class LoginRouteState extends State<LoginRoute> {
         _loginUserController.text, _loginPasswordController.text);
     print('_onLogin ${success}');
     if (success) {
+      // 保存账号密码，方便起见暂时保存在SP中
+      saveProfile(_loginUserController.text, _loginPasswordController.text);
+      //print('token = ${getToken()}');
+      // 请求云盘所有文件
+      await CloudFileManager.instance().refreshCloudFileList().whenComplete(() {
+        print('云盘数据初始化完成');
+      });
       UI.newPage(context, HomeRoute());
-      UI.showMsgDialog(context, '', '注册成功');
     } else {
       Navigator.pop(context);
       UI.showMsgDialog(context, '', '登陆失败');
     }
+  }
+
+  // 保存账号密码
+  void saveProfile(String account, String password) {
+    bool isNew = true;
+    for (int i = 0; i < _accounts.length; i++) {
+      if (_accounts[i] == account) {
+        _passwords[i] = password;
+        isNew = false;
+      }
+    }
+    if (isNew) {
+      _accounts.insert(0, account);
+      _passwords.insert(0, password);
+    }
+    SPUtil.setArray(SPUtil.KEY_ACCOUNT, _accounts);
+    SPUtil.setArray(SPUtil.KEY_PASSWORD, _passwords);
   }
 
   saveToken(String token) {

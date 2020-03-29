@@ -30,10 +30,7 @@ class HomeRouteState extends State<HomeRoute>
   Widget build(BuildContext context) {
     super.build(context);
     print('home route build');
-    final size = MediaQuery.of(context).size;
-    UI.DISPLAY_WIDTH = size.width;
-    UI.DISPLAY_HEIGHT = size.height;
-    UI.devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    UI.initSize(context);
     return Scaffold(
       body: TabBarView(controller: tabController, children: <Widget>[
         RecentRoute(),

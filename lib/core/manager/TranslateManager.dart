@@ -22,10 +22,10 @@ class TranslateManager {
     return _manager;
   }
 
-  List<DownloadTask> _doingTasks = [];
-  List<DownloadTask> get doingTasks => _doingTasks;
-  List<UploadTask> _downTasks = [];
-  List<UploadTask> get downTasks => _downTasks;
+  List<Task> _doingTasks = [];
+  List<Task> get doingTasks => _doingTasks;
+  List<Task> _downTasks = [];
+  List<Task> get downTasks => _downTasks;
 
   void addDoingTask(Task task) {
     _doingTasks.add(task);

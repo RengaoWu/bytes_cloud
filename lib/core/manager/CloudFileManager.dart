@@ -50,8 +50,8 @@ class CloudFileManager {
   CloudFileModel _cloudFileModel = CloudFileModel([]);
   CloudFileModel get model => _cloudFileModel;
 
-  CloudFileEntity _root;
-  int get rootId => _root.id;
+  CloudFileEntity _root = CloudFileEntity(-1, fileName: '云盘');
+  CloudFileEntity get root => _root;
   static CloudFileManager _instance;
 
   static CloudFileManager instance() {
@@ -119,7 +119,9 @@ class CloudFileManager {
 
   Future<bool> refreshCloudFileList() async {
     List<CloudFileEntity> es = await CloudFileHandle.refreshCloudFileList();
+    print('refreshCloudFileList es.length = ${es?.length}');
     if (es == null) return false;
+    es.forEach(print);
     await CloudFileManager.instance().saveAllCloudFiles(es); // 存DB
     await CloudFileManager.instance().initDataFromDB(); // 更新内存数据
     return true;
@@ -132,7 +134,6 @@ class CloudFileManager {
     if (es == null) return;
     List<CloudFileEntity> temp =
         es.map((f) => CloudFileEntity.fromJson(f)).toList();
-    _root = temp.firstWhere((t) => t.id == 0);
     _cloudFileModel.entities = temp;
   }
 
@@ -226,10 +227,12 @@ class CloudFileManager {
     for (int i = 0; i < paths.length; i++) {
       String f = paths[i];
       UploadTask task = UploadTask(path: f, pid: pid, token: CancelToken());
-      TranslateManager.instant().addDownTask(task);
+      TranslateManager.instant().addDoingTask(task);
       CloudFileEntity entity = await CloudFileHandle.uploadOneFile(task);
-      model.add(entity);
-      await DBManager.instance.insert(CloudFileEntity.tableName, entity);
+      if (entity != null) {
+        model.add(entity);
+        await DBManager.instance.insert(CloudFileEntity.tableName, entity);
+      }
     }
     return true;
   }

@@ -12,9 +12,12 @@ class CloudFileHandle {
   // 获取所有的目录信息
   static Future<List<CloudFileEntity>> refreshCloudFileList() async {
     try {
-      Map<String, dynamic> rsp =
-          await httpGet(HTTP_GET_ALL_FILES, params: {'curUid': '0'});
-      List maps = rsp['data'];
+      Map<String, dynamic> rsp = await httpGet(HTTP_GET_ALL_FILES);
+      print('refreshCloudFileList ${rsp.toString()}');
+      if (rsp['code'] != 0) {
+        return null;
+      }
+      List maps = rsp['data']['files'];
       List<CloudFileEntity> result = [];
       maps.forEach((json) {
         if (json['filename'] != null) {
@@ -23,6 +26,7 @@ class CloudFileHandle {
       });
       return result;
     } catch (e) {
+      print('refreshCloudFileList ${e.toString()}');
       return null;
     }
   }
@@ -61,6 +65,7 @@ class CloudFileHandle {
   static Future<CloudFileEntity> uploadOneFile(UploadTask task) async {
     int lastTime = DateTime.now().millisecondsSinceEpoch;
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
+      print('uploadOneFile ${sent} / ${total}');
       int currentTime = DateTime.now().millisecondsSinceEpoch;
       task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
       task.sent = sent;
@@ -73,7 +78,7 @@ class CloudFileHandle {
     });
     print('uploadOneFile ${resp.toString()}');
     if (resp['code'] == 0)
-      return CloudFileEntity.fromJson(resp['data']);
+      return CloudFileEntity.fromJson(resp['data']['file']);
     else
       return null;
   }

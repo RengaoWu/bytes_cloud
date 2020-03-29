@@ -1,5 +1,6 @@
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
+import 'package:bytes_cloud/entity/User.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -37,6 +38,7 @@ class DBManager {
         onCreate: (Database db, int version) async {
       await db.execute(RecentFileEntity.getSQL());
       await db.execute(CloudFileEntity.getSQL());
+//      await db.execute(UserEntity.getSQL());
     });
   }
 

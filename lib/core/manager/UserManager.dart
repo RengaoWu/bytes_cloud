@@ -28,4 +28,11 @@ class UserManager {
     print('login rsp ${rsp.toString()}');
     return rsp['code'] == 0;
   }
+
+  static Future logout() async {
+    print(cookieJar.loadForRequest(Uri.parse(host)));
+    var rsp = await httpGet(HTTP_POST_LOGOUT);
+    print('logout rsp ${rsp.toString()}');
+    return rsp['code'] == 0;
+  }
 }

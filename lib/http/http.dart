@@ -17,6 +17,8 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 /// http://116.62.177.146:5000/api/file/delete?id=1 删除
 ///
 /// http://116.62.177.146:5000/api/register?email=test1@163.com&password=123456 注册
+///
+/// http://116.62.177.146:5000/api/logout? 登出
 
 const String host = "http://116.62.177.146:5000"; // host
 Dio dio = Dio(BaseOptions(
@@ -25,6 +27,18 @@ CookieJar cookieJar = CookieJar();
 
 initHttp() {
   dio.interceptors.add(CookieManager(cookieJar));
+}
+
+getToken() {
+  List<Cookie> cookies = cookieJar.loadForRequest(Uri.parse(host));
+  for (int i = 0; i < cookies.length; i++) {
+    List<String> kvs = cookies[i].toString().split(';');
+    for (int j = 0; j < kvs.length; j++) {
+      var kv = kvs[j].split('=');
+      if (kv[0].trim() == 'token') return kv[1].trim();
+    }
+  }
+  return null;
 }
 
 const String HTTP_GET_ALL_FILES = '/api/file/all';
@@ -36,6 +50,7 @@ const String HTTP_GET_DELETE = '/api/file/delete';
 const String HTTP_GET_PREVIEW = '/api/file/preview';
 const String HTTP_POST_REGISTER = '/api/register';
 const String HTTP_POST_LOGIN = '/api/login';
+const String HTTP_POST_LOGOUT = '/api/logout';
 
 // GET
 Future<Map<String, dynamic>> httpGet(String path,
@@ -83,7 +98,9 @@ String getDownloadUrl(int id) {
 }
 
 String getPreviewUrl(int id, double width, double height) {
-  return host +
+  String url = host +
       HTTP_GET_PREVIEW +
-      '?id=$id&width=${width.toInt()}&height=${height.toInt()}';
+      '?id=$id&width=${width.toInt()}&height=${height.toInt()}&token=${getToken()}';
+  print('getPreviewUrl $url');
+  return url;
 }

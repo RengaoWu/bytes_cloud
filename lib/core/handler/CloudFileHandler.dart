@@ -63,44 +63,49 @@ class CloudFileHandle {
 
   static Future<CloudFileEntity> uploadOneFile(UploadTask task) async {
     int lastTime = DateTime.now().millisecondsSinceEpoch;
+    int lastSent = 0;
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
       print('uploadOneFile ${sent} / ${total}');
-      int currentTime = DateTime.now().millisecondsSinceEpoch;
-      if (currentTime - lastTime > 500) {
-        task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
-        lastTime = currentTime;
-      }
       print('uploadOneFile v = ${task.v}');
       task.sent = sent;
       task.total = total;
-      TranslateManager.instant().uploadTask.update(task, (t) => t == task);
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+      if (currentTime - lastTime > 100) {
+        task.v = 1000 * ((task.sent - lastSent) / (currentTime - lastTime));
+        lastTime = currentTime;
+        lastSent = task.sent;
+      }
+      //task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime)); // 这样计算速度不行，可能 currentTime - lastTime = 0
+      //TranslateManager.instant().uploadTask.update(task, (t) => t == task);
     }, form: {
       'curId': task.pid,
       'file': await MultipartFile.fromFile(task.path,
           filename: FileUtil.getFileNameWithExt(task.path)),
     });
     print('uploadOneFile ${resp.toString()}');
-    if (resp['code'] == 0)
+    if (resp['code'] == 0) {
+      TranslateManager.instant().saveFinishedTask2DB(task);
       return CloudFileEntity.fromMap(resp['data']['file']);
-    else
+    } else
       return null;
   }
 
   static Future downloadOneFile(DownloadTask task) async {
     int lastTime = DateTime.now().millisecondsSinceEpoch;
+    int lastSent = 0;
     Response<ResponseBody> resp = await httpDownload(
         HTTP_POST_DOWNLOAD_FILE, {'id': task.id}, task.path, (sent, total) {
-      int currentTime = DateTime.now().millisecondsSinceEpoch;
-      if (currentTime - lastTime > 500) {
-        task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime));
-        lastTime = currentTime;
-      }
-      lastTime = currentTime;
       task.sent = sent;
       task.total = total;
-      TranslateManager.instant().downloadTask.update(task, (t) => t == task);
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+      if (currentTime - lastTime > 100) {
+        task.v = 1000 * ((task.sent - lastSent) / (currentTime - lastTime));
+        lastTime = currentTime;
+        lastSent = task.sent;
+      }
     });
     if (resp.statusCode == 200) {
+      TranslateManager.instant().saveFinishedTask2DB(task);
       print('下载请求成功');
     }
   }

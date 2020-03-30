@@ -20,7 +20,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 ///
 /// http://116.62.177.146:5000/api/logout? 登出
 
-const String host = "http://116.62.177.146:5000"; // host
+const String host = "http://116.62.177.146"; // host
 Dio dio = Dio(BaseOptions(
     baseUrl: host, connectTimeout: Duration(hours: 1).inMilliseconds));
 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bytes_cloud/core/manager/DBManager.dart';
+import 'package:bytes_cloud/core/manager/Manager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -11,32 +12,19 @@ import 'package:flutter/cupertino.dart';
 ///
 ///
 
-class TranslateManager {
-  ListModel<DownloadTask> _downloadTask = ListModel([]);
-  ListModel<UploadTask> _uploadTask = ListModel([]);
-
-  ListModel<DownloadTask> get downloadTask => _downloadTask;
-  ListModel<UploadTask> get uploadTask => _uploadTask;
+class TranslateManager extends Manager {
+  List<DownloadTask> _downloads;
+  List<DownloadTask> get downloads => _downloads;
+  List<UploadTask> _uploads;
+  List<UploadTask> get uploads => _uploads;
 
   static TranslateManager _manager;
   TranslateManager._init() {
+    _downloads = [];
+    _uploads = [];
     initFromDB().whenComplete(() {
       print('TranslateManager 初始化完成');
     });
-  }
-
-  Future initFromDB() async {
-    List<Map> downloads =
-        await DBManager.instance.queryAll(DownloadTask.tableName, null);
-    if (downloads != null) {
-      _downloadTask.list =
-          downloads.map((d) => DownloadTask.formMap(d)).toList();
-    }
-    List<Map> uploads =
-        await DBManager.instance.queryAll(UploadTask.tableName, null);
-    if (uploads != null) {
-      _uploadTask.list = uploads.map((u) => UploadTask.formMap(u)).toList();
-    }
   }
 
   static TranslateManager instant() {
@@ -44,6 +32,36 @@ class TranslateManager {
       _manager = TranslateManager._init();
     }
     return _manager;
+  }
+
+  @override
+  initFromDB() async {
+    List<Map> ds =
+        await DBManager.instance.queryAll(DownloadTask.tableName, null);
+    if (ds != null) {
+      _downloads = ds.map((d) => DownloadTask.formMap(d)).toList();
+    }
+    List<Map> us =
+        await DBManager.instance.queryAll(UploadTask.tableName, null);
+    if (us != null) {
+      _uploads = us.map((u) => UploadTask.formMap(u)).toList();
+    }
+  }
+
+  // 目前只将完成的任务存入DB
+  saveFinishedTask2DB(Task task) {
+    if (task is UploadTask) {
+      DBManager.instance.insert(UploadTask.tableName, task);
+    } else if (task is DownloadTask) {
+      DBManager.instance.insert(DownloadTask.tableName, task);
+    }
+  }
+
+  @override
+  destroy() {
+    //_downloads
+    //_uploads
+    _manager = null;
   }
 }
 
@@ -89,9 +107,9 @@ abstract class Task extends Entity {
   }
 
   Task.fromMap(Map map) : super.fromMap(null) {
-    this.uuid = generateUUid(time);
     this.uuid = map['uuid'];
     this.time = map['time'];
+    this.uuid = generateUUid(this.time);
     this.sent = map['sent'];
     this.total = map['total'];
   }
@@ -101,6 +119,7 @@ class DownloadTask extends Task {
   static const String tableName = 'DownloadTask';
   static getSQL() => '''
             CREATE TABLE $tableName(
+            uuid INTEGER PRIMARY KEY,
             id INTEGER, 
             filename TEXT, 
             path TEXT,
@@ -141,6 +160,7 @@ class UploadTask extends Task {
   static const String tableName = 'UploadTask';
   static getSQL() => '''
             CREATE TABLE $tableName(
+            uuid INTEGER PRIMARY KEY,
             pid INTEGER, 
             path TEXT, 
             time INTEGER, 

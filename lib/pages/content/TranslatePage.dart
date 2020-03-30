@@ -1,17 +1,35 @@
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
+import 'package:bytes_cloud/model/ThemeModel.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 class TranslatePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return TranslatePageState();
   }
+//  回掉更新太快，导致频繁刷新，这里不使用Provider
+//  TranslatePage._init();
+//  static Widget newPage() {
+//    return MultiProvider(
+//      providers: <SingleChildWidget>[
+//        ChangeNotifierProvider.value(
+//                value: TranslateManager.instant().downloadTask),
+//        ChangeNotifierProvider.value(
+//                value: TranslateManager.instant().uploadTask),
+//      ],
+//      child: Consumer2<ListModel<DownloadTask>, ListModel<UploadTask>>(
+//              builder: (context, downloads, uploads, child) {
+//                return TranslatePage._init();
+//              }),
+//    );
+//  }
 }
 
 class TranslatePageState extends State<TranslatePage>
@@ -22,15 +40,22 @@ class TranslatePageState extends State<TranslatePage>
   ];
   TabController controller;
   TranslateManager translateManager;
+  List<DownloadTask> downloads;
+  List<UploadTask> uploads;
   @override
   void initState() {
     super.initState();
     controller = TabController(length: tabs.length, vsync: this);
     translateManager = TranslateManager.instant();
+    downloads = TranslateManager.instant().downloads;
+    uploads = TranslateManager.instant().uploads;
   }
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(milliseconds: 1000)).whenComplete((() {
+      if (mounted) setState(() {});
+    }));
     print('TranslatePageState build');
     return Scaffold(
       appBar: AppBar(
@@ -47,15 +72,7 @@ class TranslatePageState extends State<TranslatePage>
       body: TabBarView(
           controller: controller,
           children: tabs.map((t) {
-            return tabs.indexOf(t) == 0
-                ? ListenableProvider.value(
-                    child: _taskListView(t),
-                    value: translateManager.downloadTask,
-                  )
-                : ListenableProvider.value(
-                    child: _taskListView(t),
-                    value: translateManager.uploadTask,
-                  );
+            return _taskListView(t);
           }).toList()),
     );
   }
@@ -63,9 +80,9 @@ class TranslatePageState extends State<TranslatePage>
   Widget _taskListView(String t) {
     List<Task> tasks;
     if (tabs[0] == t) {
-      tasks = Provider.of<ListModel<DownloadTask>>(context).list;
+      tasks = downloads;
     } else {
-      tasks = Provider.of<ListModel<UploadTask>>(context).list;
+      tasks = uploads;
     }
     return GridView.builder(
         itemCount: tasks.length,

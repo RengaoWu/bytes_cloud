@@ -176,7 +176,7 @@ class CloudFileManager {
         filename: e.fileName,
         path: FileUtil.getDownloadFilePath(e),
       );
-      TranslateManager.instant().downloadTask.add(task);
+      TranslateManager.instant().downloads.add(task);
       await CloudFileHandle.downloadOneFile(task);
     }
     return true;
@@ -186,7 +186,7 @@ class CloudFileManager {
     for (int i = 0; i < paths.length; i++) {
       String f = paths[i];
       UploadTask task = UploadTask(path: f, pid: pid);
-      TranslateManager.instant().uploadTask.add(task);
+      TranslateManager.instant().uploads.add(task);
       CloudFileEntity entity = await CloudFileHandle.uploadOneFile(task);
       if (entity != null) {
         model.add(entity);

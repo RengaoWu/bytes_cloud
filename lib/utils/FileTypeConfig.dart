@@ -13,6 +13,8 @@ class FileTypeConfig {
     style: TextStyle(fontSize: 14),
   );
 
+  static Set<String> imagesExt = {'.png', '.jpeg', '.gif', '.jpg'};
+
   static void convert(String type, Map<String, Widget> type2Icon,
       Map<String, String> ext2Type) {
     switch (type) {

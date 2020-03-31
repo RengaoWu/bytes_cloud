@@ -23,14 +23,11 @@ class RemoteRouteHelper {
   static const SHOW_TYPE_RAR = 5;
 
   BuildContext context;
-  Function cb;
   RemoteRouteHelper(this.context);
 
   /// [type] 0 文件夹展示：全量显示, !0 分类展示，不显示移动&重命名
   /// [callBack] 方法执行完成的回调
-  showBottomSheet(CloudFileEntity entity,
-      {int type = 0, Function callBack}) async {
-    if (callBack != null) cb = callBack;
+  showBottomSheet(CloudFileEntity entity, {int type = 0}) async {
     List<Widget> content = [];
     Widget downloadActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () async {
@@ -40,7 +37,7 @@ class RemoteRouteHelper {
     Widget shareActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.SHARE2, '分享', () async {
       await shareAction(entity);
-      Navigator.pop(context);
+//      Navigator.pop(context);
     }, fontWeight: FontWeight.normal));
     Widget moveActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
@@ -91,7 +88,7 @@ class RemoteRouteHelper {
   // 分享 ACTION
   shareAction(CloudFileEntity entity) async {
     Navigator.pop(context);
-    UI.showContentDialog(context, '分享文件: ${entity.fileName}',
+    await UI.showContentDialog(context, '分享文件: ${entity.fileName}',
         QrImage(data: getDownloadUrl(entity.id)),
         left: '保存到本地', leftCall: () {}, right: '分享', rightCall: () {});
   }

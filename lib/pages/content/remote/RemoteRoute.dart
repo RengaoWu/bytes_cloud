@@ -4,7 +4,7 @@ import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/pages/content/TranslatePage.dart';
-import 'package:bytes_cloud/pages/content/remote/CloudPhotoFragment.dart';
+import 'package:bytes_cloud/pages/content/remote/CloudFileFragment.dart';
 import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
@@ -61,13 +61,13 @@ class RemoteRouteState extends State<RemoteRoute>
     GlobalKey key1 = GlobalKey();
 
     Widget selectShowUI(int showFlag) {
-      if (showFlag == 0) {
+      if (showFlag == RemoteRouteHelper.SHOW_TYPE_FILE) {
         return WillPopScope(
           child: cloudListView(),
           onWillPop: () async => _outFolderAndRefresh(),
         );
-      } else if (showFlag == 1) {
-        return CloudPhotoFragment();
+      } else {
+        return CloudPhotoFragment(showFlag);
       }
     }
 
@@ -224,10 +224,14 @@ class RemoteRouteState extends State<RemoteRoute>
                   () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_FILE)),
               UI.iconTxtBtn(Constants.PHOTO, "图片",
                   () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_PHOTO)),
-              UI.iconTxtBtn(Constants.VIDEO, "视频", null),
-              UI.iconTxtBtn(Constants.MUSIC, "音乐", null),
-              UI.iconTxtBtn(Constants.DOC, "文档", null),
-              UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", null),
+              UI.iconTxtBtn(Constants.VIDEO, "视频",
+                  () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_VIDEO)),
+              UI.iconTxtBtn(Constants.MUSIC, "音乐",
+                  () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_MUSIC)),
+              UI.iconTxtBtn(Constants.DOC, "文档",
+                  () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_DOC)),
+              UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包",
+                  () => modifyShowType(RemoteRouteHelper.SHOW_TYPE_RAR)),
             ],
           )),
     );

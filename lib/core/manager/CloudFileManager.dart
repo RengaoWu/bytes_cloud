@@ -2,6 +2,8 @@ import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
+import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
+import 'package:bytes_cloud/utils/FileTypeConfig.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -35,15 +37,32 @@ class CloudFileManager {
     _cloudFileModel.list = es.map((f) => CloudFileEntity.fromMap(f)).toList();
   }
 
-  List<CloudFileEntity> get photos {
-    List<CloudFileEntity> _photos = [];
+  List<CloudFileEntity> typeFiles(int type) {
+    List<CloudFileEntity> _files = [];
+    bool getFromType(CloudFileEntity f, int type) {
+      String currentType = '.' + f.type;
+      switch (type) {
+        case RemoteRouteHelper.SHOW_TYPE_DOC:
+          return FileTypeConfig.documentExtension2Type.keys
+              .contains(currentType);
+        case RemoteRouteHelper.SHOW_TYPE_MUSIC:
+          return FileTypeConfig.musicExtension2Type.keys.contains(currentType);
+        case RemoteRouteHelper.SHOW_TYPE_VIDEO:
+          return FileTypeConfig.videoExtension2Type.keys.contains(currentType);
+        case RemoteRouteHelper.SHOW_TYPE_RAR:
+          return FileTypeConfig.zipExtension2Type.keys.contains(currentType);
+        case RemoteRouteHelper.SHOW_TYPE_PHOTO:
+          return FileTypeConfig.imagesExt.contains(currentType);
+      }
+    }
+
     model.list.forEach((f) {
-      if (f.type == 'png' || f.type == 'jpg' || f.type == 'jpeg') {
-        _photos.add(f);
+      if (getFromType(f, type)) {
+        _files.add(f);
       }
     });
-    print(_photos.length);
-    return _photos;
+    print(_files.length);
+    return _files;
   }
 
   CloudFileEntity getEntityById(int id) {

@@ -15,6 +15,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
 class CloudPhotoFragment extends StatefulWidget {
+  final int type;
+  CloudPhotoFragment(this.type);
   @override
   State<StatefulWidget> createState() {
     return _CloudPhotoFragmentState();
@@ -24,7 +26,6 @@ class CloudPhotoFragment extends StatefulWidget {
 class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   List<CloudFileEntity> _entities = [];
   List<_ViewHolder> uiDate = [];
-  List<CancelToken> tokens = [];
 
   static double _imageWidgetSize = UI.DISPLAY_WIDTH / 4;
   static double _imagePxSize = UI.dpi2px(_imageWidgetSize);
@@ -36,7 +37,7 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
 
   initData() {
     uiDate.clear();
-    _entities = CloudFileManager.instance().photos;
+    _entities = CloudFileManager.instance().typeFiles(widget.type);
     _entities.sort((e1, e2) => e2.uploadTime - e1.uploadTime);
     for (int i = 0; i < _entities.length; i++) {
       CloudFileEntity e = _entities[i];
@@ -60,29 +61,64 @@ class _CloudPhotoFragmentState extends State<CloudPhotoFragment> {
   @override
   Widget build(BuildContext context) {
     Provider.of<ListModel<CloudFileEntity>>(context);
-    print('cloud photo fragment build');
+    print('cloud file fragment build');
     initData();
-    Widget photoView = StaggeredGridView.countBuilder(
-      crossAxisCount: 4,
-      itemCount: uiDate.length,
-      itemBuilder: (BuildContext context, int index) {
-        _ViewHolder holder = uiDate[index];
-        if (holder.type == _ViewHolder.GROUP) {
-          return UI.groupItemCard(holder.time, flag: 3);
-        } else {
-          return loadImage(holder);
-        }
-      },
-      staggeredTileBuilder: (int index) {
-        _ViewHolder holder = uiDate[index];
-        if (holder.type == _ViewHolder.GROUP) {
-          return new StaggeredTile.count(4, 0.5);
-        } else {
-          return new StaggeredTile.count(1, 1);
-        }
-      },
-    );
-    return photoView;
+    Widget result;
+    if (widget.type == RemoteRouteHelper.SHOW_TYPE_PHOTO) {
+      result = StaggeredGridView.countBuilder(
+        crossAxisCount: 4,
+        itemCount: uiDate.length,
+        itemBuilder: (BuildContext context, int index) {
+          _ViewHolder holder = uiDate[index];
+          if (holder.type == _ViewHolder.GROUP) {
+            return UI.groupItemCard(holder.time, flag: 3);
+          } else {
+            return loadImage(holder);
+          }
+        },
+        staggeredTileBuilder: (int index) {
+          _ViewHolder holder = uiDate[index];
+          if (holder.type == _ViewHolder.GROUP) {
+            return new StaggeredTile.count(4, 0.5);
+          } else {
+            return new StaggeredTile.count(1, 1);
+          }
+        },
+      );
+    } else {
+      result = ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            _ViewHolder holder = uiDate[index];
+            if (holder.type == _ViewHolder.GROUP) {
+              return UI.groupItemCard(holder.time, flag: 3);
+            } else {
+              return UI.buildCloudFileItem(
+                file: holder.entity,
+                trailing: IconButton(
+                  icon: Icon(Icons.more_horiz),
+                  onPressed: () async {
+                    await RemoteRouteHelper(context)
+                        .showBottomSheet(holder.entity, type: widget.type);
+                  },
+                ),
+                onTap: (_) async {
+                  FileSystemEntity file =
+                      File(FileUtil.getDownloadFilePath(holder.entity));
+                  if (FileUtil.haveDownloaded(holder.entity)) {
+                    UI.openFile(context, file);
+                  } else {
+                    print('haveDownloaded false');
+                    RemoteRouteHelper(context)
+                        .downloadAction(holder.entity); // 下载
+                  }
+                },
+              );
+            }
+          },
+//          separatorBuilder: Divider(indent: 16, endIndent: 16,),
+          itemCount: uiDate.length);
+    }
+    return result;
   }
 
   Widget loadImage(_ViewHolder holder) {

@@ -18,6 +18,7 @@ import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class RecentRoute extends StatefulWidget {
   @override
@@ -57,7 +58,7 @@ class RecentRouteState extends State<RecentRoute>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print('build');
+    print('RecentRouteState build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -145,6 +146,7 @@ class RecentRouteState extends State<RecentRoute>
     ListView listView = ListView.builder(
       controller: _controller,
       itemCount: _sourceListData.length + 1,
+//      shrinkWrap: true,
       key: PageStorageKey('RecentRoute'),
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
@@ -228,7 +230,7 @@ class RecentRouteState extends State<RecentRoute>
     );
   }
 
-  static const int PIC_MAX_SHOW_LENGTH = 4;
+//  static const int PIC_MAX_SHOW_LENGTH = 400;
   contentItemView(List<RecentFileEntity> group) {
     return Card(
         elevation: 2,
@@ -317,7 +319,7 @@ class RecentRouteState extends State<RecentRoute>
     );
   }
 
-  double itemInnerViewPhotoSize = (UI.DISPLAY_WIDTH - 40) / 2;
+  double itemInnerViewPhotoSize = (UI.DISPLAY_WIDTH) / 2;
   itemInnerView(List<RecentFileEntity> group) {
     if (FileUtil.isVideo(group[0].path) || FileUtil.isImage(group[0].path)) {
       return itemInnerImageView(group);
@@ -327,51 +329,37 @@ class RecentRouteState extends State<RecentRoute>
   }
 
   itemInnerImageView(List<RecentFileEntity> group) {
-    List<RecentFileEntity> showData;
-    if (group.length >= PIC_MAX_SHOW_LENGTH) {
-      showData = group.sublist(0, PIC_MAX_SHOW_LENGTH);
-    } else {
-      showData = group;
-    }
-    int i = 0;
-    var widgets = showData.map((f) {
-      i++;
+    List<RecentFileEntity> visiables =
+        group.length > 4 ? group.sublist(0, 4) : group;
+    var widgets = visiables.map((f) {
       Widget image = Hero(
         child: UI.selectPreview(f.path, itemInnerViewPhotoSize),
         tag: f.path,
       );
-
-      if (i == PIC_MAX_SHOW_LENGTH) {
-        image = SizedBox(
-          width: itemInnerViewPhotoSize,
-          height: itemInnerViewPhotoSize,
-          child: Stack(
-            children: <Widget>[
-              image,
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                width: itemInnerViewPhotoSize,
-                height: itemInnerViewPhotoSize,
-                child: Icon(
-                  Icons.more_horiz,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
       return InkWell(
         child: image,
         onTap: () => openFile(f, group),
       );
     }).toList();
+
+    if (group.length > 4) {
+      widgets.add(InkWell(
+          onTap: () => openFile(group[4], group),
+          child: SizedBox(
+            width: itemInnerViewPhotoSize / 2,
+            height: itemInnerViewPhotoSize,
+            child: Center(
+              child: Icon(Icons.more_horiz),
+            ),
+          )));
+    }
     return Container(
         padding: EdgeInsets.only(top: 4, bottom: 4),
-        child: Wrap(
-          children: widgets,
-        ));
+        child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: widgets,
+            ))); //);
   }
 
   itemInnerFileView(List<RecentFileEntity> group) {

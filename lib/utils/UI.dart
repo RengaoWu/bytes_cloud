@@ -48,7 +48,7 @@ class UI {
     UI.devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
   }
 
-  static dpi2px(double size) => size * devicePixelRatio;
+  static double dpi2px(double size) => size * devicePixelRatio;
   // 一般效果
   static newPage(BuildContext context, Widget widget,
       {bool isClearTop = false}) {
@@ -649,13 +649,15 @@ class UI {
     );
   }
 
-  static loadImage(String path, double size) {
-    return ExtendedImage.file(
+  // 不使用 cacheHeight 内存要炸了
+  static Widget loadImage(String path, double size) {
+    Widget image = Image.file(
       File(path),
-      fit: BoxFit.cover,
-      width: size,
+      alignment: Alignment.center,
       height: size,
+      cacheHeight: dpi2px(size).toInt(),
     );
+    return image;
   }
 
   static searchBar(BuildContext context, TextEditingController controller,

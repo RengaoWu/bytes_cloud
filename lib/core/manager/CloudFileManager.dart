@@ -13,7 +13,8 @@ class CloudFileManager {
   ListModel<CloudFileEntity> _cloudFileModel = ListModel([]);
   ListModel<CloudFileEntity> get model => _cloudFileModel;
 
-  CloudFileEntity _root = CloudFileEntity(-1, fileName: '云盘');
+  CloudFileEntity _root =
+      CloudFileEntity(-1, fileName: '云盘', pathRoot: '/', type: 'dir');
   CloudFileEntity get root => _root;
   static CloudFileManager _instance;
 
@@ -47,11 +48,21 @@ class CloudFileManager {
 
   CloudFileEntity getEntityById(int id) {
     try {
+      if (id == root.id) return root;
       return model.list.firstWhere((e) => e.id == id);
     } catch (e) {
       print('getEntityById ${e}');
       return null;
     }
+  }
+
+  String getVitualPathById(int id) {
+    CloudFileEntity entity = getEntityById(id);
+    //print('getVitualPathById ${entity.toString()}');
+    if (entity == null)
+      return '';
+    else
+      return entity.pathRoot + entity.fileName;
   }
 
   List<CloudFileEntity> listRootFiles(

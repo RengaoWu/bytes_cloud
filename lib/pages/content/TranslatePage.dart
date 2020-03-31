@@ -14,22 +14,6 @@ class TranslatePage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return TranslatePageState();
   }
-//  回掉更新太快，导致频繁刷新，这里不使用Provider
-//  TranslatePage._init();
-//  static Widget newPage() {
-//    return MultiProvider(
-//      providers: <SingleChildWidget>[
-//        ChangeNotifierProvider.value(
-//                value: TranslateManager.instant().downloadTask),
-//        ChangeNotifierProvider.value(
-//                value: TranslateManager.instant().uploadTask),
-//      ],
-//      child: Consumer2<ListModel<DownloadTask>, ListModel<UploadTask>>(
-//              builder: (context, downloads, uploads, child) {
-//                return TranslatePage._init();
-//              }),
-//    );
-//  }
 }
 
 class TranslatePageState extends State<TranslatePage>
@@ -84,65 +68,90 @@ class TranslatePageState extends State<TranslatePage>
     } else {
       tasks = uploads;
     }
-    return GridView.builder(
-        itemCount: tasks.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, mainAxisSpacing: 8.0, childAspectRatio: 1.0),
-        itemBuilder: (BuildContext context, int index) {
-          return _taskItemView(tasks[index]);
-        });
+    return ListView.separated(
+      itemCount: tasks.length,
+      itemBuilder: (BuildContext context, int index) {
+        return _taskItemView(tasks[index]);
+      },
+      separatorBuilder: (BuildContext context, int index) => Divider(
+        indent: 16,
+        endIndent: 16,
+      ),
+    );
   }
 
   Widget _taskItemView(Task task) {
-    String content;
+    Widget trailing;
+    Widget subTitle;
     if (task.progress == 1) {
-      content = '已完成';
+      trailing = Icon(Icons.done);
+      subTitle = Text(
+        convertTimeToString(DateTime.fromMillisecondsSinceEpoch(task.time)) +
+            '    ' +
+            task.pathMsg,
+        style: TextStyle(fontSize: 12, color: Colors.grey),
+      );
     } else {
-      content = '${FileUtil.getFileSize(task.v?.toInt())} / s';
+      trailing = Text(
+        '${FileUtil.getFileSize(task.v?.toInt())} / s',
+        style: TextStyle(fontSize: 13),
+      );
+      subTitle = LinearProgressIndicator(
+        value: task.progress,
+      );
     }
-    return Card(
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          Positioned(
-            child: UI.selectIcon(task.name, false, size: 24),
-            left: 8,
-            top: 8,
-          ),
-          Positioned(
-              top: 24,
-              child: SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: Stack(alignment: Alignment.center, children: <Widget>[
-                    SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CircularProgressIndicator(
-                          value: task.progress,
-                          valueColor: AlwaysStoppedAnimation(Colors.green),
-                        )),
-                    Positioned(
-                      child: Text(content),
-                    ),
-                  ]))),
-          Positioned(
-            child: Text(task.name.length > 20
-                ? task.name.substring(0, 17) + '...'
-                : task.name),
-            bottom: 24,
-          ),
-          Positioned(
-            bottom: 8,
-            left: 8,
-            child: Text(
-              convertTimeToString(
-                  DateTime.fromMillisecondsSinceEpoch(task.time)),
-              style: TextStyle(color: Colors.grey, fontSize: 10),
-            ),
-          )
-        ],
+    return ListTile(
+      leading: UI.selectIcon(task.name, false, size: 40),
+      title: Text(
+        task.name,
+        style: TextStyle(fontSize: 14),
       ),
+      subtitle: subTitle,
+      trailing: trailing,
     );
+//    return Card(
+//      child: Stack(
+//        alignment: Alignment.center,
+//        children: <Widget>[
+//          Positioned(
+//            child: UI.selectIcon(task.name, false, size: 24),
+//            left: 8,
+//            top: 8,
+//          ),
+//          Positioned(
+//              top: 24,
+//              child: SizedBox(
+//                  width: 100,
+//                  height: 100,
+//                  child: Stack(alignment: Alignment.center, children: <Widget>[
+//                    SizedBox(
+//                        width: 100,
+//                        height: 100,
+//                        child: CircularProgressIndicator(
+//                          value: task.progress,
+//                          valueColor: AlwaysStoppedAnimation(Colors.green),
+//                        )),
+//                    Positioned(
+//                      child: Text(content),
+//                    ),
+//                  ]))),
+//          Positioned(
+//            child: Text(task.name.length > 20
+//                ? task.name.substring(0, 17) + '...'
+//                : task.name),
+//            bottom: 24,
+//          ),
+//          Positioned(
+//            bottom: 8,
+//            left: 8,
+//            child: Text(
+//              convertTimeToString(
+//                  DateTime.fromMillisecondsSinceEpoch(task.time)),
+//              style: TextStyle(color: Colors.grey, fontSize: 10),
+//            ),
+//          )
+//        ],
+//      ),
+//    );
   }
 }

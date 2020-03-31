@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
+import 'package:bytes_cloud/pages/content/TranslatePage.dart';
 import 'package:bytes_cloud/pages/content/remote/CloudPhotoFragment.dart';
 import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
@@ -91,7 +92,9 @@ class RemoteRouteState extends State<RemoteRoute>
             icon: Icon(Icons.add), onPressed: () => _newFolder(context)));
     Widget transformAction = IconButton(
       icon: Icon(Icons.transform),
-      onPressed: () {},
+      onPressed: () {
+        UI.newPage(context, TranslatePage());
+      },
     );
     Widget sortActionForm = IconButton(
       key: key2,

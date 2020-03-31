@@ -104,6 +104,9 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
           item,
           fit: BoxFit.contain,
           mode: ExtendedImageMode.gesture,
+//          cacheWidth: UI.DISPLAY_WIDTH.toInt(),
+          height: UI.DISPLAY_HEIGHT,
+          width: UI.DISPLAY_HEIGHT,
         );
         image = Container(
           child: image,

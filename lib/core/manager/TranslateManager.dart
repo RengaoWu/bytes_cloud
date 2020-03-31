@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/core/manager/Manager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
@@ -87,6 +88,7 @@ abstract class Task extends Entity {
   generateUUid(int time) => (time - Random(time).nextInt(2000)).hashCode;
 
   String get name;
+  String get pathMsg;
 
   @override
   bool operator ==(Object other) =>
@@ -154,6 +156,9 @@ class DownloadTask extends Task {
     this.filename = map['filename'];
     this.path = map['path'];
   }
+
+  @override
+  String get pathMsg => path.substring(0, path.length - filename.length);
 }
 
 class UploadTask extends Task {
@@ -190,4 +195,8 @@ class UploadTask extends Task {
     pid = map['pid'];
     path = map['path'];
   }
+
+  @override
+  String get pathMsg =>
+      CloudFileManager.instance().getVitualPathById(pid) + '/';
 }

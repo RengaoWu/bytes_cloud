@@ -123,7 +123,7 @@ class FileUtil {
   }
 
   static String getDownloadFilePath(CloudFileEntity entity) {
-    return Common().appDownload + '/' + entity.pathRoot + '/' + entity.fileName;
+    return Common().appDownload + entity.pathRoot + entity.fileName;
   }
 
   static bool haveDownloaded(CloudFileEntity entity) {

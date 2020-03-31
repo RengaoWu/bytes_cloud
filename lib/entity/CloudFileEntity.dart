@@ -25,7 +25,8 @@ class CloudFileEntity extends Entity {
   int uid; // 0 暂时没用
   int uploadTime; // 上传时间
 
-  CloudFileEntity(this.id, {this.fileName}) : super.fromMap(null);
+  CloudFileEntity(this.id, {this.fileName, this.pathRoot, this.type})
+      : super.fromMap(null);
 
   CloudFileEntity.fromMap(Map map) : super.fromMap(null) {
     fileName = map['filename'];

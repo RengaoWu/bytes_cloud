@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -128,6 +128,6 @@ class FileUtil {
 
   static bool haveDownloaded(CloudFileEntity entity) {
     return File(getDownloadFilePath(entity)).existsSync() &&
-        SPUtil.getBool(SPUtil.downloadedKey(entity.id), false);
+        SP.getBool(SP.downloadedKey(entity.id), false);
   }
 }

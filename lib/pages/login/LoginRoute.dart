@@ -3,11 +3,10 @@ import 'dart:ui';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/core/manager/UserManager.dart';
-import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
 import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,8 +49,8 @@ class LoginRouteState extends State<LoginRoute> {
   List<String> _accounts = []; //['1', '2', '3', '4', '5', '6'];
   List<String> _passwords = []; //['1', '2', '3', '4', '5', '6'];
   initData() {
-    _accounts = SPUtil.getArray(SPUtil.KEY_ACCOUNT, []);
-    _passwords = SPUtil.getArray(SPUtil.KEY_PASSWORD, []);
+    _accounts = SP.getArray(SP.KEY_ACCOUNT, []);
+    _passwords = SP.getArray(SP.KEY_PASSWORD, []);
     print('login _accounts = ${_accounts.toString()}');
     print('login _accounts = ${_passwords.toString()}');
     _loginUserController.text = _accounts.length > 0 ? _accounts[0] : '';
@@ -343,8 +342,8 @@ class LoginRouteState extends State<LoginRoute> {
       _accounts.insert(0, account);
       _passwords.insert(0, password);
     }
-    SPUtil.setArray(SPUtil.KEY_ACCOUNT, _accounts);
-    SPUtil.setArray(SPUtil.KEY_PASSWORD, _passwords);
+    SP.setArray(SP.KEY_ACCOUNT, _accounts);
+    SP.setArray(SP.KEY_PASSWORD, _passwords);
   }
 
   saveToken(String token) {

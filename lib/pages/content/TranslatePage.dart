@@ -2,7 +2,7 @@ import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/model/ThemeModel.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/utils/OtherUtil.dart';
+import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +86,7 @@ class TranslatePageState extends State<TranslatePage>
     if (task.progress == 1) {
       trailing = Icon(Icons.done);
       subTitle = Text(
-        convertTimeToString(DateTime.fromMillisecondsSinceEpoch(task.time)) +
+        UI.convertTimeToString(DateTime.fromMillisecondsSinceEpoch(task.time)) +
             '    ' +
             task.pathMsg,
         style: TextStyle(fontSize: 12, color: Colors.grey),

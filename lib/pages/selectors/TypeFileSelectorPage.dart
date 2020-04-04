@@ -5,7 +5,7 @@ import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeConfig.dart';
-import 'package:bytes_cloud/utils/OtherUtil.dart';
+import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -121,7 +121,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
       });
       return res;
     }
-    res = (await compute(wapperGetAllFiles, {
+    res = (await compute(wrapperGetAllFiles, {
       'keys': extensionName2Type.keys.toList(),
       'roots': paths,
       'isExt': true,
@@ -284,7 +284,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
             bottom: 0,
             right: 0,
             child: Text(
-              convertTimeToString(holder.dataTime),
+              UI.convertTimeToString(holder.dataTime),
               style: TextStyle(fontSize: 12, color: Colors.white),
             ),
           ),

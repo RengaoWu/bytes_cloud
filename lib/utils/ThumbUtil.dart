@@ -6,21 +6,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'FileUtil.dart';
 
-convertTimeToString(DateTime dateTime) {
-  return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';
-}
 
-String toJson(List<String> list) {
-  String json = '[';
-  for (int i = 0; i < list.length; i++) {
-    if (i < list.length - 1) {
-      json += '"${list[i]}",';
-    } else {
-      json += '"${list[i]}"';
-    }
-  }
-  return json += ']';
-}
 
 getThumbWidget(String path) {
   // from cache

@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SPUtil {
+class SP {
   static SharedPreferences sp;
   // 方便起见，账号密码暂时保存在SP中
   static const KEY_ACCOUNT = "KEY_ACCOUNT";

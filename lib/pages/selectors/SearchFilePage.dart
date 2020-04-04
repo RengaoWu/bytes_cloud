@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -44,7 +44,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
   initDate() {
     key = args['key'];
     roots = args['roots'];
-    historyKeys = SPUtil.getArray('search_history', []);
+    historyKeys = SP.getArray('search_history', []);
     controller.value = TextEditingValue(text: key);
   }
 
@@ -98,7 +98,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
   handleSearchResult(AsyncSnapshot snapshot) {
     if (key != null && !historyKeys.contains(key)) {
       historyKeys.add(key);
-      SPUtil.setArray('search_history', historyKeys);
+      SP.setArray('search_history', historyKeys);
     }
     allFiles.clear();
     allFiles.addAll(snapshot.data);
@@ -182,7 +182,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
     if (key == '') {
       throw 'Please input key';
     }
-    List<FileSystemEntity> res = await compute(wapperGetAllFiles, {
+    List<FileSystemEntity> res = await compute(wrapperGetAllFiles, {
       'keys': [key],
       'roots': roots
     });

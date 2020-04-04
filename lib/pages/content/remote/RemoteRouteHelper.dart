@@ -6,7 +6,7 @@ import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +100,7 @@ class RemoteRouteHelper {
       return;
     }
     File localFile = File(FileUtil.getDownloadFilePath(entity));
-    if (SPUtil.getBool(SPUtil.downloadedKey(entity.id), false) &&
+    if (SP.getBool(SP.downloadedKey(entity.id), false) &&
         localFile.existsSync()) {
       UI.openFile(context, localFile);
       return;

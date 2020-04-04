@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/utils/OtherUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +92,7 @@ class MarkDownListPageState extends State<MarkDownListPage> {
 
   inkwellItemCard(FileSystemEntity file) {
     String name = FileUtil.getFileName(file.path);
-    String time = convertTimeToString(file.statSync().changed);
+    String time = UI.convertTimeToString(file.statSync().changed);
     return InkWell(
       child: itemCard(name, time, () {
         FileUtil.deleteFile(file.path);

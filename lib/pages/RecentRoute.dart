@@ -12,8 +12,7 @@ import 'package:bytes_cloud/pages/widgets/PopWindows.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
-import 'package:bytes_cloud/utils/OtherUtil.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -174,11 +173,11 @@ class RecentRouteState extends State<RecentRoute>
   // 查询是否有新文件，如果有添加到数据库
   Future<bool> hasNewRecentFilesFromFileSystem() async {
     // 增量查询
-    List<FileSystemEntity> recentFiles = await compute(wapperGetAllFiles, {
+    List<FileSystemEntity> recentFiles = await compute(wrapperGetAllFiles, {
       "keys": Common().recentFileExt(),
       "roots": Common().recentDir,
       "isExt": true,
-      'fromTime': SPUtil.getInt("lastGetRecentFileTime", 0)
+      'fromTime': SP.getInt("lastGetRecentFileTime", 0)
     });
     // 更新时间戳
     var newTimeStamp = 0;
@@ -187,7 +186,7 @@ class RecentRouteState extends State<RecentRoute>
     } else {
       newTimeStamp = recentFiles[0].statSync().modified.millisecondsSinceEpoch;
     }
-    SPUtil.setInt("lastGetRecentFileTime", newTimeStamp);
+    SP.setInt("lastGetRecentFileTime", newTimeStamp);
     // 存入数据库
     print("增量查询最近文件, 新文件长度:${recentFiles.length}");
     bool hasNewRecentFile = false;
@@ -249,7 +248,7 @@ class RecentRouteState extends State<RecentRoute>
   itemTailView(RecentFileEntity file) {
     return Row(children: <Widget>[
       Text(
-        convertTimeToString(
+        UI.convertTimeToString(
             DateTime.fromMillisecondsSinceEpoch(file.modifyTime)),
         style: TextStyle(fontSize: 12, color: Colors.grey),
       )

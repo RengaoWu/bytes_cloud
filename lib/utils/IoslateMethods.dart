@@ -3,7 +3,7 @@ import 'dart:io';
 
 // keys
 // 已经按照时间的新到旧排序
-List<FileSystemEntity> wapperGetAllFiles(Map args) {
+List<FileSystemEntity> wrapperGetAllFiles(Map args) {
   List<String> keys = args['keys'];
   List<String> paths = args['roots'];
   bool isExt = args['isExt'];

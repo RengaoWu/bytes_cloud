@@ -4,7 +4,7 @@ import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/login/LoginRoute.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
@@ -63,16 +63,17 @@ void main() async {
     }
   }
 
+  // todo 这里要添加一个 SplashPage 用于初始化
   WidgetsFlutterBinding.ensureInitialized();
   // Permission check
   Future.wait([
     initializeDateFormatting("zh-CN", ""),
     getPermission(), // 初始化权限
-    SPUtil.getSp(), // 初始化 sp
+    SP.getSp(), // 初始化 sp
   ]).then((result) {
     initHttp(); // init http, 添加cookie
     DBManager.instance.init(); // 初始化DB
-    SPUtil.sp = result[2] as SharedPreferences;
+    SP.sp = result[2] as SharedPreferences;
     runApp(MyApp());
   });
 }

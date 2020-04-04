@@ -9,7 +9,7 @@ import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/pages/plugins/PdfReaderPage.dart';
 import 'package:bytes_cloud/pages/plugins/GalleryPage.dart';
-import 'package:bytes_cloud/utils/OtherUtil.dart';
+import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -46,6 +46,10 @@ class UI {
     UI.DISPLAY_WIDTH = size.width;
     UI.DISPLAY_HEIGHT = size.height;
     UI.devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+  }
+
+  static convertTimeToString(DateTime dateTime) {
+    return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';
   }
 
   static double dpi2px(double size) => size * devicePixelRatio;

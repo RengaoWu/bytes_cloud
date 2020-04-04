@@ -4,7 +4,7 @@ import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:dio/dio.dart';
 
 class CloudFileHandle {
@@ -107,7 +107,7 @@ class CloudFileHandle {
     });
     if (resp.statusCode == 200) {
       TranslateManager.instant().saveFinishedTask2DB(task);
-      SPUtil.setBool(SPUtil.downloadedKey(task.id), true);
+      SP.setBool(SP.downloadedKey(task.id), true);
       print('下载请求成功');
     }
   }

@@ -1,7 +1,7 @@
 import 'package:bytes_cloud/model/ThemeModel.dart';
 import 'package:bytes_cloud/pages/content/ThemeSwitchPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
-import 'package:bytes_cloud/utils/SPWrapper.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

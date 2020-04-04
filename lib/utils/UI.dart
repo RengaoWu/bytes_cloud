@@ -6,6 +6,7 @@ import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/plugins/MDPage.dart';
 import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
+import 'package:bytes_cloud/pages/widgets/CheckWidget.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/pages/plugins/PdfReaderPage.dart';
 import 'package:bytes_cloud/pages/plugins/GalleryPage.dart';
@@ -327,7 +328,7 @@ class UI {
             subtitle: Text(
                 '$modifiedTime  ${FileUtil.getFileSize(file.statSync().size)}',
                 style: TextStyle(fontSize: 12.0)),
-            trailing: Checkbox(
+            trailing: CheckWidget(
               value: isCheck,
               onChanged: (bool value) {
                 onChanged(value, file);
@@ -452,15 +453,15 @@ class UI {
     return count;
   }
 
-  static pushToCloud(BuildContext context, int length, int size) {
-    String content = '';
-    if (length == 0) {
-      content = '没有选择任何文件';
-    } else {
-      content = '开始上传，总共${length}个文件，共${FileUtil.getFileSize(size)}';
-    }
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
-  }
+//  static pushToCloud(BuildContext context, int length, int size) {
+//    String content = '';
+//    if (length == 0) {
+//      content = '没有选择任何文件';
+//    } else {
+//      content = '开始上传，总共${length}个文件，共${FileUtil.getFileSize(size)}';
+//    }
+//    Scaffold.of(context).showSnackBar(SnackBar(content: Text(content)));
+//  }
 
   static openFile(BuildContext context, File currentFile,
       {List<FileSystemEntity> files, bool useOtherApp = false}) {
@@ -492,11 +493,6 @@ class UI {
 
   static openCloudFile(BuildContext context, CloudFileEntity current,
       {List<CloudFileEntity> entities}) {
-//    File local = File(FileUtil.getDownloadFilePath(current));
-//    if (local.existsSync()) {
-//      UI.openFile(context, local);
-//      return;
-//    }
     if (FileUtil.isImage(current.fileName)) {
       UI.newPage(context,
           PhotoGalleryPage({'current': current, 'files': entities})); // 图片
@@ -573,10 +569,11 @@ class UI {
     }
     if (resFlag == 1) {
       return ClipRect(
-        child: ExtendedImage.file(
+        child: Image.file(
           File(path),
           width: size,
           height: size,
+          cacheWidth: dpi2px(size).toInt(),
         ),
       );
     } else {
@@ -584,6 +581,7 @@ class UI {
         iconImg,
         width: size,
         height: size,
+        cacheWidth: dpi2px(size).toInt(),
       );
     }
   }

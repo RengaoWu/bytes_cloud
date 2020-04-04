@@ -164,16 +164,14 @@ class _SearchFilePageState extends State<SearchFilePage> {
   }
 
   onChange(bool value, FileSystemEntity file) {
-    setState(() {
-      flashListView = false;
-      if (value) {
-        selectedFiles.add(file.path);
-        filesSize += file.statSync().size;
-      } else {
-        selectedFiles.remove(file.path);
-        filesSize -= file.statSync().size;
-      }
-    });
+    flashListView = false;
+    if (value) {
+      selectedFiles.add(file.path);
+      filesSize += file.statSync().size;
+    } else {
+      selectedFiles.remove(file.path);
+      filesSize -= file.statSync().size;
+    }
   }
 
   onTap() {}
@@ -182,10 +180,8 @@ class _SearchFilePageState extends State<SearchFilePage> {
     if (key == '') {
       throw 'Please input key';
     }
-    List<FileSystemEntity> res = await compute(wrapperGetAllFiles, {
-      'keys': [key],
-      'roots': roots
-    });
+    List<FileSystemEntity> res =
+        await computeGetAllFiles(roots: roots, keys: [key]);
     return res;
   }
 

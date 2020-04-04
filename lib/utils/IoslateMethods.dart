@@ -1,16 +1,29 @@
 import 'dart:collection';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 // keys
 // 已经按照时间的新到旧排序
-List<FileSystemEntity> wrapperGetAllFiles(Map args) {
+Future<List<FileSystemEntity>> computeGetAllFiles(
+    {@required List<String> roots,
+    @required List<String> keys,
+    bool isExt = false,
+    int fromTime = 0}) async {
+  return await compute(_wrapperGetAllFiles, {
+    'keys': keys,
+    'roots': roots,
+    'isExt': isExt,
+    'fromTime': fromTime,
+  });
+}
+
+List<FileSystemEntity> _wrapperGetAllFiles(Map args) {
   List<String> keys = args['keys'];
   List<String> paths = args['roots'];
   bool isExt = args['isExt'];
   int fromTime = args['fromTime'];
 
-  isExt = isExt == null ? false : isExt;
-  fromTime = fromTime == null ? 0 : fromTime;
   Set<FileSystemEntity> all = HashSet(
       equals: (e1, e2) => e1.path == e2.path, hashCode: (e) => e.path.hashCode);
   paths.forEach((f) {

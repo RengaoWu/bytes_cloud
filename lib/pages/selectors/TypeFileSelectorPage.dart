@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bytes_cloud/core/manager/CacheManager.dart';
+import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
+import 'package:bytes_cloud/pages/widgets/CheckWidget.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/FileTypeConfig.dart';
@@ -82,7 +84,8 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
                   return IconButton(
                     icon: Icon(Icons.file_upload),
                     onPressed: () {
-                      UI.pushToCloud(context, selectedFiles.length, filesSize);
+                      UI.newPage(context, CloudFolderSelector(selectedFiles));
+//                      UI.pushToCloud(context, selectedFiles.length, filesSize);
                     },
                   );
                 },
@@ -121,11 +124,8 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
       });
       return res;
     }
-    res = (await compute(wrapperGetAllFiles, {
-      'keys': extensionName2Type.keys.toList(),
-      'roots': paths,
-      'isExt': true,
-    }));
+    res = await computeGetAllFiles(
+        roots: paths, keys: extensionName2Type.keys.toList(), isExt: true);
     cache[argType] = res;
 
     return res;
@@ -267,9 +267,8 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
           Positioned(
               right: 0,
               top: 0,
-              child: Checkbox(
+              child: CheckWidget(
                   value: selectedFiles.contains(path),
-                  checkColor: Colors.white,
                   onChanged: (value) {
                     if (value) {
                       selectedFiles.add(path);
@@ -278,7 +277,6 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
                       selectedFiles.remove(path);
                       filesSize -= holder.entity.statSync().size;
                     }
-                    setState(() {});
                   })),
           Positioned(
             bottom: 0,
@@ -294,15 +292,13 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   }
 
   onChange(bool value, FileSystemEntity file) {
-    setState(() {
-      if (value) {
-        selectedFiles.add(file.path);
-        filesSize += file.statSync().size;
-      } else {
-        selectedFiles.remove(file.path);
-        filesSize -= file.statSync().size;
-      }
-    });
+    if (value) {
+      selectedFiles.add(file.path);
+      filesSize += file.statSync().size;
+    } else {
+      selectedFiles.remove(file.path);
+      filesSize -= file.statSync().size;
+    }
   }
 
   onTap(FileSystemEntity file) {

@@ -172,13 +172,11 @@ class RecentRouteState extends State<RecentRoute>
 
   // 查询是否有新文件，如果有添加到数据库
   Future<bool> hasNewRecentFilesFromFileSystem() async {
-    // 增量查询
-    List<FileSystemEntity> recentFiles = await compute(wrapperGetAllFiles, {
-      "keys": Common().recentFileExt(),
-      "roots": Common().recentDir,
-      "isExt": true,
-      'fromTime': SP.getInt("lastGetRecentFileTime", 0)
-    });
+    List<FileSystemEntity> recentFiles = await computeGetAllFiles(
+        roots: Common().recentDir,
+        keys: Common().recentFileExt(),
+        isExt: true,
+        fromTime: SP.getInt("lastGetRecentFileTime", 0));
     // 更新时间戳
     var newTimeStamp = 0;
     if (recentFiles.length == 0) {

@@ -87,6 +87,8 @@ class Constants {
   static const String SHARE2 = 'assets/images/share2.png';
   static const String LOGIN_BG = 'assets/images/login_bg.jpeg';
   static const String AVATOR = 'assets/images/avator.jpg';
+  static const String QRCODE = 'assets/images/qrcode.png';
+  static const String LINK = 'assets/images/link.png';
 
   static const int COLOR_DIVIDER = 0xffe5e5e5;
 }

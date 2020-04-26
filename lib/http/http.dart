@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -19,6 +20,11 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 /// http://116.62.177.146:5000/api/register?email=test1@163.com&password=123456 注册
 ///
 /// http://116.62.177.146:5000/api/logout? 登出
+///
+/// http://116.62.177.146/api/file/share?id=3&token_required=1&day=7 获取分享URL
+///
+/// http://116.62.177.146/api/file/share/download/1pc2bw6?share_token=de99  download share file
+///
 
 const String host = "http://116.62.177.146"; // host
 Dio dio = Dio(BaseOptions(
@@ -52,6 +58,8 @@ const String HTTP_GET_PREVIEW = '/api/file/preview';
 const String HTTP_POST_REGISTER = '/api/register';
 const String HTTP_POST_LOGIN = '/api/login';
 const String HTTP_POST_LOGOUT = '/api/logout';
+const String HTTP_POST_SHARE_FILE = '/api/file/share';
+const String HTTP_POST_SHARE_FILE_DOWNLOAD = '/api/file/share/download';
 
 // GET
 Future<Map<String, dynamic>> httpGet(String path,
@@ -96,6 +104,14 @@ Future httpDownload(String path, Map<String, dynamic> args, String savePath,
 
 String getDownloadUrl(int id) {
   return host + HTTP_POST_DOWNLOAD_FILE + '?id=$id';
+}
+
+String getShareURL(ShareEntity entity) {
+  return host +
+      HTTP_POST_SHARE_FILE_DOWNLOAD +
+      entity.shareURL +
+      '?share_token=' +
+      entity.shareToken;
 }
 
 String getPreviewUrl(int id, double width, double height) {

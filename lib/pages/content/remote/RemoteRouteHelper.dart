@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
+import 'package:bytes_cloud/pages/widgets/ShareWindow.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
@@ -88,9 +90,8 @@ class RemoteRouteHelper {
   // 分享 ACTION
   shareAction(CloudFileEntity entity) async {
     Navigator.pop(context);
-    await UI.showContentDialog(context, '分享文件: ${entity.fileName}',
-        QrImage(data: getDownloadUrl(entity.id)),
-        left: '保存到本地', leftCall: () {}, right: '分享', rightCall: () {});
+    await UI.bottomSheet(
+        context: context, content: ShareWindow(entity), height: 700);
   }
 
   // 下载 ACTION

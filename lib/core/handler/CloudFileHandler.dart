@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
@@ -110,5 +111,18 @@ class CloudFileHandle {
       SP.setBool(SP.downloadedKey(task.id), true);
       print('下载请求成功');
     }
+  }
+
+  static Future<ShareEntity> shareFile(int id, bool needToken, int day) async {
+    int token_required = needToken ? 1 : 0;
+    var rsp = await httpPost(HTTP_POST_SHARE_FILE,
+        form: {'id': id, 'token_required': token_required, 'day': day});
+    print('CloudFileHanlder shareFile rsp = ${rsp}');
+    if (rsp['code'] == 0) {
+      return ShareEntity.fromMap(rsp['data']['share']);
+    } else {
+      print('CloudFileHanlder shareFile code != 0');
+    }
+    return null;
   }
 }

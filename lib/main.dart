@@ -6,6 +6,7 @@ import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/login/LoginRoute.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -66,6 +67,10 @@ void main() async {
   // todo 这里要添加一个 SplashPage 用于初始化
   WidgetsFlutterBinding.ensureInitialized();
   // Permission check
+  // fixme appid 还没有申请下来
+  registerWxApi(
+      appId: "wxd930ea5d5a228f5f",
+      universalLink: "https://your.univerallink.com/link/");
   Future.wait([
     initializeDateFormatting("zh-CN", ""),
     getPermission(), // 初始化权限

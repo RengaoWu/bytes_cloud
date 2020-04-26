@@ -130,4 +130,18 @@ class FileUtil {
     return File(getDownloadFilePath(entity)).existsSync() &&
         SP.getBool(SP.downloadedKey(entity.id), false);
   }
+
+  static bool isFile(String path) {
+    if (path == null || path.trim() == '') {
+      return false;
+    }
+    if (!File(path).existsSync()) {
+      return false;
+    }
+    return true;
+  }
+
+  static String uri2Path(String url) {
+    return url.substring(8); //  'file:///'
+  }
 }

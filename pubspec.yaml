@@ -15,10 +15,8 @@ dependencies:
   permission_handler: ^4.2.0+hotfix.3
   intl: ^0.16.0
   fluttertoast: ^3.1.3
-  table_calendar: ^2.2.2
   event_bus: ^1.1.0
   flutter_staggered_grid_view: ^0.3.0
-  flutter_spinkit: ^4.1.1 #进度条
   flutter_markdown: ^0.3.3
   provider: ^4.0.4
   sqflite: ^1.2.0
@@ -31,7 +29,7 @@ dependencies:
   extended_image: ^0.7.1  # 图片查看器
   open_file: ^3.0.1 # https://pub.dev/packages/open_file#-readme-tab-
 
-  flutter_filereader: ^2.0.0 # 文件阅读器 failed in android 10
+  # wflutter_filereader: ^2.0.0 # 文件阅读器 failed in android 10
   # ios add <key>io.flutter.embedded_views_preview</key><true/>
   # zefyr: ^0.10.0
   # native_pdf_view: 2.2.0
@@ -44,6 +42,8 @@ dependencies:
   qr_flutter: ^3.2.0  # 生成二维码
 
   font_awesome_flutter: ^8.8.0 #Flutter的图标库
+  image_gallery_saver: ^1.2.2 #保存照片
+  fluwx: ^2.0.8+1 # 微信分享
 
 
 
@@ -118,6 +118,8 @@ flutter:
     - assets/images/share2.png
     - assets/images/login_bg.jpeg
     - assets/images/avator.jpg
+    - assets/images/qrcode.png
+    - assets/images/link.png
 
 
 

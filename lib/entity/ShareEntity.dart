@@ -15,11 +15,12 @@ class ShareEntity extends Entity {
   String shareToken;
   String shareURL;
   String qrCodeFile = '';
+  static const String ORDER_BY_BEGIN_TIME = ' share_begin_time ';
   static const String tableName = 'ShareEntity';
   static const String SQL_SHARE_CREATE = '''
 			      CREATE TABLE ${tableName} (
             file_id INTEGER, 
-            share_id TEXT PRIMARY KEY, 
+            share_id INTEGER PRIMARY KEY, 
             share_begin_time INTEGER, 
             share_end_time INTEGER,
             share_token TEXT,
@@ -33,7 +34,11 @@ class ShareEntity extends Entity {
     endTime = map['share_end_time'];
     shareToken = map['share_token'];
     shareURL = map['share_url'];
-    qrCodeFile = map['qrCodeFile'];
+    qrCodeFile = map['qrCodeFile'] == null ? '' : map['qrCodeFile'];
+    if (DateTime.fromMillisecondsSinceEpoch(beginTime).year < 2020) {
+      beginTime *= 1000;
+      endTime *= 1000;
+    }
   }
 
   @override

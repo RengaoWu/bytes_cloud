@@ -25,7 +25,10 @@ Widget boldText(String text,
     {FontWeight fontWeight = FontWeight.bold, double fontSize = 14}) {
   return Text(
     text,
-    style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
+    style: TextStyle(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+    ),
   );
 }
 
@@ -499,7 +502,8 @@ class UI {
     }
   }
 
-  static Widget selectIcon(String path, bool preview, {double size = 40}) {
+  static Widget selectIcon(String path, bool preview,
+      {bool isUrl = false, int id, double size = 40}) {
     int resFlag = 0; // 图片 1, 视频 2
     String ext = p.extension(path);
     String iconImg = Constants.UNKNOW;
@@ -568,97 +572,37 @@ class UI {
         break;
     }
     if (resFlag == 1) {
-      return ClipRect(
-        child: Image.file(
-          File(path),
-          width: size,
-          height: size,
-          cacheWidth: dpi2px(size).toInt(),
-        ),
-      );
-    } else {
-      return Image.asset(
-        iconImg,
-        width: size,
-        height: size,
-        cacheWidth: dpi2px(size).toInt(),
-      );
-    }
-  }
-
-  static Widget selectPreview(String path, double size) {
-    String ext = p.extension(path);
-    int resFlag = 0; // 图片 1, 视频 2
-    String iconImg = Constants.UNKNOW;
-    switch (ext) {
-      case '.ppt':
-      case '.pptx':
-        iconImg = Constants.PPT;
-        break;
-      case '.doc':
-      case '.docx':
-        iconImg = Constants.DOC;
-        break;
-      case '.xls':
-      case '.xlsx':
-        iconImg = Constants.EXCEL;
-        break;
-      case '.jpg':
-      case '.jpeg':
-      case '.png':
-        iconImg = "";
-        resFlag = 1;
-        break;
-      case '.txt':
-        iconImg = Constants.TXT;
-        break;
-      case '.mp3':
-      case '.wav':
-      case '.flac':
-      case '.aac':
-        iconImg = Constants.MUSIC;
-        break;
-      case '.mp4':
-      case '.avi':
-      case '.flv':
-      case '3gp':
-        //iconImg = Constants.VIDEO;
-        resFlag = 2;
-        break;
-      case '.rar':
-      case '.zip':
-      case '.7z':
-        iconImg = Constants.COMPRESSFILE;
-        break;
-      case '.psd':
-      case '.pdf':
-        iconImg = Constants.PSD;
-        break;
-      default:
-        iconImg = Constants.FILE;
-        break;
-    }
-    if (resFlag == 1) {
-      return loadImage(path, size);
+      return loadImage(path, id, isUrl, size);
     } else if (resFlag == 2) {
       return SizedBox(width: size, height: size, child: getThumbWidget(path));
     }
-    return ExtendedImage.asset(
+    return Image.asset(
       iconImg,
-      width: size / 2,
-      height: size / 2,
-      fit: BoxFit.cover,
+      width: size,
+      height: size,
+      cacheWidth: dpi2px(size).toInt(),
     );
   }
 
   // 不使用 cacheHeight 内存要炸了
-  static Widget loadImage(String path, double size) {
-    Widget image = Image.file(
-      File(path),
-      alignment: Alignment.center,
-      height: size,
-      cacheHeight: dpi2px(size).toInt(),
-    );
+  static Widget loadImage(String path, int id, bool isUrl, double size) {
+    Widget image;
+    if (isUrl) {
+      path = getPreviewUrl(id, dpi2px(size), dpi2px(size));
+      image = Image.network(
+        path,
+        alignment: Alignment.center,
+        height: size,
+        cacheHeight: dpi2px(size).toInt(),
+      );
+    } else {
+      image = Image.file(
+        File(path),
+        alignment: Alignment.center,
+        height: size,
+        cacheHeight: dpi2px(size).toInt(),
+      );
+    }
     return image;
   }
 

@@ -18,7 +18,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:fluwx/fluwx.dart';
-import 'package:toast/toast.dart';
 
 class ShareWindow extends StatefulWidget {
   final CloudFileEntity entity;
@@ -58,7 +57,7 @@ class ShareWindowState extends State<ShareWindow> {
         tag: entity.id,
       );
     } else {
-      icon = UI.selectIcon(entity.fileName, true, size: 130);
+      icon = UI.selectIcon(entity.fileName, true, size: 120);
     }
     String timeTitle;
     String timeSubTitle;
@@ -70,9 +69,9 @@ class ShareWindowState extends State<ShareWindow> {
       timeSubTitle = '分享将在${day}后失效';
     }
     return Padding(
-      child: Column(
+      child: ListView(
         children: <Widget>[
-          boldText('分享文件: ${entity.fileName}'),
+          boldText('${entity.fileName}'),
           Padding(
             child: icon,
             padding: EdgeInsets.only(top: 8),

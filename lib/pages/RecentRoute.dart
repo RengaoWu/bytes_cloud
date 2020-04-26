@@ -330,7 +330,7 @@ class RecentRouteState extends State<RecentRoute>
         group.length > 4 ? group.sublist(0, 4) : group;
     var widgets = visiables.map((f) {
       Widget image = Hero(
-        child: UI.selectPreview(f.path, itemInnerViewPhotoSize),
+        child: UI.selectIcon(f.path, true, size: itemInnerViewPhotoSize),
         tag: f.path,
       );
       return InkWell(

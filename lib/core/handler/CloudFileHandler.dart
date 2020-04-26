@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
@@ -119,10 +120,17 @@ class CloudFileHandle {
         form: {'id': id, 'token_required': token_required, 'day': day});
     print('CloudFileHanlder shareFile rsp = ${rsp}');
     if (rsp['code'] == 0) {
-      return ShareEntity.fromMap(rsp['data']['share']);
+      ShareEntity entity = ShareEntity.fromMap(rsp['data']['share']);
+      return entity;
     } else {
       print('CloudFileHanlder shareFile code != 0');
     }
     return null;
+  }
+
+  static Future<bool> delShareFile(int shareID) async {
+    var rsp = await httpPost(HTTP_POST_DEL_SHARE, form: {'share_id': shareID});
+    print('CloudFileHanlder delShareFile rsp = ${rsp}');
+    return rsp['code'] == 0;
   }
 }

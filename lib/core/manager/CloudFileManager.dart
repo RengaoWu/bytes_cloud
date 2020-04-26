@@ -235,4 +235,13 @@ class CloudFileManager {
     }
     return entity;
   }
+
+  Future<bool> deleteShareFile(ShareEntity entity) async {
+    bool success = await CloudFileHandle.delShareFile(entity.shareID);
+    if (success != null) {
+      DBManager.instance.delete(
+          ShareEntity.tableName, {'share_id': entity.shareID.toString()});
+    }
+    return success;
+  }
 }

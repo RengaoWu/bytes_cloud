@@ -59,6 +59,7 @@ const String HTTP_POST_REGISTER = '/api/register';
 const String HTTP_POST_LOGIN = '/api/login';
 const String HTTP_POST_LOGOUT = '/api/logout';
 const String HTTP_POST_SHARE_FILE = '/api/file/share';
+const String HTTP_POST_DEL_SHARE = '/api/file/share/cancel';
 const String HTTP_POST_SHARE_FILE_DOWNLOAD = '/api/file/share/download';
 
 // GET

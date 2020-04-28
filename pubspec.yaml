@@ -44,6 +44,7 @@ dependencies:
   font_awesome_flutter: ^8.8.0 #Flutter的图标库
   image_gallery_saver: ^1.2.2 #保存照片
   fluwx: ^2.0.8+1 # 微信分享
+  url_launcher: ^5.4.5 # 发邮件、打电话
 
 
 

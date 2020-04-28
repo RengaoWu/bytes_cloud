@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
@@ -15,6 +17,10 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
@@ -598,7 +604,7 @@ class UI {
     } else {
       image = Image.file(
         File(path),
-        alignment: Alignment.center,
+        fit: BoxFit.cover,
         height: size,
         cacheHeight: dpi2px(size).toInt(),
       );

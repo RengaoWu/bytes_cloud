@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 
 class Constants {
+  // msg
+  static const String MY_EMAIL_LOCATION = 'rengao_wu@qq.com';
   // Channel
   static const String COMMON_CHANNEL = 'common';
   static const String getThumbnails = 'getThumbnails';

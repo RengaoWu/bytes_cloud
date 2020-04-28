@@ -1,10 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:bytes_cloud/core/common.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/utils/FileTypeConfig.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -143,5 +148,15 @@ class FileUtil {
 
   static String uri2Path(String url) {
     return url.substring(8); //  'file:///'
+  }
+
+  static Future<String> saveUI2Image(GlobalKey key) async {
+    RenderRepaintBoundary boundary = key.currentContext.findRenderObject();
+    var image = await boundary.toImage();
+    ByteData byteData = await image.toByteData(format: ImageByteFormat.png);
+    Uint8List png = byteData.buffer.asUint8List();
+    String path = FileUtil.uri2Path(await ImageGallerySaver.saveImage(png));
+    Fluttertoast.showToast(msg: '保存到 ${path}');
+    return path;
   }
 }

@@ -37,9 +37,6 @@ class TranslatePageState extends State<TranslatePage>
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(milliseconds: 1000)).whenComplete((() {
-      if (mounted) setState(() {});
-    }));
     print('TranslatePageState build');
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +68,7 @@ class TranslatePageState extends State<TranslatePage>
     return ListView.separated(
       itemCount: tasks.length,
       itemBuilder: (BuildContext context, int index) {
-        return _taskItemView(tasks[index]);
+        return TaskItem(tasks[index]);
       },
       separatorBuilder: (BuildContext context, int index) => Divider(
         indent: 16,
@@ -79,8 +76,36 @@ class TranslatePageState extends State<TranslatePage>
       ),
     );
   }
+}
+
+class TaskItem extends StatefulWidget {
+  final Task task;
+  TaskItem(this.task);
+  @override
+  State<StatefulWidget> createState() {
+    return TaskItemState();
+  }
+}
+
+class TaskItemState extends State<TaskItem> {
+  Task task;
+  Widget leading;
+  @override
+  void initState() {
+    super.initState();
+    task = widget.task;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _taskItemView(task);
+  }
 
   Widget _taskItemView(Task task) {
+    Future.delayed(Duration(milliseconds: 1000)).whenComplete((() {
+      if (mounted) setState(() {});
+    }));
+
     Widget trailing;
     Widget subTitle;
     if (task.progress == 1) {
@@ -89,69 +114,28 @@ class TranslatePageState extends State<TranslatePage>
         UI.convertTimeToString(DateTime.fromMillisecondsSinceEpoch(task.time)) +
             '    ' +
             task.pathMsg,
-        style: TextStyle(fontSize: 12, color: Colors.grey),
+        style: TextStyle(fontSize: 10, color: Colors.grey),
       );
     } else {
       trailing = Text(
         '${FileUtil.getFileSize(task.v?.toInt())} / s',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(fontSize: 12),
       );
       subTitle = LinearProgressIndicator(
         value: task.progress,
       );
     }
+    if (leading == null) {
+      leading = UI.selectIcon(task.filePath, true, size: 40);
+    }
     return ListTile(
-      leading: UI.selectIcon(task.name, false, size: 40),
+      leading: leading,
       title: Text(
         task.name,
-        style: TextStyle(fontSize: 14),
+        style: TextStyle(fontSize: 12),
       ),
       subtitle: subTitle,
       trailing: trailing,
     );
-//    return Card(
-//      child: Stack(
-//        alignment: Alignment.center,
-//        children: <Widget>[
-//          Positioned(
-//            child: UI.selectIcon(task.name, false, size: 24),
-//            left: 8,
-//            top: 8,
-//          ),
-//          Positioned(
-//              top: 24,
-//              child: SizedBox(
-//                  width: 100,
-//                  height: 100,
-//                  child: Stack(alignment: Alignment.center, children: <Widget>[
-//                    SizedBox(
-//                        width: 100,
-//                        height: 100,
-//                        child: CircularProgressIndicator(
-//                          value: task.progress,
-//                          valueColor: AlwaysStoppedAnimation(Colors.green),
-//                        )),
-//                    Positioned(
-//                      child: Text(content),
-//                    ),
-//                  ]))),
-//          Positioned(
-//            child: Text(task.name.length > 20
-//                ? task.name.substring(0, 17) + '...'
-//                : task.name),
-//            bottom: 24,
-//          ),
-//          Positioned(
-//            bottom: 8,
-//            left: 8,
-//            child: Text(
-//              convertTimeToString(
-//                  DateTime.fromMillisecondsSinceEpoch(task.time)),
-//              style: TextStyle(color: Colors.grey, fontSize: 10),
-//            ),
-//          )
-//        ],
-//      ),
-//    );
   }
 }

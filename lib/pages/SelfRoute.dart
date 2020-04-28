@@ -1,4 +1,5 @@
 import 'package:bytes_cloud/core/manager/UserManager.dart';
+import 'package:bytes_cloud/pages/content/FacebackPage.dart';
 import 'package:bytes_cloud/pages/content/SharePage.dart';
 import 'package:bytes_cloud/pages/content/TranslatePage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
@@ -8,6 +9,7 @@ import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SelfRoute extends StatefulWidget {
   @override
@@ -62,7 +64,8 @@ class SelfRouteState extends State<SelfRoute>
               indent: 8,
               endIndent: 8,
             ),
-            UI.iconTxtListItem(Constants.FACEBACK, '反馈', null, null,
+            UI.iconTxtListItem(Constants.FACEBACK, '反馈', null,
+                () => UI.newPage(context, FaceBackPage()),
                 left: 8, right: 8, bottom: 16, top: 16),
           ],
         ),
@@ -85,14 +88,14 @@ class SelfRouteState extends State<SelfRoute>
               physics: ScrollPhysics(),
               shrinkWrap: true,
               children: <Widget>[
+                UI.iconTxtBtn(Constants.DOWNLOADED, "传输",
+                    () => UI.newPage(context, TranslatePage())), // 已下载文件
+                UI.iconTxtBtn(Constants.SHARE, "分享",
+                    () => UI.newPage(context, SharePage())), // 分享
                 UI.iconTxtBtn(Constants.BACK, "备份", () => {print("")}),
                 UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
                 UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
-                UI.iconTxtBtn(Constants.SHARE, "分享",
-                    () => UI.newPage(context, SharePage())), // 分享
                 UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
-                UI.iconTxtBtn(Constants.DOWNLOADED, "已下载",
-                    () => UI.newPage(context, TranslatePage())), // 已下载文件
               ],
             ),
             context: context,

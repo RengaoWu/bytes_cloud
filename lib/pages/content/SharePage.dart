@@ -2,9 +2,13 @@ import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class SharePage extends StatefulWidget {
   @override
@@ -16,6 +20,7 @@ class SharePage extends StatefulWidget {
 class SharePageState extends State<SharePage> {
   List<ShareEntity> entities;
   List<CloudFileEntity> cloudFiles;
+  GlobalKey qrCodeKey = new GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -98,6 +103,35 @@ class SharePageState extends State<SharePage> {
                 });
             },
           ),
+          onTap: () {
+            UI.showContentDialog(
+                context,
+                '分享文件',
+                RepaintBoundary(
+                    key: qrCodeKey,
+                    child: Column(
+                      children: <Widget>[
+                        boldText(cloudFileEntity.fileName),
+                        QrImage(
+                          data: shareEntity.getShareDownloadURL,
+                        ),
+                        Text(
+                          '来自ByteCloud',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
+                    )),
+                left: '复制链接',
+                leftCall: () {
+                  Clipboard.setData(
+                      ClipboardData(text: shareEntity.getShareDownloadURL));
+                  Fluttertoast.showToast(msg: '复制到剪切板');
+                },
+                right: '保存二维码',
+                rightCall: () async {
+                  await FileUtil.saveUI2Image(qrCodeKey);
+                });
+          },
         );
       },
       itemCount: entities.length,

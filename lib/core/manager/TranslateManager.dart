@@ -89,6 +89,7 @@ abstract class Task extends Entity {
 
   String get name;
   String get pathMsg;
+  String get filePath;
 
   @override
   bool operator ==(Object other) =>
@@ -159,6 +160,9 @@ class DownloadTask extends Task {
 
   @override
   String get pathMsg => path.substring(0, path.length - filename.length);
+
+  @override
+  String get filePath => path;
 }
 
 class UploadTask extends Task {
@@ -199,4 +203,7 @@ class UploadTask extends Task {
   @override
   String get pathMsg =>
       CloudFileManager.instance().getVitualPathById(pid) + '/';
+
+  @override
+  String get filePath => path;
 }

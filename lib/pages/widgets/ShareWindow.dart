@@ -144,8 +144,8 @@ class ShareWindowState extends State<ShareWindow> {
                       },
                     ),
                     left: '保存', leftCall: () async {
-                  await saveQrCode();
-                  Fluttertoast.showToast(msg: '保存到 ${shareEntity.qrCodeFile}');
+                  shareEntity.qrCodeFile =
+                      await FileUtil.saveUI2Image(qrCodeKey);
                   Navigator.pop(context);
                 }, right: '分享', rightCall: shareQrCode);
               }),
@@ -171,25 +171,11 @@ class ShareWindowState extends State<ShareWindow> {
     ));
   }
 
-  saveQrCode() async {
-    if (FileUtil.isFile(shareEntity.qrCodeFile)) {
-      return;
-    }
-    RenderRepaintBoundary boundary =
-        qrCodeKey.currentContext.findRenderObject();
-    var image = await boundary.toImage();
-    ByteData byteData = await image.toByteData(format: ImageByteFormat.png);
-    Uint8List png = byteData.buffer.asUint8List();
-    shareEntity.qrCodeFile =
-        FileUtil.uri2Path(await ImageGallerySaver.saveImage(png));
-    print('shareEntity.qrCodeFile ${shareEntity.qrCodeFile}');
-  }
-
   // appid 还没有申请下来，害
   shareQrCode() async {
     print(shareEntity.qrCodeFile);
     if (!FileUtil.isFile(shareEntity.qrCodeFile)) {
-      await saveQrCode();
+      shareEntity.qrCodeFile = await FileUtil.saveUI2Image(qrCodeKey);
     }
     print(shareEntity.qrCodeFile);
     shareToWeChat(WeChatShareImageModel(

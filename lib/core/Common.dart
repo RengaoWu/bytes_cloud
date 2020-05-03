@@ -18,6 +18,9 @@ class Common {
 
   Common._internal();
 
+  static int availableSize;
+  static int allSize;
+  static int get used => allSize - availableSize;
   static String sd;
   static String appRoot;
   String get downloadDir => sd + '/Download'; // android 'Download', ios null

@@ -10,21 +10,29 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/barcode_scan-2.0.1/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_filereader-2.0.0/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_fullpdfview-1.0.3+2/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/barcode_scan-2.0.2/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/easy_contact_picker-0.0.2/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_fullpdfview-1.0.9+3/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_plugin_android_lifecycle-1.0.7/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_qr_reader-1.0.3/android" />
             <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/multi_image_picker-4.6.3/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluwx-2.0.8+1/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/image_gallery_saver-1.2.2/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/image_picker-0.6.5+2/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/multi_image_picker-4.6.6+rc.1/android" />
             <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/open_file-3.0.1/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider-1.6.5/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider_macos-0.0.4/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/permission_handler-4.4.0/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider-1.6.7/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/path_provider_macos-0.0.4+1/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/permission_handler-4.4.0+hotfix.4/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.7/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+7/android" />
             <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/sqflite-1.2.2+1/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/sqflite-1.3.0/android" />
             <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/thumbnails-1.0.1/android" />
-            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player-0.10.8+1/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/url_launcher-5.4.5/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/url_launcher_macos-0.0.1+5/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/url_launcher_web-0.1.1+2/android" />
+            <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player-0.10.9+1/android" />
             <option value="$USER_HOME$/Env/flutter/.pub-cache/hosted/pub.flutter-io.cn/video_player_web-0.1.2+1/android" />
           </set>
         </option>

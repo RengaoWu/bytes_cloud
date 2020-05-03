@@ -6,6 +6,7 @@ class Constants {
   // Channel
   static const String COMMON_CHANNEL = 'common';
   static const String getThumbnails = 'getThumbnails';
+  static const String getCardState = 'getCardState';
 
   static const MethodChannel COMMON = MethodChannel(COMMON_CHANNEL);
   // File type

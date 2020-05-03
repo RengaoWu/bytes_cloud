@@ -4,7 +4,10 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.StatFs;
+import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -13,7 +16,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import io.flutter.embedding.android.FlutterActivity;
@@ -29,6 +34,7 @@ public class MainActivity extends FlutterActivity {
 
     // METHOD LIST
     private static final String getThumbnails = "getThumbnails";
+    private static final String getCardState = "getCardState";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +48,37 @@ public class MainActivity extends FlutterActivity {
                 (methodCall, result) -> {
                     if (methodCall.method.equals(getThumbnails)) {
                         handleGetThumbanils(methodCall, result);
-                    } else {
+                    } else if (methodCall.method.equals(getCardState)) {
+                        handleGetCardState(methodCall,result);
+                    }else {
                         result.notImplemented();
                     }
                 }
         );
+    }
+
+    private void handleGetCardState(MethodCall methodCall, MethodChannel.Result result) {
+//        Map<String, Long> res = new HashMap<String,Long>();
+//        String state = Environment.getExternalStorageState();
+//        if(Environment.MEDIA_MOUNTED.equals(state)) {
+//            File sdcardDir = Environment.getExternalStorageDirectory();
+//            StatFs sf = new StatFs(sdcardDir.getPath());
+//            long blockSize = sf.getBlockSize();
+//            long blockCount = sf.getBlockCount();
+//            long availCount = sf.getAvailableBlocks();
+//            Log.d("", "block大小:"+ blockSize+",block数目:"+ blockCount+",总大小:"+blockSize*blockCount/(1024*1024*1024)+"GB");
+//            Log.d("", "可用的block数目：:"+ availCount+",剩余空间:"+ availCount*blockSize/(1024*1024*1024)+"GB");
+//            res.put("SDAll" , blockSize*blockCount);
+//            res.put("SDAVA", availCount * blockSize);
+//        }
+//
+//        File root = Environment.getRootDirectory();
+//        StatFs sf = new StatFs(root.getPath());
+//        long all = sf.getTotalBytes();
+//        long ava = sf.getAvailableBytes();
+//        res.put("allSize" , all);
+//        res.put("availableSize", ava);
+        result.success(StorageQueryUtil.queryWithStorageManager(getActivity()));
     }
 
     private void handleGetThumbanils(MethodCall methodCall, MethodChannel.Result result) {

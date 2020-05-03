@@ -118,6 +118,7 @@ class CloudFileHandle {
 
   static Future<ShareEntity> shareFile(int id, bool needToken, int day) async {
     int token_required = needToken ? 1 : 0;
+    day = day == -1 ? (365 * 10) : day;
     var rsp = await httpPost(HTTP_POST_SHARE_FILE,
         form: {'id': id, 'token_required': token_required, 'day': day});
     print('CloudFileHanlder shareFile rsp = ${rsp}');

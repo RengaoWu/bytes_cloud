@@ -62,10 +62,19 @@ class NativeRouteState extends State<NativeRoute>
         width: 40,
         height: 40,
       ),
-      title: boldText('内部存储'),
-      subtitle: Text(
-        '已使用 12.81/64GB',
-        style: TextStyle(fontSize: 12),
+      title: Row(
+        children: <Widget>[
+          Expanded(
+            child: boldText('内部存储'),
+          ),
+          Text(
+            '已使用 ${(Common.used / (1000 * 1000 * 1000)).toStringAsFixed(1)}/ ${(Common.allSize / (1000 * 1000 * 1000)).toStringAsFixed(1)}GB',
+            style: TextStyle(fontSize: 12),
+          )
+        ],
+      ),
+      subtitle: LinearProgressIndicator(
+        value: Common.used / Common.allSize,
       ),
       trailing: Icon(Icons.arrow_right),
       onTap: callFileSelectorPage,
@@ -106,8 +115,8 @@ class NativeRouteState extends State<NativeRoute>
 //            UI.iconTxtBtn(Constants.FILE2, "文件", callFileSelectorPage),
             UI.iconTxtBtn(Constants.COMPRESSFILE, "压缩包", callZipTypeSelector),
             UI.iconTxtBtn(Constants.NOTE, "笔记", callMarkDownPage),
-            UI.iconTxtBtn(Constants.MCF, "语言", () => {print("")}),
-            UI.iconTxtBtn(Constants.SCAN, "扫描", () => {print("")}),
+//            UI.iconTxtBtn(Constants.MCF, "语言", () => {print("")}),
+//            UI.iconTxtBtn(Constants.SCAN, "扫描", () => {print("")}),
           ],
         ),
       );

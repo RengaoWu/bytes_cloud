@@ -4,6 +4,7 @@ import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/pages/LoginPage.dart';
+import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
@@ -46,6 +47,10 @@ void main() async {
     print((await getExternalStorageDirectory()).path);
     Common.sd = '/storage/emulated/0/';
     Common.appRoot = (await getApplicationSupportDirectory()).path;
+    var map = await Constants.COMMON.invokeMethod(Constants.getCardState);
+    print(map);
+    Common.allSize = map['total'];
+    Common.availableSize = map['available'];
   }
 
   Future<void> getPermission() async {

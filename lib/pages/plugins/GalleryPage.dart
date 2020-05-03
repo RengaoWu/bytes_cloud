@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:extended_image/extended_image.dart';

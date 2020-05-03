@@ -4,7 +4,7 @@ import 'package:bytes_cloud/pages/content/SharePage.dart';
 import 'package:bytes_cloud/pages/content/TranslatePage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
-import 'package:bytes_cloud/pages/login/LoginRoute.dart';
+import 'package:bytes_cloud/pages/LoginPage.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,8 +94,8 @@ class SelfRouteState extends State<SelfRoute>
                     () => UI.newPage(context, SharePage())), // 分享
                 UI.iconTxtBtn(Constants.BACK, "备份", () => {print("")}),
                 UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
-                UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
-                UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
+//                UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
+//                UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
               ],
             ),
             context: context,

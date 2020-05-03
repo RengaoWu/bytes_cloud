@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/pages/widgets/CheckWidget.dart';
 import 'package:bytes_cloud/utils/Constants.dart';

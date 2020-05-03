@@ -53,5 +53,8 @@
     <string>YES</string>
     <key>NSCameraUsageDescription</key>
     	<string>Camera permission is required for barcode scanning.</string>
+
+    <key>NSContactsUsageDescription</key>
+    <string>app需要访问您的通讯录</string>
 </dict>
 </plist>

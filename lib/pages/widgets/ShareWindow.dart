@@ -2,11 +2,10 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -64,6 +63,9 @@ class ShareWindowState extends State<ShareWindow> {
     if (day == -1) {
       timeTitle = '永久有效';
       timeSubTitle = '在手动取消前，分享将持续有效';
+    } else if (day == 31) {
+      timeTitle = '一个月内有效';
+      timeSubTitle = '分享将在${day}后失效';
     } else {
       timeTitle = '${day}天内有效';
       timeSubTitle = '分享将在${day}后失效';
@@ -80,6 +82,38 @@ class ShareWindowState extends State<ShareWindow> {
             title: Text(timeTitle),
             subtitle: Text(timeSubTitle),
             trailing: Icon(Icons.chevron_right),
+            onTap: () async {
+              listTitle(String title, String subTitle, int day, bool curr) {
+                return ListTile(
+                  title: Text(title),
+                  subtitle: Text(subTitle),
+                  trailing: curr ? Icon(Icons.done) : SizedBox(),
+                  onTap: () {
+                    Navigator.pop(context, [day]);
+                  },
+                );
+              }
+
+              List d = (await UI.bottomSheet(
+                  context: context,
+                  content: Column(
+                    children: <Widget>[
+                      Container(
+                        child: boldText('有效期设置', fontSize: 16),
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(top: 8),
+                      ),
+                      listTitle('7天内有效', '', 7, (day == 7)),
+                      listTitle('一个月有效', '31天', 31, (day == 31)),
+                      listTitle('永久有效', '我的 - 分享 中可以删除', -1, (day == -1)),
+                    ],
+                  ),
+                  height: 300));
+              if (d == null || d.length <= 0) return;
+              setState(() {
+                day = d[0];
+              });
+            },
           ),
           ListTile(
             title: Text('需要验证'),

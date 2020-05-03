@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
 import 'package:bytes_cloud/pages/selectors/PhotoPushRoute.dart';
 import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
@@ -40,7 +40,12 @@ class NativeRouteState extends State<NativeRoute>
           height: MediaQueryData.fromWindow(window).padding.top,
         ),
         UI.searchBar(context, controller, (k) {
-          UI.newPage(context, SearchFilePage({'key': k, 'roots': [Common.sd]}));
+          UI.newPage(
+              context,
+              SearchFilePage({
+                'key': k,
+                'roots': [Common.sd]
+              }));
         }),
         gridView(),
         UI.divider(width: 2, padding: 16),

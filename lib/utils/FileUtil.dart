@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/utils/FileTypeConfig.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';

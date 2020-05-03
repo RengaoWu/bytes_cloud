@@ -54,7 +54,7 @@ class SharePageState extends State<SharePage> {
                   return listView();
                 }
                 return Center(
-                  child: Text('Ops!'),
+                  child: Text('空空如也!'),
                 );
               },
             ),

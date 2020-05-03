@@ -1,8 +1,9 @@
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/DownloadTask.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
-import 'package:bytes_cloud/entity/User.dart';
+import 'package:bytes_cloud/entity/UploadTask.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -38,8 +39,6 @@ class DBManager {
       await db.execute(UploadTask.getSQL());
       await db.execute(ShareEntity.SQL_SHARE_CREATE);
       print('DBManager _open finished');
-
-//      await db.execute(UserEntity.getSQL());
     });
   }
 

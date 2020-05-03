@@ -1,10 +1,7 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/core/handler/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/entity/ShareEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/widgets/ShareWindow.dart';
 import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';

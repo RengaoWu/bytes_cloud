@@ -21,7 +21,8 @@ class FaceBackPageState extends State<FaceBackPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          FocusScope.of(context).requestFocus(FocusNode());  // 关闭软键盘，否则个人中心页面会存在溢出
+          FocusScope.of(context)
+              .requestFocus(FocusNode()); // 关闭软键盘，否则个人中心页面会存在溢出
           return true;
         },
         child: Scaffold(

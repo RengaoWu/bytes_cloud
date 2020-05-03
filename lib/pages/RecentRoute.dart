@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:bytes_cloud/pages/plugins/ScanPage.dart';

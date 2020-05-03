@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';

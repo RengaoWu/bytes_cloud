@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/DownloadTask.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
+import 'package:bytes_cloud/entity/UploadTask.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:dio/dio.dart';

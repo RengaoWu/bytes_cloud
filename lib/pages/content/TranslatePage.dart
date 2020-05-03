@@ -1,4 +1,7 @@
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
+import 'package:bytes_cloud/entity/DownloadTask.dart';
+import 'package:bytes_cloud/entity/TranslateTask.dart';
+import 'package:bytes_cloud/entity/UploadTask.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/model/ThemeModel.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -59,7 +62,7 @@ class TranslatePageState extends State<TranslatePage>
   }
 
   Widget _taskListView(String t) {
-    List<Task> tasks;
+    List<TranslateTask> tasks;
     if (tabs[0] == t) {
       tasks = downloads;
     } else {
@@ -79,7 +82,7 @@ class TranslatePageState extends State<TranslatePage>
 }
 
 class TaskItem extends StatefulWidget {
-  final Task task;
+  final TranslateTask task;
   TaskItem(this.task);
   @override
   State<StatefulWidget> createState() {
@@ -88,7 +91,7 @@ class TaskItem extends StatefulWidget {
 }
 
 class TaskItemState extends State<TaskItem> {
-  Task task;
+  TranslateTask task;
   Widget leading;
   @override
   void initState() {
@@ -101,7 +104,7 @@ class TaskItemState extends State<TaskItem> {
     return _taskItemView(task);
   }
 
-  Widget _taskItemView(Task task) {
+  Widget _taskItemView(TranslateTask task) {
     Future.delayed(Duration(milliseconds: 1000)).whenComplete((() {
       if (mounted) setState(() {});
     }));

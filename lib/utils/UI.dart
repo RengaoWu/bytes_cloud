@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:bytes_cloud/core/manager/CacheManager.dart';
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/http/http.dart';
 import 'package:bytes_cloud/pages/plugins/MDPage.dart';
 import 'package:bytes_cloud/pages/plugins/VideoPlayerPage.dart';
 import 'package:bytes_cloud/pages/widgets/CheckWidget.dart';
@@ -19,8 +17,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
@@ -28,9 +24,12 @@ import 'package:path/path.dart' as p;
 import 'Constants.dart';
 
 Widget boldText(String text,
-    {FontWeight fontWeight = FontWeight.bold, double fontSize = 14}) {
+    {FontWeight fontWeight = FontWeight.bold,
+    double fontSize = 14,
+    int maxLines = 1}) {
   return Text(
     text,
+    maxLines: maxLines,
     style: TextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
@@ -277,8 +276,8 @@ class UI {
           @required Widget content,
           double height = 400,
           double radius = 10,
-          double padding = 16}) =>
-      showModalBottomSheet(
+          double padding = 16}) async =>
+      await showModalBottomSheet(
           context: context,
           backgroundColor: Colors.transparent,
           builder: (BuildContext bc) {

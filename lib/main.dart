@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/core/common.dart';
+import 'package:bytes_cloud/core/Common.dart';
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
-import 'package:bytes_cloud/http/http.dart';
-import 'package:bytes_cloud/pages/login/LoginRoute.dart';
+import 'package:bytes_cloud/pages/LoginPage.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'core/handler/CloudFileHandler.dart';
 import 'model/ThemeModel.dart';
 
 class MyApp extends StatelessWidget {
@@ -23,8 +22,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: <SingleChildWidget>[
         ChangeNotifierProvider.value(value: ThemeModel()),
-//        ChangeNotifierProvider.value(value: UserModel()),
-//        ChangeNotifierProvider.value(value: LocaleModel()),
       ],
       child: Consumer<ThemeModel>(
         builder: (BuildContext context, themeModel, Widget child) {

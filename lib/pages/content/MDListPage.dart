@@ -16,18 +16,8 @@ class MarkDownListPage extends StatefulWidget {
 class MarkDownListPageState extends State<MarkDownListPage> {
   List<FileSystemEntity> files;
 
-  @override
-  void initState() {
-    super.initState();
-    initFileList();
-  }
-
-  initFileList() {
-    Future.wait([FileUtil.listFiles("notebook")]).then((value) {
-      setState(() {
-        files = value[0].cast<FileSystemEntity>();
-      });
-    });
+  Future<List<FileSystemEntity>> initFileList() async {
+    return await FileUtil.listFiles("notebook");
   }
 
   Future<String> showInputDialog() async {
@@ -67,12 +57,21 @@ class MarkDownListPageState extends State<MarkDownListPage> {
       appBar: AppBar(
         title: Text("笔记"),
       ),
-      body: StaggeredGridView.countBuilder(
-        crossAxisCount: 4,
-        itemCount: files.length,
-        staggeredTileBuilder: (index) => new StaggeredTile.fit(2),
-        itemBuilder: (BuildContext context, int index) {
-          return inkwellItemCard(files[index]);
+      body: FutureBuilder<List<FileSystemEntity>>(
+        future: initFileList(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center();
+          }
+          files = snapshot.data;
+          return StaggeredGridView.countBuilder(
+            crossAxisCount: 4,
+            itemCount: files.length,
+            staggeredTileBuilder: (index) => new StaggeredTile.fit(2),
+            itemBuilder: (BuildContext context, int index) {
+              return inkwellItemCard(files[index]);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

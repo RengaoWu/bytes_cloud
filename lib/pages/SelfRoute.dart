@@ -93,7 +93,9 @@ class SelfRouteState extends State<SelfRoute>
                 UI.iconTxtBtn(Constants.SHARE, "分享",
                     () => UI.newPage(context, SharePage())), // 分享
                 UI.iconTxtBtn(Constants.BACK, "备份", () => {print("")}),
-                UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
+//                UI.iconTxtBtn(Constants.GROUP, "共享", () => {print("")}),
+                UI.iconTxtBtn(Constants.NOTE, '笔记',
+                    () => UI.newPage(context, MarkDownListPage())),
 //                UI.iconTxtBtn(Constants.MARK, "收藏", () => {print("")}),
 //                UI.iconTxtBtn(Constants.TRASH, "回收站", () => {print("")}),
               ],

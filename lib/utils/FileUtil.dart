@@ -22,6 +22,10 @@ class FileUtil {
     return p.basenameWithoutExtension(path);
   }
 
+  static String getFilePathWithoutName(String path) {
+    return p.dirname(path);
+  }
+
   static String ext(String path) {
     return p.extension(path);
   }

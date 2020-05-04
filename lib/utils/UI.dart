@@ -148,7 +148,7 @@ class UI {
 
     showDialog<Null>(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(title),

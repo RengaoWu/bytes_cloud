@@ -1,13 +1,16 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
+import 'package:bytes_cloud/pages/plugins/MDPage.dart';
 import 'package:bytes_cloud/pages/selectors/PhotoPushRoute.dart';
 import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/pages/selectors/TypeFileSelectorPage.dart';
 import 'package:bytes_cloud/core/StaticConfig.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +102,11 @@ class NativeRouteState extends State<NativeRoute>
   callMusicSelector() =>
       UI.newPage(context, TypeFileSelectorPage(StaticConfig.ARG_MUSIC));
 
-  callMarkDownPage() => UI.newPage(context, MarkDownListPage());
+  callMarkDownPage() async {
+    FileSystemEntity entity = await FileUtil.createFile(
+        'notebook', '新建笔记' + DateTime.now().toIso8601String(), '.md');
+    UI.openFile(context, entity);
+  }
 
   gridView() => Padding(
         padding: EdgeInsets.fromLTRB(16, 8, 16, 8),

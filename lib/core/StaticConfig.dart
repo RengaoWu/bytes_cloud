@@ -12,6 +12,7 @@ class StaticConfig {
   static const String FOLDER_AUTO_SYNC_WX = '微信文件同步文件夹';
   static const String FOLDER_AUTO_SYNC_QQ = 'QQ文件同步文件夹';
   static const String FOLDER_AUTO_SYNC_IMAGE = '相册文件同步文件夹';
+  static const String FOLDER_AUTO_SYNC_MD = '笔记同步文件夹';
 
   static const _A = Text(
     'A',

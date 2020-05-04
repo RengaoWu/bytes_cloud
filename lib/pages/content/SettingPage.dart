@@ -1,4 +1,6 @@
+import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/model/ThemeModel.dart';
+import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,44 +24,91 @@ class SettingPageState extends State<SettingPage> {
       ),
       body: ListView(
         shrinkWrap: true,
-        children: <Widget>[ThemeSwitcher()],
+        children: <Widget>[
+          themeSetting(context),
+          divider(),
+          switchSetting('微信文件自动上传', Common.instance.wxAutoSync, (value) {
+            Common.instance.wxAutoSync = value;
+            SP.setBool(SP.KEY_SYNC_WX, value);
+          }),
+          switchSetting('QQ文件自动上传', Common.instance.qqAutoSync, (value) {
+            SP.setBool(SP.KEY_SYNC_QQ, value);
+            Common.instance.qqAutoSync = value;
+          }),
+          switchSetting('相册文件自动上传', Common.instance.imageAutoSync, (value) {
+            SP.setBool(SP.KEY_SYNC_IMAGE, value);
+            Common.instance.imageAutoSync = value;
+          }),
+          divider(),
+          switchSetting('使用数据流量上传/下载', Common.instance.justTranslateInWifi,
+              (value) {
+            SP.setBool(SP.KEY_TRANSLATE_IN_WIFI, value);
+            Common.instance.justTranslateInWifi = value;
+          }),
+          ListTile(
+            title: Text('下载保存地址'),
+            subtitle: Text(Common.instance.appDownload),
+          ),
+          switchSetting('显示隐藏文件', Common.instance.showHiddenFile, (value) {
+            SP.setBool(SP.KEY_SHOW_HIDDEN_FILE, value);
+            Common.instance.showHiddenFile = value;
+          }),
+          divider(),
+          ListTile(
+            title: Text('清空缓存文件'),
+          ),
+          ListTile(
+            title: Text('关于'),
+          )
+        ],
       ),
     );
   }
-}
 
-class ThemeSwitcher extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      UI.leftTitle('主题选择',
-          paddingLeft: 16,
-          paddingTop: 8,
-          size: 14,
-          fontWeight: FontWeight.normal),
-      Row(
-        children: Themes.map<Widget>((e) {
-          return Expanded(
-              child: GestureDetector(
-            child: Padding(
-              padding: EdgeInsets.only(left: 10, top: 8, right: 10),
-              child: Container(
-                color: e,
-                alignment: Alignment.bottomCenter,
-                height: 80,
+  Widget switchSetting(String title, bool value, Function onChange) {
+    return ListTile(
+        title: Text(title),
+        trailing: Switch(
+            value: value,
+            onChanged: (value) {
+              onChange(value);
+              setState(() {});
+            }));
+  }
+
+  themeSetting(context) {
+    return Column(
+      children: <Widget>[
+        UI.leftTitle('主题选择',
+            paddingLeft: 16,
+            paddingTop: 8,
+            size: 14,
+            fontWeight: FontWeight.normal),
+        Row(
+          children: Themes.map<Widget>((e) {
+            return Expanded(
+                child: GestureDetector(
+              child: Padding(
+                padding: EdgeInsets.only(left: 10, top: 8, right: 10),
+                child: Container(
+                  color: e,
+                  alignment: Alignment.bottomCenter,
+                  height: 80,
+                ),
               ),
-            ),
-            onTap: () {
-              //主题更新后，MaterialApp会重新build
-              Provider.of<ThemeModel>(context, listen: false).theme = e;
-            },
-          ));
-        }).toList(),
-      ),
-      Divider(
+              onTap: () {
+                //主题更新后，MaterialApp会重新build
+                Provider.of<ThemeModel>(context, listen: false).theme = e;
+              },
+            ));
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  divider() => Divider(
         indent: 8,
         endIndent: 8,
-      )
-    ]);
-  }
+      );
 }

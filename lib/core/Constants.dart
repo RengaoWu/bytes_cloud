@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+/// 常量配置文件
 class Constants {
   // msg
   static const String MY_EMAIL_LOCATION = 'rengao_wu@qq.com';

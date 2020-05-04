@@ -59,13 +59,13 @@ class RecentFileEntity extends Entity {
   }
 
   static fileFrom(String path) {
-    if (path.startsWith(Common().WxRoot)) {
+    if (path.startsWith(Common.instance.WxRoot)) {
       return '微信'; // 先判断wx，再判断tencent(qq)
-    } else if (path.startsWith(Common().TencentRoot)) {
+    } else if (path.startsWith(Common.instance.TencentRoot)) {
       return 'QQ';
-    } else if (path.startsWith(Common().DCIM)) {
+    } else if (path.startsWith(Common.instance.DCIM)) {
       return '相册';
-    } else if (path.startsWith(Common().screamShot)) {
+    } else if (path.startsWith(Common.instance.screamShot)) {
       return '截图';
     } else {
       return '其他';

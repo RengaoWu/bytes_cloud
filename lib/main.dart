@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
 void main() async {
   Future<void> getSDCardDir() async {
     // /storage/emulated/0/Android/data/com.bytescloud.bytes_cloud/files
-    // Common().sDCardDir = (await getExternalStorageDirectory());
+    // Common.instance.sDCardDir = (await getExternalStorageDirectory());
     print((await getExternalStorageDirectory()).path);
     Common.sd = '/storage/emulated/0/';
     Common.appRoot = (await getApplicationSupportDirectory()).path;

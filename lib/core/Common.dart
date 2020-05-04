@@ -1,10 +1,11 @@
 import 'dart:core';
 import 'dart:io';
 
-import 'package:bytes_cloud/core/Config.dart';
-class Common {
-  factory Common() => _getInstance();
+import 'package:bytes_cloud/utils/SPUtil.dart';
 
+/// 动态配置文件
+/// 打开APP的时候需要初始化
+class Common {
   static Common get instance => _getInstance();
   static Common _instance; // 单例对象
 
@@ -15,7 +16,13 @@ class Common {
     return _instance;
   }
 
-  Common._internal();
+  Common._internal() {
+    wxAutoSync = SP.getBool(SP.KEY_SYNC_WX, false);
+    qqAutoSync = SP.getBool(SP.KEY_SYNC_QQ, false);
+    imageAutoSync = SP.getBool(SP.KEY_SYNC_IMAGE, false);
+    justTranslateInWifi = SP.getBool(SP.KEY_TRANSLATE_IN_WIFI, false);
+    showHiddenFile = SP.getBool(SP.KEY_SHOW_HIDDEN_FILE, false);
+  }
 
   static int availableSize;
   static int allSize;
@@ -44,7 +51,6 @@ class Common {
   String get camera => sd + '/DCIM/Camera'; // 相机
 
   // 最近的文件：来源：微信、QQ、下载管理器、相机、QQ邮箱、浏览器、百度网盘、音乐、
-  //
   List<String> get recentDir => <String>[
         sQQFileRecDir,
         sWxDirDownload,
@@ -52,15 +58,6 @@ class Common {
         DCIM,
         screamShot
       ]; // wx 和 qq的文件有重合，先判断是否是wx
-  List<String> recentFileExt() {
-    List<String> list = [];
-    list.addAll(Config.documentExtension2Type.keys);
-    list.addAll(Config.videoExtension2Type.keys);
-    list.addAll(Config.musicExtension2Type.keys);
-    list.addAll(['.png', '.jpg']);
-    list.remove('.txt');
-    return list;
-  }
 
   List<FileSystemEntity> get qqFiles => [
         Directory(sQQFileRecDir),
@@ -68,4 +65,27 @@ class Common {
         Directory(sQQFileCollRecDir),
         Directory(sQQFavDir),
       ];
+
+  // 自动上传开关
+  bool qqAutoSync = false;
+  bool wxAutoSync = false;
+  bool imageAutoSync = false;
+  List<String> get autoSyncDirs {
+    if (wxAutoSync) {
+      autoSyncDirs.add(sWxDirDownload);
+      autoSyncDirs.add(sWxMsg);
+    }
+    if (qqAutoSync) {
+      autoSyncDirs.add(sQQFileRecDir);
+    }
+    if (imageAutoSync) {
+      autoSyncDirs.add(DCIM);
+    }
+  }
+
+  // 流量下是否上传下载
+  bool justTranslateInWifi = false;
+
+  // 是否显示隐藏文件夹
+  bool showHiddenFile = false;
 }

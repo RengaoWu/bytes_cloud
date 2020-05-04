@@ -2,7 +2,8 @@ import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/Constants.dart';
 import 'package:flutter/material.dart';
 
-class Config {
+/// 静态配置文件
+class StaticConfig {
   static const String ARG_DOC = '文档';
   static const String ARG_ZIP = '压缩包';
   static const String ARG_MUSIC = '音乐';
@@ -109,8 +110,23 @@ class Config {
 
   static List<String> getPaths(String arg) {
     if (arg == ARG_VIDEO) {
-      return [Common().DCIM, Common().WxRoot, Common().TencentRoot]; // or so
+      return [
+        Common.instance.DCIM,
+        Common.instance.WxRoot,
+        Common.instance.TencentRoot
+      ]; // or so
     }
     return [Common.sd];
+  }
+
+  // 最近文件列表筛选的文件类型
+  static List<String> recentFileExt() {
+    List<String> list = [];
+    list.addAll(StaticConfig.documentExtension2Type.keys);
+    list.addAll(StaticConfig.videoExtension2Type.keys);
+    list.addAll(StaticConfig.musicExtension2Type.keys);
+    list.addAll(['.png', '.jpg']);
+    list.remove('.txt');
+    return list;
   }
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/Constants.dart';
+import 'package:bytes_cloud/core/StaticConfig.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/entity/RecentFileEntity.dart';
 import 'package:bytes_cloud/pages/plugins/ScanPage.dart';
@@ -62,8 +63,10 @@ class RecentRouteState extends State<RecentRoute>
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(Icons.search),
-            onPressed: () => UI.newPage(context,
-                SearchFilePage({'key': '', 'roots': Common().recentDir}))),
+            onPressed: () => UI.newPage(
+                context,
+                SearchFilePage(
+                    {'key': '', 'roots': Common.instance.recentDir}))),
         centerTitle: true,
         title: boldText(
           '最近',
@@ -173,8 +176,8 @@ class RecentRouteState extends State<RecentRoute>
   // 查询是否有新文件，如果有添加到数据库
   Future<bool> hasNewRecentFilesFromFileSystem() async {
     List<FileSystemEntity> recentFiles = await computeGetAllFiles(
-        roots: Common().recentDir,
-        keys: Common().recentFileExt(),
+        roots: Common.instance.recentDir,
+        keys: StaticConfig.recentFileExt(),
         isExt: true,
         fromTime: SP.getInt("lastGetRecentFileTime", 0));
     // 更新时间戳
@@ -390,16 +393,24 @@ class RecentRouteState extends State<RecentRoute>
     UI.openFile(context, File(f.path), files: sysFiles);
   }
 
-  callDownloadSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().downloadDir, 'rootName': '下载'}));
-  callWxSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().sWxDirDownload, 'rootName': '微信'}));
-  callQQSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().TencentRoot, 'rootName': 'QQ'}));
-  callScreamShotSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().screamShot, 'rootName': '截图'}));
+  callDownloadSelector() => UI.newPage(
+      context,
+      SysFileSelectorPage(
+          {'root': Common.instance.downloadDir, 'rootName': '下载'}));
+  callWxSelector() => UI.newPage(
+      context,
+      SysFileSelectorPage(
+          {'root': Common.instance.sWxDirDownload, 'rootName': '微信'}));
+  callQQSelector() => UI.newPage(
+      context,
+      SysFileSelectorPage(
+          {'root': Common.instance.TencentRoot, 'rootName': 'QQ'}));
+  callScreamShotSelector() => UI.newPage(
+      context,
+      SysFileSelectorPage(
+          {'root': Common.instance.screamShot, 'rootName': '截图'}));
   callCameraSelector() => UI.newPage(context,
-      SysFileSelectorPage({'root': Common().camera, 'rootName': '相机'}));
+      SysFileSelectorPage({'root': Common.instance.camera, 'rootName': '相机'}));
   headerGridView() => Row(
         children: <Widget>[
           // 快捷访问

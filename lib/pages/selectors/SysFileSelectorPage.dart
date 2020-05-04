@@ -57,7 +57,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
 
   // 截图和相机选择器采用不同的UI展示
   bool isImageMode() {
-    return root == Common().camera || root == Common().screamShot;
+    return root == Common.instance.camera || root == Common.instance.screamShot;
   }
 
   // 初始化该路径下的文件、文件夹
@@ -296,9 +296,9 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
 
   // QQ 下的文件过滤一下
   void fileFilter(List<FileSystemEntity> _folder) {
-    if (root == Common().TencentRoot && isRoot()) {
+    if (root == Common.instance.TencentRoot && isRoot()) {
       _folder.clear();
-      Common().qqFiles.forEach((f) {
+      Common.instance.qqFiles.forEach((f) {
         if (f.existsSync()) _folder.add(f);
       });
     }

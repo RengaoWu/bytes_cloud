@@ -15,7 +15,7 @@ getThumbWidget(String path, {double width = 200, double height = 200}) {
   }
   // generate
   return FutureBuilder(
-    future: _realGetThumb(Common().appCache, path),
+    future: _realGetThumb(Common.instance.appCache, path),
     builder: (BuildContext context, AsyncSnapshot snapshot) {
       if (snapshot.hasData) {
         return _getImage(snapshot.data, width, height);
@@ -42,7 +42,7 @@ _getImage(String path, double width, double height) {
 
 _getThumbFromCache(String path) {
   print('_getThumbFromCache path = ' + path);
-  String thumbnailFolder = Common().appCache;
+  String thumbnailFolder = Common.instance.appCache;
   String thumbnailFolderPng =
       thumbnailFolder + '/' + FileUtil.getFileName(path) + '.png';
   if (File(thumbnailFolderPng).existsSync()) {

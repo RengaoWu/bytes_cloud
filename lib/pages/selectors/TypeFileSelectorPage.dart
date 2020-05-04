@@ -6,7 +6,7 @@ import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/pages/widgets/CheckWidget.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
-import 'package:bytes_cloud/core/Config.dart';
+import 'package:bytes_cloud/core/StaticConfig.dart';
 import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,7 +38,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   TypeFileSelectorPageState(this.argType);
 
   initData() {
-    Config.convert(argType, type2Icon, extensionName2Type);
+    StaticConfig.convert(argType, type2Icon, extensionName2Type);
     type2Icon.keys.forEach((key) {
       type2Files[key] = []; // 初始化数据
     });
@@ -66,7 +66,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
             ),
             title: Text('$currentType'),
             pinned: false, //
-            expandedHeight: Config.showType(argType)
+            expandedHeight: StaticConfig.showType(argType)
                 ? UI.kToolbarHeight + 32
                 : UI.kToolbarHeight, // 向下滑动是否保留 bottom
             forceElevated: innerBoxIsScrolled,
@@ -99,7 +99,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   loadFilesFuture() {
     return FutureBuilder(
-      future: getAllFile(Config.getPaths(argType)),
+      future: getAllFile(StaticConfig.getPaths(argType)),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -163,7 +163,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     List<_ViewHolder> holders = insertGroupItem(list); // 插入分组的数据
     return MediaQuery.removePadding(
       removeTop: true,
-      child: argType == Config.ARG_VIDEO
+      child: argType == StaticConfig.ARG_VIDEO
           ? mediaGridView(holders)
           : generalListView(holders),
       context: context,
@@ -319,7 +319,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   // 类型筛选Grid
   Widget fileTypeGridView() {
-    if (!Config.showType(argType)) {
+    if (!StaticConfig.showType(argType)) {
       return Container();
     }
     List<String> types = type2Files.keys.toList();

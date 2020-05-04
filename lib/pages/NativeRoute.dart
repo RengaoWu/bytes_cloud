@@ -7,7 +7,7 @@ import 'package:bytes_cloud/pages/selectors/PhotoPushRoute.dart';
 import 'package:bytes_cloud/pages/selectors/SearchFilePage.dart';
 import 'package:bytes_cloud/pages/selectors/SysFileSelectorPage.dart';
 import 'package:bytes_cloud/pages/selectors/TypeFileSelectorPage.dart';
-import 'package:bytes_cloud/core/Config.dart';
+import 'package:bytes_cloud/core/StaticConfig.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class NativeRouteState extends State<NativeRoute>
   }
 
   callVideoSelectorPage() =>
-      UI.newPage(context, TypeFileSelectorPage(Config.ARG_VIDEO));
+      UI.newPage(context, TypeFileSelectorPage(StaticConfig.ARG_VIDEO));
 
   callPhotoSelectorPage() => UI.newPage(
       context, PhotoPushRoute(type: PhotoPushRoute.TYPE_OPEN_SELECT));
@@ -91,13 +91,13 @@ class NativeRouteState extends State<NativeRoute>
       context, SysFileSelectorPage({'root': Common.sd, 'rootName': '根目录'}));
 
   callDocTypeSelector() =>
-      UI.newPage(context, TypeFileSelectorPage(Config.ARG_DOC));
+      UI.newPage(context, TypeFileSelectorPage(StaticConfig.ARG_DOC));
 
   callZipTypeSelector() =>
-      UI.newPage(context, TypeFileSelectorPage(Config.ARG_ZIP));
+      UI.newPage(context, TypeFileSelectorPage(StaticConfig.ARG_ZIP));
 
   callMusicSelector() =>
-      UI.newPage(context, TypeFileSelectorPage(Config.ARG_MUSIC));
+      UI.newPage(context, TypeFileSelectorPage(StaticConfig.ARG_MUSIC));
 
   callMarkDownPage() => UI.newPage(context, MarkDownListPage());
 

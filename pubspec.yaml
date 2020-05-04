@@ -46,8 +46,7 @@ dependencies:
   fluwx: ^2.0.8+1 # 微信分享
   url_launcher: ^5.4.5 # 发邮件、打电话
   easy_contact_picker: ^0.0.2 # 获取通讯录
-
-
+  connectivity: ^0.4.8+2 # 网络状态
 
 
 

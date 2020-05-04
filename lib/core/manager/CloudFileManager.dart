@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bytes_cloud/core/http/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
@@ -148,6 +150,17 @@ class CloudFileManager {
     });
   }
 
+  // 仅仅用于同步文件夹
+  CloudFileEntity getCloudFileEntityByName(String name) {
+    List<CloudFileEntity> list = listRootFiles(justFolder: true, r: false);
+    for (CloudFileEntity entity in list) {
+      if (entity.fileName == name) {
+        return entity;
+      }
+    }
+    return null;
+  }
+
   // 重命名
   Future<bool> renameFile(int id, String newName) async {
     CloudFileEntity entity = getEntityById(id);
@@ -189,7 +202,7 @@ class CloudFileManager {
     return success;
   }
 
-  Future newFolder(int pid, String name) async {
+  Future<CloudFileEntity> newFolder(int pid, String name) async {
     CloudFileEntity entity = await CloudFileHandle.newFolder(pid, name);
     print('newFolder ${entity.toMap()}');
     bool success = entity != null;
@@ -197,7 +210,7 @@ class CloudFileManager {
       _cloudFileModel.add(entity);
       DBManager.instance.insert(CloudFileEntity.tableName, entity);
     }
-    return success;
+    return entity;
   }
 
   Future<bool> downloadFile(List<CloudFileEntity> es) async {
@@ -212,6 +225,14 @@ class CloudFileManager {
       await CloudFileHandle.downloadOneFile(task);
     }
     return true;
+  }
+
+  Future<bool> uploadFileWrapper(int pid, List<FileSystemEntity> paths) async {
+    List<String> files = [];
+    for (int i = 0; i < paths.length; i++) {
+      files.add(paths[i].path);
+    }
+    return await uploadFile(pid, files);
   }
 
   Future<bool> uploadFile(int pid, List<String> paths) async {

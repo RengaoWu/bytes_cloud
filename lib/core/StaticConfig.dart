@@ -9,6 +9,10 @@ class StaticConfig {
   static const String ARG_MUSIC = '音乐';
   static const String ARG_VIDEO = '视频';
 
+  static const String FOLDER_AUTO_SYNC_WX = '微信文件同步文件夹';
+  static const String FOLDER_AUTO_SYNC_QQ = 'QQ文件同步文件夹';
+  static const String FOLDER_AUTO_SYNC_IMAGE = '相册文件同步文件夹';
+
   static const _A = Text(
     'A',
     style: TextStyle(fontSize: 14),

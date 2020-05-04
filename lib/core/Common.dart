@@ -20,7 +20,7 @@ class Common {
     wxAutoSync = SP.getBool(SP.KEY_SYNC_WX, false);
     qqAutoSync = SP.getBool(SP.KEY_SYNC_QQ, false);
     imageAutoSync = SP.getBool(SP.KEY_SYNC_IMAGE, false);
-    justTranslateInWifi = SP.getBool(SP.KEY_TRANSLATE_IN_WIFI, false);
+    translateInGPRS = SP.getBool(SP.KEY_TRANSLATE_ONLY_IN_GPRS, true);
     showHiddenFile = SP.getBool(SP.KEY_SHOW_HIDDEN_FILE, false);
   }
 
@@ -84,7 +84,7 @@ class Common {
   }
 
   // 流量下是否上传下载
-  bool justTranslateInWifi = false;
+  bool translateInGPRS = false;
 
   // 是否显示隐藏文件夹
   bool showHiddenFile = false;

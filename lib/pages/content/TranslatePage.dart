@@ -41,6 +41,9 @@ class TranslatePageState extends State<TranslatePage>
   @override
   Widget build(BuildContext context) {
     print('TranslatePageState build');
+    Future.delayed(Duration(milliseconds: 1000)).whenComplete((() {
+      if (mounted) setState(() {});
+    }));
     return Scaffold(
       appBar: AppBar(
         title: Text('传输列表'),

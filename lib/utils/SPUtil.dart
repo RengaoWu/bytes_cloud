@@ -13,7 +13,7 @@ class SP {
   static const KEY_SYNC_QQ = 'KEY_SYNC_QQ';
   static const KEY_SYNC_WX = 'KEY_SYNC_WX';
   static const KEY_SYNC_IMAGE = 'KEY_SYNC_IMAGE';
-  static const KEY_TRANSLATE_IN_WIFI = 'KEY_TRANSLATE_IN_WIFI';
+  static const KEY_TRANSLATE_ONLY_IN_GPRS = 'KEY_TRANSLATE_ONLY_IN_GPRS';
   static const KEY_SHOW_HIDDEN_FILE = 'KEY_SHOW_HIDDEN_FILE';
 
   static String downloadedKey(int id) => '$KEY_DOWNLOADED $id';

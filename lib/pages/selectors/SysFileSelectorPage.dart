@@ -71,9 +71,9 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
 
   Future<bool> onWillPop() async {
     if (!isRoot()) {
+      await jumpToPosition(false);
       position.removeLast();
       initPathFiles(parentDir.parent.path);
-      jumpToPosition(false);
     } else {
       Navigator.pop(context);
     }
@@ -242,9 +242,12 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
       controller.jumpTo(0.0);
     else {
       try {
+        print(position);
         await Future.delayed(Duration(milliseconds: 10)); // 不添加这个下面代码无法生效
         controller?.jumpTo(position[position.length - 1]);
-      } catch (e) {}
+      } catch (e) {
+        print(e);
+      }
     }
   }
 

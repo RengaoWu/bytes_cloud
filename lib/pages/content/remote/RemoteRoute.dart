@@ -127,9 +127,9 @@ class RemoteRouteState extends State<RemoteRoute>
       UI.showSnackBar(context, Text('文件名为空'));
       return;
     }
-    bool success = await CloudFileManager.instance()
+    CloudFileEntity entity = await CloudFileManager.instance()
         .newFolder(path.last.id, folderName.trim());
-    if (!success) UI.showSnackBar(context, Text('创建失败'));
+    if (entity != null) UI.showSnackBar(context, Text('创建失败'));
   }
 
   cloudListView() {

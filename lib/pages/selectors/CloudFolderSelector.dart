@@ -88,9 +88,9 @@ class _CloudFolderSelectorState extends State<CloudFolderSelector> {
       UI.showSnackBar(context, Text('文件名为空'));
       return;
     }
-    bool success = await CloudFileManager.instance()
+    CloudFileEntity entity = await CloudFileManager.instance()
         .newFolder(path.last.id, folderName.trim());
-    if (success)
+    if (entity != null)
       refresh();
     else
       UI.showSnackBar(context, Text('创建文件夹失败'));

@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:bytes_cloud/core/Common.dart';
+import 'package:bytes_cloud/core/StaticConfig.dart';
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
+import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/model/ThemeModel.dart';
+import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,23 +33,36 @@ class SettingPageState extends State<SettingPage> {
         children: <Widget>[
           themeSetting(context),
           divider(),
-          switchSetting('微信文件自动上传', Common.instance.wxAutoSync, (value) {
+          switchSetting('微信文件自动上传', Common.instance.wxAutoSync, (value) async {
             Common.instance.wxAutoSync = value;
             SP.setBool(SP.KEY_SYNC_WX, value);
+            if (value) {
+              syncFile(StaticConfig.FOLDER_AUTO_SYNC_WX,
+                  [Common.instance.sWxMsg, Common.instance.sWxDirDownload]);
+            }
           }),
-          switchSetting('QQ文件自动上传', Common.instance.qqAutoSync, (value) {
+          switchSetting('QQ文件自动上传', Common.instance.qqAutoSync, (value) async {
             SP.setBool(SP.KEY_SYNC_QQ, value);
             Common.instance.qqAutoSync = value;
+            if (value) {
+              syncFile(StaticConfig.FOLDER_AUTO_SYNC_QQ,
+                  [Common.instance.sQQFileRecDir]);
+            }
           }),
-          switchSetting('相册文件自动上传', Common.instance.imageAutoSync, (value) {
+          switchSetting('相册文件自动上传', Common.instance.imageAutoSync,
+              (value) async {
             SP.setBool(SP.KEY_SYNC_IMAGE, value);
             Common.instance.imageAutoSync = value;
+            if (value) {
+              syncFile(
+                  StaticConfig.FOLDER_AUTO_SYNC_IMAGE, [Common.instance.DCIM]);
+            }
           }),
           divider(),
-          switchSetting('使用数据流量上传/下载', Common.instance.justTranslateInWifi,
+          switchSetting('使用数据流量上传/下载', Common.instance.translateInGPRS,
               (value) {
-            SP.setBool(SP.KEY_TRANSLATE_IN_WIFI, value);
-            Common.instance.justTranslateInWifi = value;
+            SP.setBool(SP.KEY_TRANSLATE_ONLY_IN_GPRS, value);
+            Common.instance.translateInGPRS = value;
           }),
           ListTile(
             title: Text('下载保存地址'),
@@ -63,6 +82,18 @@ class SettingPageState extends State<SettingPage> {
         ],
       ),
     );
+  }
+
+  syncFile(String folder, List<String> roots) async {
+    List<FileSystemEntity> result = await computeGetAllFiles(
+        roots: roots, keys: StaticConfig.recentFileExt(), isExt: true);
+    CloudFileEntity entity =
+        CloudFileManager.instance().getCloudFileEntityByName(folder);
+    if (entity == null) {
+      entity = await CloudFileManager.instance()
+          .newFolder(CloudFileManager.instance().root.id, folder);
+    }
+    CloudFileManager.instance().uploadFileWrapper(entity.id, result);
   }
 
   Widget switchSetting(String title, bool value, Function onChange) {

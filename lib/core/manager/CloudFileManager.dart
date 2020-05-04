@@ -6,7 +6,7 @@ import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/entity/UploadTask.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
-import 'package:bytes_cloud/utils/FileTypeConfig.dart';
+import 'package:bytes_cloud/core/Config.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -46,16 +46,15 @@ class CloudFileManager {
       String currentType = '.' + f.type;
       switch (type) {
         case RemoteRouteHelper.SHOW_TYPE_DOC:
-          return FileTypeConfig.documentExtension2Type.keys
-              .contains(currentType);
+          return Config.documentExtension2Type.keys.contains(currentType);
         case RemoteRouteHelper.SHOW_TYPE_MUSIC:
-          return FileTypeConfig.musicExtension2Type.keys.contains(currentType);
+          return Config.musicExtension2Type.keys.contains(currentType);
         case RemoteRouteHelper.SHOW_TYPE_VIDEO:
-          return FileTypeConfig.videoExtension2Type.keys.contains(currentType);
+          return Config.videoExtension2Type.keys.contains(currentType);
         case RemoteRouteHelper.SHOW_TYPE_RAR:
-          return FileTypeConfig.zipExtension2Type.keys.contains(currentType);
+          return Config.zipExtension2Type.keys.contains(currentType);
         case RemoteRouteHelper.SHOW_TYPE_PHOTO:
-          return FileTypeConfig.imagesExt.contains(currentType);
+          return Config.imagesExt.contains(currentType);
       }
     }
 

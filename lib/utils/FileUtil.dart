@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
-import 'package:bytes_cloud/utils/FileTypeConfig.dart';
+import 'package:bytes_cloud/core/Config.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -76,7 +76,7 @@ class FileUtil {
   }
 
   static bool isImage(String file) {
-    return FileTypeConfig.imagesExt.contains(p.extension(file));
+    return Config.imagesExt.contains(p.extension(file));
   }
 
   static bool isPDF(String file) {
@@ -110,7 +110,7 @@ class FileUtil {
 
   static bool isVideo(String file) {
     String ext = p.extension(file);
-    return FileTypeConfig.videoExtension2Type.keys.contains(ext);
+    return Config.videoExtension2Type.keys.contains(ext);
   }
 
   static String getFileSize(int fileSize) {

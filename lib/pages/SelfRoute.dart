@@ -1,3 +1,4 @@
+import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/pages/content/FacebackPage.dart';
 import 'package:bytes_cloud/pages/content/SharePage.dart';
@@ -5,7 +6,6 @@ import 'package:bytes_cloud/pages/content/TranslatePage.dart';
 import 'package:bytes_cloud/pages/content/MDListPage.dart';
 import 'package:bytes_cloud/pages/content/SettingPage.dart';
 import 'package:bytes_cloud/pages/LoginPage.dart';
-import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bytes_cloud/utils/FileTypeConfig.dart';
+import 'package:bytes_cloud/core/Config.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/ThumbUtil.dart';
@@ -31,8 +31,8 @@ class SysImageSelectorPageState extends State<SysImageSelectorPage> {
     root = widget.args['root'];
     rootName = widget.args['rootName'];
     imageSize = UI.dpi2px(UI.DISPLAY_WIDTH / 2);
-    exts.addAll(FileTypeConfig.imagesExt);
-    exts.addAll(FileTypeConfig.videoExtension2Type.keys);
+    exts.addAll(Config.imagesExt);
+    exts.addAll(Config.videoExtension2Type.keys);
   }
 
   @override

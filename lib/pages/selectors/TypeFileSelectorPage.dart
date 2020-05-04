@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/core/manager/CacheManager.dart';
 import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/pages/widgets/CheckWidget.dart';
-import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
-import 'package:bytes_cloud/utils/FileTypeConfig.dart';
+import 'package:bytes_cloud/core/Config.dart';
 import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,7 +38,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
   TypeFileSelectorPageState(this.argType);
 
   initData() {
-    FileTypeConfig.convert(argType, type2Icon, extensionName2Type);
+    Config.convert(argType, type2Icon, extensionName2Type);
     type2Icon.keys.forEach((key) {
       type2Files[key] = []; // 初始化数据
     });
@@ -66,7 +66,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
             ),
             title: Text('$currentType'),
             pinned: false, //
-            expandedHeight: FileTypeConfig.showType(argType)
+            expandedHeight: Config.showType(argType)
                 ? UI.kToolbarHeight + 32
                 : UI.kToolbarHeight, // 向下滑动是否保留 bottom
             forceElevated: innerBoxIsScrolled,
@@ -99,7 +99,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   loadFilesFuture() {
     return FutureBuilder(
-      future: getAllFile(FileTypeConfig.getPaths(argType)),
+      future: getAllFile(Config.getPaths(argType)),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -163,7 +163,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
     List<_ViewHolder> holders = insertGroupItem(list); // 插入分组的数据
     return MediaQuery.removePadding(
       removeTop: true,
-      child: argType == FileTypeConfig.ARG_VIDEO
+      child: argType == Config.ARG_VIDEO
           ? mediaGridView(holders)
           : generalListView(holders),
       context: context,
@@ -319,7 +319,7 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
 
   // 类型筛选Grid
   Widget fileTypeGridView() {
-    if (!FileTypeConfig.showType(argType)) {
+    if (!Config.showType(argType)) {
       return Container();
     }
     List<String> types = type2Files.keys.toList();

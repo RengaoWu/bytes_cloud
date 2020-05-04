@@ -4,7 +4,6 @@ import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/pages/LoginPage.dart';
-import 'package:bytes_cloud/utils/Constants.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
@@ -15,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/Constants.dart';
 import 'model/ThemeModel.dart';
 
 class MyApp extends StatelessWidget {

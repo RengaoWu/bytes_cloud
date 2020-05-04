@@ -1,8 +1,7 @@
 import 'dart:core';
 import 'dart:io';
 
-import 'package:bytes_cloud/utils/FileTypeConfig.dart';
-
+import 'package:bytes_cloud/core/Config.dart';
 class Common {
   factory Common() => _getInstance();
 
@@ -55,9 +54,9 @@ class Common {
       ]; // wx 和 qq的文件有重合，先判断是否是wx
   List<String> recentFileExt() {
     List<String> list = [];
-    list.addAll(FileTypeConfig.documentExtension2Type.keys);
-    list.addAll(FileTypeConfig.videoExtension2Type.keys);
-    list.addAll(FileTypeConfig.musicExtension2Type.keys);
+    list.addAll(Config.documentExtension2Type.keys);
+    list.addAll(Config.videoExtension2Type.keys);
+    list.addAll(Config.musicExtension2Type.keys);
     list.addAll(['.png', '.jpg']);
     list.remove('.txt');
     return list;

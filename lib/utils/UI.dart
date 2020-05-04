@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/pages/plugins/MDPage.dart';
@@ -20,8 +21,6 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
-
-import 'Constants.dart';
 
 Widget boldText(String text,
     {FontWeight fontWeight = FontWeight.bold,

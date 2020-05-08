@@ -1,3 +1,5 @@
+import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/entity/TranslateTask.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/material.dart';
@@ -7,19 +9,21 @@ class DownloadTask extends TranslateTask {
   static getSQL() => '''
             CREATE TABLE $tableName(
             uuid INTEGER PRIMARY KEY,
-            id INTEGER, 
+            id TEXT, 
             filename TEXT, 
             path TEXT,
+            token TEXT,
             time INTEGER, 
             sent INTEGER,
             total INTEGER)
   ''';
-  int id;
-  String filename;
-  String path;
+  String id; /// 云盘文件ID是[CloudFileEntity]的ID，分享的文件是 [ShareEntity] share_url
+  String filename; // 文件存储的名字
+  String path; // 文件存储的路径
+  String token; // 分享文件下载时候需要token
 
   DownloadTask(
-      {@required this.id, @required this.filename, @required this.path})
+      {@required this.id, @required this.filename, @required this.path, this.token})
       : super();
 
   @override
@@ -32,6 +36,7 @@ class DownloadTask extends TranslateTask {
       'id': id,
       'filename': filename,
       'path': path,
+      'token' : token,
     });
     return result;
   }
@@ -40,6 +45,7 @@ class DownloadTask extends TranslateTask {
     this.id = map[id];
     this.filename = map['filename'];
     this.path = map['path'];
+    this.token = map['token'];
   }
 
   @override

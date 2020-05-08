@@ -1,5 +1,6 @@
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
+import 'package:bytes_cloud/core/manager/ShareManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -94,7 +95,7 @@ class SharePageState extends State<SharePage> {
               size: 16,
             ),
             onTap: () async {
-              bool success = await CloudFileManager.instance()
+              bool success = await ShareManager.instance
                   .deleteShareFile(shareEntity);
               if (success)
                 setState(() {
@@ -113,7 +114,8 @@ class SharePageState extends State<SharePage> {
                       children: <Widget>[
                         boldText(cloudFileEntity.fileName),
                         QrImage(
-                          data: shareEntity.getShareDownloadURL,
+                          // 分享的链接不加token
+                          data: shareEntity.getShareDownloadURLWithoutToken,
                         ),
                         Text(
                           '来自ByteCloud',
@@ -124,7 +126,7 @@ class SharePageState extends State<SharePage> {
                 left: '复制链接',
                 leftCall: () {
                   Clipboard.setData(
-                      ClipboardData(text: shareEntity.getShareDownloadURL));
+                      ClipboardData(text: shareEntity.getShareContent));
                   Fluttertoast.showToast(msg: '复制到剪切板');
                 },
                 right: '保存二维码',

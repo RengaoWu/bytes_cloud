@@ -70,7 +70,7 @@ Future<Map<String, dynamic>> httpGet(String path,
     return response.data;
   } catch (e) {
     print(e.toString());
-    return {'error': e.toString()};
+    return {};
   }
 }
 
@@ -105,14 +105,6 @@ Future httpDownload(String path, Map<String, dynamic> args, String savePath,
 
 String getDownloadUrl(int id) {
   return host + HTTP_POST_DOWNLOAD_FILE + '?id=$id';
-}
-
-String getShareURL(ShareEntity entity) {
-  return host +
-      HTTP_POST_SHARE_FILE_DOWNLOAD +
-      entity.shareURL +
-      '?share_token=' +
-      entity.shareToken;
 }
 
 String getPreviewUrl(int id, double width, double height) {

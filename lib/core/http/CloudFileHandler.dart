@@ -115,25 +115,4 @@ class CloudFileHandle {
       print('下载请求成功');
     }
   }
-
-  static Future<ShareEntity> shareFile(int id, bool needToken, int day) async {
-    int token_required = needToken ? 1 : 0;
-    day = day == -1 ? (365 * 10) : day;
-    var rsp = await httpPost(HTTP_POST_SHARE_FILE,
-        form: {'id': id, 'token_required': token_required, 'day': day});
-    print('CloudFileHanlder shareFile rsp = ${rsp}');
-    if (rsp['code'] == 0) {
-      ShareEntity entity = ShareEntity.fromMap(rsp['data']['share']);
-      return entity;
-    } else {
-      print('CloudFileHanlder shareFile code != 0');
-    }
-    return null;
-  }
-
-  static Future<bool> delShareFile(int shareID) async {
-    var rsp = await httpPost(HTTP_POST_DEL_SHARE, form: {'share_id': shareID});
-    print('CloudFileHanlder delShareFile rsp = ${rsp}');
-    return rsp['code'] == 0;
-  }
 }

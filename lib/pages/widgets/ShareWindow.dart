@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
+import 'package:bytes_cloud/core/manager/ShareManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -131,10 +132,9 @@ class ShareWindowState extends State<ShareWindow> {
             children: <Widget>[
               shareItem(Constants.LINK, '分享链接', () async {
                 if (shareEntity == null) {
-                  shareEntity = await CloudFileManager.instance()
-                      .shareFile(entity.id, needToken, day);
+                  shareEntity = await ShareManager.instance.shareFile(entity.id, needToken, day);
                 }
-                Clipboard.setData(ClipboardData(text: shareEntity.shareURL));
+                Clipboard.setData(ClipboardData(text: shareEntity.getShareContent));
                 Fluttertoast.showToast(msg: '复制到剪切板');
                 Navigator.pop(context);
               }),
@@ -143,8 +143,7 @@ class ShareWindowState extends State<ShareWindow> {
                     context,
                     "分享文件",
                     FutureBuilder<ShareEntity>(
-                      future: CloudFileManager.instance()
-                          .shareFile(entity.id, needToken, day),
+                      future: ShareManager.instance.shareFile(entity.id, needToken, day),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -159,11 +158,12 @@ class ShareWindowState extends State<ShareWindow> {
                           shareEntity = snapshot.data;
                           return RepaintBoundary(
                               key: qrCodeKey,
-                              child: Column(
+                              child: Container( color : Colors.white,
+                                  child :Column(
                                 children: <Widget>[
                                   boldText(entity.fileName),
                                   QrImage(
-                                    data: shareEntity.getShareDownloadURL,
+                                    data: shareEntity.getShareDownloadURLWithoutToken,
                                   ),
                                   Text(
                                     '来自ByteCloud',
@@ -171,7 +171,7 @@ class ShareWindowState extends State<ShareWindow> {
                                         fontSize: 12, color: Colors.grey),
                                   ),
                                 ],
-                              ));
+                              )));
                         } else {
                           return Center(child: Text('Ops!'));
                         }

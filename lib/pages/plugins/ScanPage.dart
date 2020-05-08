@@ -1,9 +1,11 @@
 import 'dart:ui';
 
+import 'package:bytes_cloud/core/manager/ShareManager.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_qr_reader/flutter_qr_reader.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -117,14 +119,35 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   /// fixme 这个插件有个BUG，重新打开之后会执行两次 onScan (概率事件喵喵喵)
-  void handleScanSuccess(String v) {
+  void handleScanSuccess(String v) async{
     setState(() {
       data = v;
       isScanStop = true;
       _controller.stopCamera();
     });
     print("handleScanSuccess $data");
-    UI.showMessageDialog(context: context, content: Text(data));
+
+    if (isShareURL(data)) {
+      Fluttertoast.showToast(msg: '开始下载');
+      Uri uri = Uri.parse(data);
+      bool success = await ShareManager.instance.downloadShareFile(uri);
+      if(!success){
+        String token = await UI.showInputDialog(context, '请输入token');
+        if(token == null || token.isEmpty) {
+          return;
+        }
+        Map<String, String> args = {};
+        args.addAll(uri.queryParameters);
+        args.addAll({'share_token': token});
+        Uri tokenUri = Uri.http(uri.authority, uri.path, args);
+        bool success = await ShareManager.instance.downloadShareFile(tokenUri);
+        if(!success){
+          Fluttertoast.showToast(msg: '下载失败，token错误');
+        }
+      }
+    } else {
+      UI.showMessageDialog(context: context, content: Text(data));
+    }
   }
 
   void selectFromPhotos() async {

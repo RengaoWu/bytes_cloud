@@ -16,7 +16,7 @@ class SP {
   static const KEY_TRANSLATE_ONLY_IN_GPRS = 'KEY_TRANSLATE_ONLY_IN_GPRS';
   static const KEY_SHOW_HIDDEN_FILE = 'KEY_SHOW_HIDDEN_FILE';
 
-  static String downloadedKey(int id) => '$KEY_DOWNLOADED $id';
+  static String downloadedKey(String id) => '$KEY_DOWNLOADED $id';
 
   static Future<SharedPreferences> getSp() async {
     return SharedPreferences.getInstance();

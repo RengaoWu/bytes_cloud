@@ -4,14 +4,11 @@ import 'package:bytes_cloud/core/http/CloudFileHandler.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/DownloadTask.dart';
-import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/entity/UploadTask.dart';
 import 'package:bytes_cloud/model/ListModel.dart';
 import 'package:bytes_cloud/pages/content/remote/RemoteRouteHelper.dart';
 import 'package:bytes_cloud/core/StaticConfig.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'DBManager.dart';
@@ -217,7 +214,7 @@ class CloudFileManager {
     for (int i = 0; i < es.length; i++) {
       CloudFileEntity e = es[i];
       DownloadTask task = DownloadTask(
-        id: e.id,
+        id: e.id.toString(),
         filename: e.fileName,
         path: FileUtil.getDownloadFilePath(e),
       );
@@ -247,22 +244,5 @@ class CloudFileManager {
       }
     }
     return true;
-  }
-
-  Future<ShareEntity> shareFile(int id, bool needToken, int day) async {
-    ShareEntity entity = await CloudFileHandle.shareFile(id, needToken, day);
-    if (entity != null) {
-      DBManager.instance.insert(ShareEntity.tableName, entity);
-    }
-    return entity;
-  }
-
-  Future<bool> deleteShareFile(ShareEntity entity) async {
-    bool success = await CloudFileHandle.delShareFile(entity.shareID);
-    if (success != null) {
-      DBManager.instance.delete(
-          ShareEntity.tableName, {'share_id': entity.shareID.toString()});
-    }
-    return success;
   }
 }

@@ -12,6 +12,7 @@ class ShareEntity extends Entity {
   int fileID;
   int beginTime;
   int endTime;
+  String filename;
   String shareToken;
   String shareURL;
   String qrCodeFile = '';
@@ -23,6 +24,7 @@ class ShareEntity extends Entity {
             share_id INTEGER PRIMARY KEY, 
             share_begin_time INTEGER, 
             share_end_time INTEGER,
+            filename TEXT, 
             share_token TEXT,
             share_url TEXT,
             qrCodeFile TEXT)
@@ -34,6 +36,7 @@ class ShareEntity extends Entity {
     endTime = map['share_end_time'];
     shareToken = map['share_token'];
     shareURL = map['share_url'];
+    filename = map['filename'];
     qrCodeFile = map['qrCodeFile'] == null ? '' : map['qrCodeFile'];
     if (DateTime.fromMillisecondsSinceEpoch(beginTime).year < 2020) {
       beginTime *= 1000;
@@ -51,13 +54,32 @@ class ShareEntity extends Entity {
       'share_token': shareToken,
       'share_url': shareURL,
       'qrCodeFile': qrCodeFile,
+      'filename': filename,
     };
   }
 
   String get getShareDownloadURL =>
       host +
       HTTP_POST_SHARE_FILE_DOWNLOAD +
-      shareURL +
-      '?share_token=' +
-      shareToken;
+      '/${shareURL}' +
+      '?share_token=$shareToken' +
+      '&filename=$filename';
+
+  /// 没有token
+  String get getShareDownloadURLWithoutToken =>
+      host +
+          HTTP_POST_SHARE_FILE_DOWNLOAD +
+          '/${shareURL}' +
+          '?share_token=' +
+          '&filename=$filename';
+
+  String get getShareContent{
+    String link = host + HTTP_POST_SHARE_FILE_DOWNLOAD + '/${shareURL}?share_token=';
+    String result = '来自BytesCloud的分享 ${link}';
+    if(shareToken != null) {
+      return result + ', 提取码: $shareToken';
+    } else {
+      return result;
+    }
+  }
 }

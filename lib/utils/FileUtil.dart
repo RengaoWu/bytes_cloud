@@ -135,9 +135,13 @@ class FileUtil {
     return Common.instance.appDownload + entity.pathRoot + entity.fileName;
   }
 
+  static String getShareDownloadFilePath(String filename){
+    return Common.instance.appDownload + '/share_download/' + filename;
+  }
+
   static bool haveDownloaded(CloudFileEntity entity) {
     return File(getDownloadFilePath(entity)).existsSync() &&
-        SP.getBool(SP.downloadedKey(entity.id), false);
+        SP.getBool(SP.downloadedKey(entity.id.toString()), false);
   }
 
   static bool isFile(String path) {

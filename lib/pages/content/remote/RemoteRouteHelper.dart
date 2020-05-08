@@ -98,7 +98,7 @@ class RemoteRouteHelper {
       return;
     }
     File localFile = File(FileUtil.getDownloadFilePath(entity));
-    if (SP.getBool(SP.downloadedKey(entity.id), false) &&
+    if (SP.getBool(SP.downloadedKey(entity.id.toString()), false) &&
         localFile.existsSync()) {
       UI.openFile(context, localFile);
       return;

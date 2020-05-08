@@ -1,16 +1,8 @@
-import 'dart:math';
-
-import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/core/manager/Manager.dart';
 import 'package:bytes_cloud/entity/DownloadTask.dart';
 import 'package:bytes_cloud/entity/TranslateTask.dart';
 import 'package:bytes_cloud/entity/UploadTask.dart';
-import 'package:bytes_cloud/entity/entitys.dart';
-import 'package:bytes_cloud/model/ListModel.dart';
-import 'package:bytes_cloud/utils/FileUtil.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 
 /// 文件上传和下载管理器
 

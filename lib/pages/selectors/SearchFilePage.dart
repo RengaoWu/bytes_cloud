@@ -27,7 +27,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
   int filesSize = 0;
   Map<String, dynamic> args;
 
-  bool flashListView = false;
+  bool flashListView = true;
   bool isDeepSearch = false;
   Widget list;
   List<FileSystemEntity> allFiles = [];

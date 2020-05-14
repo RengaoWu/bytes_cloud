@@ -11,6 +11,7 @@ import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class SettingPage extends StatefulWidget {
@@ -75,6 +76,23 @@ class SettingPageState extends State<SettingPage> {
           divider(),
           ListTile(
             title: Text('清空缓存文件'),
+            onTap: () {
+              UI.showContentDialog(context, '清空缓存', Text('你确定清空缓存吗？'),
+                  left: '取消',
+                  leftCall: () {
+                    Navigator.pop(context);
+                  },
+                  right: '确定',
+                  rightCall: () {
+                    UI.showProgressDialog(context: context);
+                    // todo 删除Cache目录下的文件。
+                    Future.delayed(Duration(seconds: 1)).whenComplete(() {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Fluttertoast.showToast(msg: '已经清空缓存');
+                    });
+                  });
+            },
           ),
           ListTile(
             title: Text('关于'),

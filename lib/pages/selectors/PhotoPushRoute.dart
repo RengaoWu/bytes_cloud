@@ -1,5 +1,10 @@
+import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
+import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
+import 'package:bytes_cloud/utils/FileUtil.dart';
+import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class PhotoPushRoute extends StatefulWidget {
@@ -80,7 +85,16 @@ class PhotoPushRouteState extends State<PhotoPushRoute> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.file_upload),
-              onPressed: () {},
+              onPressed: () async {
+                UI.showProgressDialog(context: context);
+                List<String> paths = [];
+                for(Asset asset in images){
+                  ByteData bytes = await asset.getByteData(quality: 0);
+                  paths.add(await FileUtil.saveBytesAsFile(bytes));
+                }
+                Navigator.pop(context);
+                UI.newPage(context, CloudFolderSelector(paths));
+              },
             )
           ],
         ),

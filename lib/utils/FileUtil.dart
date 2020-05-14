@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter/services.dart';
 
 class FileUtil {
   static String getFileNameWithExt(String path) {
@@ -137,6 +138,12 @@ class FileUtil {
 
   static String getShareDownloadFilePath(String filename){
     return Common.instance.appDownload + '/share_download/' + filename;
+  }
+
+  static Future<String> saveBytesAsFile(ByteData byteData) async {
+    Uint8List png = byteData.buffer.asUint8List();
+    String path = FileUtil.uri2Path(await ImageGallerySaver.saveImage(png));
+    return path;
   }
 
   static bool haveDownloaded(CloudFileEntity entity) {

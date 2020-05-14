@@ -81,6 +81,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
                           ));
                         }
                         if (snapshot.hasData) {
+                          print('search ');
                           return handleSearchResult(snapshot);
                         } else {
                           return Expanded(
@@ -95,16 +96,16 @@ class _SearchFilePageState extends State<SearchFilePage> {
     );
   }
 
-  handleSearchResult(AsyncSnapshot snapshot) {
+  Widget handleSearchResult(AsyncSnapshot snapshot) {
     if (key != null && !historyKeys.contains(key)) {
       historyKeys.add(key);
       SP.setArray('search_history', historyKeys);
     }
     allFiles.clear();
     allFiles.addAll(snapshot.data);
+    print('search ${allFiles.length}');
     if (allFiles.length > PAGE_LENGTH) {
       allFiles = allFiles.sublist(0, PAGE_LENGTH);
-      return searchListView();
     } else if (allFiles.length == 0) {
       return InkWell(
           onTap: () {
@@ -136,6 +137,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
             ),
           ));
     }
+    return searchListView();
   }
 
   searchListView() {
@@ -156,7 +158,9 @@ class _SearchFilePageState extends State<SearchFilePage> {
                   file: allFiles[index],
                   isCheck: selectedFiles.contains(allFiles[index].path),
                   onChanged: onChange,
-                  onTap: onTap,
+                  onTap: (File f){
+                    UI.openFile(context, f, useOtherApp: false);
+                  },
                 );
               })),
       context: context,
@@ -173,8 +177,6 @@ class _SearchFilePageState extends State<SearchFilePage> {
       filesSize -= file.statSync().size;
     }
   }
-
-  onTap() {}
 
   static startSearch(String key, List<String> roots) async {
     if (key == '') {

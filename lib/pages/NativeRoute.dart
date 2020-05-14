@@ -47,7 +47,7 @@ class NativeRouteState extends State<NativeRoute>
               context,
               SearchFilePage({
                 'key': k,
-                'roots': [Common.sd]
+                'roots': Common.instance.recentDir
               }));
         }),
         gridView(),

@@ -93,6 +93,7 @@ class Constants {
   static const String AVATOR = 'assets/images/avator.jpg';
   static const String QRCODE = 'assets/images/qrcode.png';
   static const String LINK = 'assets/images/link.png';
+  static const String ICON = 'assets/images/ic_launcher.png';
 
   static const int COLOR_DIVIDER = 0xffe5e5e5;
 }

@@ -5,6 +5,7 @@ import 'package:bytes_cloud/core/StaticConfig.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/model/ThemeModel.dart';
+import 'package:bytes_cloud/pages/content/AboutPage.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -96,6 +97,7 @@ class SettingPageState extends State<SettingPage> {
           ),
           ListTile(
             title: Text('关于'),
+            onTap: () => UI.newPage(context, AboutPage()),
           )
         ],
       ),

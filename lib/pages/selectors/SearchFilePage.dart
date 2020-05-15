@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bytes_cloud/core/Common.dart';
 import 'package:bytes_cloud/core/Constants.dart';
+import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/utils/IoslateMethods.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
@@ -93,6 +94,13 @@ class _SearchFilePageState extends State<SearchFilePage> {
                   : searchListView(),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.file_upload),
+        onPressed: () {
+          if(selectedFiles.length == 0) return;
+          UI.newPage(context, CloudFolderSelector(selectedFiles.toList()));
+        },
+      ),
     );
   }
 
@@ -158,7 +166,7 @@ class _SearchFilePageState extends State<SearchFilePage> {
                   file: allFiles[index],
                   isCheck: selectedFiles.contains(allFiles[index].path),
                   onChanged: onChange,
-                  onTap: (File f){
+                  onTap: (File f) {
                     UI.openFile(context, f, useOtherApp: false);
                   },
                 );

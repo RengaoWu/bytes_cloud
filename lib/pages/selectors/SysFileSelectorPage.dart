@@ -215,7 +215,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
                 file: files[index],
                 isCheck: selectedFiles.contains(files[index].path),
                 onChanged: onChange,
-                onTap: () => UI.openFile(context, files[index], files: files));
+                onTap: (file) => UI.openFile(context, file, files: files));
           else
             return UI.buildFolderItem(
                 file: files[index],

@@ -46,12 +46,19 @@ class SharePageState extends State<SharePage> {
                   );
                 }
                 if (snapshot.hasData) {
-                  entities = (snapshot.data as List<Map>).map((m) {
-                    return ShareEntity.fromMap(m);
-                  }).toList();
-                  cloudFiles = entities.map((f) {
-                    return CloudFileManager.instance().getEntityById(f.fileID);
-                  }).toList();
+                  List<Map> data = snapshot.data as List<Map>;
+                  List<ShareEntity> shares = [];
+                  List<CloudFileEntity> files = [];
+                  for(Map map in data){
+                    ShareEntity entity = ShareEntity.fromMap(map);
+                    CloudFileEntity cloudFileEntity = CloudFileManager.instance().getEntityById(entity.fileID);
+                    if(cloudFileEntity != null){
+                      shares.add(entity);
+                      files.add(cloudFileEntity);
+                    }
+                  }
+                  entities = shares;
+                  cloudFiles = files;
                   return listView();
                 }
                 return Center(

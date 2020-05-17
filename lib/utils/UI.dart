@@ -491,8 +491,6 @@ class UI {
       UI.newPage(context, MarkDownPage({'path': currentFile.path})); // 文本
     } else if (FileUtil.isMD(currentFile.path)) {
       UI.newPage(context, MarkDownPage({'path': currentFile.path})); // MD
-//    } else if (FileUtil.isFileReaderSupport(currentFile)) {
-//      UI.newPage(context, FileReaderPage({'path': currentFile.path})); // Android 10 不兼容
     } else {
       OpenFile.open(currentFile.path); // 手机其他APP
     }

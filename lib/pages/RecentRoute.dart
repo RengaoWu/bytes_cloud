@@ -99,13 +99,10 @@ class RecentRouteState extends State<RecentRoute>
 
   // 最近的文件：来源：微信、QQ、下载管理器、相机、QQ邮箱、浏览器、百度网盘、音乐、
   recentFilesListViewFuture() {
-    print("hasNew $hasNew");
-    if (hasNew) _recentFileListView = recentListView();
-    if (_recentFileListView != null) {
-      print('use old');
-      return _recentFileListView;
-    }
-
+    if (hasNew) _recentFileListView = recentListView(); // 如果有新文件
+    // 如果没有新文件，并且列表已经存在
+    if (_recentFileListView != null) return _recentFileListView;
+    // 如果没有新文件，但是列表不存在
     return FutureBuilder<bool>(
       future: hasNewRecentFilesFromFileSystem(), // 如果有新数据，直接更新到_SourceListData
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -115,7 +112,7 @@ class RecentRouteState extends State<RecentRoute>
                   height: 48, width: 48, child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
-          _recentFileListView = recentListView();
+          _recentFileListView = recentListView(); // 加载列表
           return _recentFileListView;
         }
         return Text(snapshot.error.toString());
@@ -148,7 +145,6 @@ class RecentRouteState extends State<RecentRoute>
     ListView listView = ListView.builder(
       controller: _controller,
       itemCount: _sourceListData.length + 1,
-//      shrinkWrap: true,
       key: PageStorageKey('RecentRoute'),
       itemBuilder: (BuildContext context, int index) {
         if (index == 0) {
@@ -175,20 +171,19 @@ class RecentRouteState extends State<RecentRoute>
 
   // 查询是否有新文件，如果有添加到数据库
   Future<bool> hasNewRecentFilesFromFileSystem() async {
+    // 查询是否有新文件
     List<FileSystemEntity> recentFiles = await computeGetAllFiles(
         roots: Common.instance.recentDir,
         keys: StaticConfig.recentFileExt(),
         isExt: true,
-        fromTime: SP.getInt("lastGetRecentFileTime", 0));
-    // 更新时间戳
+        fromTime: SP.getInt("lastGetRecentFileTime", 0)); // 读取上次查询的时间
     var newTimeStamp = 0;
     if (recentFiles.length == 0) {
       newTimeStamp = DateTime.now().millisecondsSinceEpoch;
     } else {
       newTimeStamp = recentFiles[0].statSync().modified.millisecondsSinceEpoch;
     }
-    SP.setInt("lastGetRecentFileTime", newTimeStamp);
-    // 存入数据库
+    SP.setInt("lastGetRecentFileTime", newTimeStamp); //更新时间戳
     print("增量查询最近文件, 新文件长度:${recentFiles.length}");
     bool hasNewRecentFile = false;
     recentFiles.forEach((f) {
@@ -199,10 +194,9 @@ class RecentRouteState extends State<RecentRoute>
       }
     });
     if (hasNewRecentFile || _sourceListData == null) {
-      await updateListData();
-      print('更新数据');
+      await updateListData(); //更新列表
     }
-    return hasNewRecentFile;
+    return hasNewRecentFile; // 返回是否有更新
   }
 
   Future<List<RecentFileEntity>> getRecentFilesFromDB() async {

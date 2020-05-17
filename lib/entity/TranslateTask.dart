@@ -18,10 +18,10 @@ abstract class TranslateTask extends Entity {
 
   TranslateTask({this.time}) : super.fromMap(null) {
     time = DateTime.now().millisecondsSinceEpoch;
-    uuid = generateUUid(time);
+    uuid = _generateUUid(time);
   }
 
-  generateUUid(int time) => (time - Random(time).nextInt(2000)).hashCode;
+  _generateUUid(int time) => (time - Random(time).nextInt(2000)).hashCode;
 
   String get name;
   String get pathMsg;
@@ -50,7 +50,7 @@ abstract class TranslateTask extends Entity {
   TranslateTask.fromMap(Map map) : super.fromMap(null) {
     this.uuid = map['uuid'];
     this.time = map['time'];
-    this.uuid = generateUUid(this.time);
+    this.uuid = _generateUUid(this.time);
     this.sent = map['sent'];
     this.total = map['total'];
   }

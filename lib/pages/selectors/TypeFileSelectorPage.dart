@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TypeFileSelectorPage extends StatefulWidget {
   final String argType;
@@ -84,6 +85,10 @@ class TypeFileSelectorPageState extends State<TypeFileSelectorPage> {
                   return IconButton(
                     icon: Icon(Icons.file_upload),
                     onPressed: () {
+                      if(selectedFiles.length == 0) {
+                        Fluttertoast.showToast(msg: '请先选择文件');
+                        return;
+                      }
                       UI.newPage(context, CloudFolderSelector(selectedFiles));
 //                      UI.pushToCloud(context, selectedFiles.length, filesSize);
                     },

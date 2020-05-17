@@ -10,6 +10,7 @@ import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SearchFilePage extends StatefulWidget {
   final Map<String, dynamic> args;
@@ -97,7 +98,10 @@ class _SearchFilePageState extends State<SearchFilePage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.file_upload),
         onPressed: () {
-          if(selectedFiles.length == 0) return;
+          if(selectedFiles.length == 0) {
+            Fluttertoast.showToast(msg: '请先选择文件');
+            return;
+          }
           UI.newPage(context, CloudFolderSelector(selectedFiles.toList()));
         },
       ),

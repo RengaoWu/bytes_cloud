@@ -10,6 +10,7 @@ import 'package:bytes_cloud/utils/ThumbUtil.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import 'SearchFilePage.dart';
@@ -99,6 +100,10 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
                 return IconButton(
                   icon: Icon(Icons.file_upload),
                   onPressed: () {
+                    if(selectedFiles.length == 0) {
+                      Fluttertoast.showToast(msg: '请先选择文件');
+                      return;
+                    }
                     UI.newPage(
                         context, CloudFolderSelector(selectedFiles.toList()));
 //                    UI.pushToCloud(context, selectedFiles.length, filesSize);

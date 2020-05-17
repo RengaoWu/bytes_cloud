@@ -70,27 +70,23 @@ class CloudFileHandle {
     int lastTime = DateTime.now().millisecondsSinceEpoch;
     int lastSent = 0;
     var resp = await httpPost(HTTP_POST_A_FILE, call: (sent, total) {
-      print('uploadOneFile ${sent} / ${total}');
-      print('uploadOneFile v = ${task.v}');
-      task.sent = sent;
-      task.total = total;
+      task.sent = sent; // 已经上传的长度
+      task.total = total; // 总长度
       int currentTime = DateTime.now().millisecondsSinceEpoch;
-      if (currentTime - lastTime > 100) {
+      if (currentTime - lastTime > 100) { // 计算上传的速度
         task.v = 1000 * ((task.sent - lastSent) / (currentTime - lastTime));
         lastTime = currentTime;
         lastSent = task.sent;
       }
-      //task.v = 1000 * ((sent - task.sent) / (currentTime - lastTime)); // 这样计算速度不行，可能 currentTime - lastTime = 0
-      //TranslateManager.instant().uploadTask.update(task, (t) => t == task);
     }, form: {
-      'curId': task.pid,
+      'curId': task.pid, // 需要上传到的目标文件夹
       'file': await MultipartFile.fromFile(task.path,
-          filename: FileUtil.getFileNameWithExt(task.path)),
+          filename: FileUtil.getFileNameWithExt(task.path)), // 上传的文件
     });
     print('uploadOneFile ${resp.toString()}');
-    if (resp['code'] == 0) {
-      TranslateManager.instant().saveFinishedTask2DB(task);
-      return CloudFileEntity.fromMap(resp['data']['file']);
+    if (resp['code'] == 0) { // 上传成功
+      TranslateManager.instant().saveFinishedTask2DB(task); // 将上传任务写如DB
+      return CloudFileEntity.fromMap(resp['data']['file']); // 返回云盘文件类
     } else
       return null;
   }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:bytes_cloud/core/Constants.dart';
+import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/pages/widgets/ShareWindow.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:bytes_cloud/utils/SPUtil.dart';
@@ -39,8 +41,9 @@ class RemoteRouteHelper {
 //      Navigator.pop(context);
     }, fontWeight: FontWeight.normal));
     Widget moveActionWidget = Expanded(
-        child: UI.iconTxtBtn(Constants.MOVE, '移动', null,
-            fontWeight: FontWeight.normal));
+        child: UI.iconTxtBtn(Constants.MOVE, '移动', () async {
+      await moveAction(entity);
+    }, fontWeight: FontWeight.normal));
     Widget deleteActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.DELETE, '删除', () async {
       await deleteAction(entity);
@@ -52,8 +55,9 @@ class RemoteRouteHelper {
       Navigator.pop(context);
     }, fontWeight: FontWeight.normal));
     Widget moreActionWidget = Expanded(
-        child: UI.iconTxtBtn(Constants.MORE, '详情', null,
-            fontWeight: FontWeight.normal));
+        child: UI.iconTxtBtn(Constants.MORE, '详情', () async {
+      await moreInfoAction(entity);
+    }, fontWeight: FontWeight.normal));
 
     if (type == RemoteRouteHelper.SHOW_TYPE_FILE) {
       content.add(downloadActionWidget);
@@ -82,6 +86,18 @@ class RemoteRouteHelper {
         height: 100,
         radius: 8,
         padding: 8);
+  }
+
+  moveAction(CloudFileEntity entity) async {
+    // 因为Svr暂时不支持移动操作，所以这里先下载再上传实现移动
+    if (!FileUtil.haveDownloaded(entity)) {
+      CloudFileManager.instance().downloadFile([entity]);
+    }
+    // 上传
+    UI.newPage(
+        context, CloudFolderSelector([FileUtil.getDownloadFilePath(entity)]));
+    // 删除当前
+    // 因为不容易判断是否上传成功，所以暂时不删除原来的文件
   }
 
   // 分享 ACTION
@@ -128,5 +144,55 @@ class RemoteRouteHelper {
   deleteAction(CloudFileEntity entity) async {
     bool success = await CloudFileManager.instance().deleteFile(entity.id);
     return success;
+  }
+
+  moreInfoAction(CloudFileEntity entity) async {
+    Navigator.pop(context);
+    Widget icon;
+    if (FileUtil.isImage(entity.fileName)) {
+      icon = Hero(
+        child: Image.network(
+          getPreviewUrl(entity.id, UI.dpi2px(200), UI.dpi2px(200)),
+          height: 110,
+          width: UI.DISPLAY_WIDTH * 0.8,
+          fit: BoxFit.cover,
+        ),
+        tag: entity.id,
+      );
+    } else {
+      icon = UI.selectIcon(entity.fileName, true, size: 110);
+    }
+
+    String downloadInfo = FileUtil.haveDownloaded(entity)
+        ? FileUtil.getDownloadFilePath(entity)
+        : '未下载';
+
+    UI.bottomSheet(
+        context: context,
+        height: 700,
+        content: Column(
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.all(4),
+                child: boldText('${entity.fileName}')),
+            Padding(
+              child: icon,
+              padding: EdgeInsets.only(top: 8),
+            ),
+            titleAndContent(
+                '上传日期',
+                UI.convertTimeToString(
+                    DateTime.fromMillisecondsSinceEpoch(entity.uploadTime))),
+            titleAndContent('云盘中的位置：', entity.pathRoot),
+            titleAndContent('下载的位置：', downloadInfo),
+          ],
+        ));
+  }
+
+  Widget titleAndContent(String title, String content) {
+    return ListTile(
+      title: Text(title),
+      subtitle: Text(content),
+    );
   }
 }

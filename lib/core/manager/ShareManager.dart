@@ -5,6 +5,7 @@ import 'package:bytes_cloud/entity/DownloadTask.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 import 'DBManager.dart';
 
@@ -67,5 +68,16 @@ class ShareManager extends Manager {
         id: shareUrl, filename: filename, path: path, token: token));
     if (success) Fluttertoast.showToast(msg: '${filename}下载完成,保存到{$path}');
     return success;
+  }
+
+  Future<bool> initShareDB(List<ShareEntity> shares) async {
+    await (await DBManager.instance.db).transaction((txn) async {
+      Batch batch = txn.batch();
+      batch.delete(ShareEntity.tableName); // 先 clear 本地数据库
+      shares.forEach(
+              (e) => batch.insert(ShareEntity.tableName, e.toMap()) // 再批量插入
+      );
+      await batch.commit(noResult: true);
+    });
   }
 }

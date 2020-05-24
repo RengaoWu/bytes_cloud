@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:bytes_cloud/core/manager/UserManager.dart';
+import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:flutter/cupertino.dart';
 
 // ID = 0 表示根目录
 class CloudFileEntity extends Entity {
-  static String get tableName => 'CloudFileEntity' + UserManager.instance().userName;
+  static String get tableName =>
+      'CloudFileEntity' + UserManager.instance().userName;
   static getSQL() => '''
             CREATE TABLE $tableName(
             filename TEXT, 
@@ -13,6 +17,7 @@ class CloudFileEntity extends Entity {
             path_root TEXT,
             size INTEGER,
             type_of_node TEXT,
+            shares TEXT,
             uid INTEGER,
             upload_time INTEGER)
   ''';
@@ -25,6 +30,7 @@ class CloudFileEntity extends Entity {
   String type; // dir or 具体的文件类型
   int uid; // 0 暂时没用
   int uploadTime; // 上传时间
+  List<int> shares; // share id
 
   CloudFileEntity(this.id, {this.fileName, this.pathRoot, this.type})
       : super.fromMap(null);
@@ -38,6 +44,20 @@ class CloudFileEntity extends Entity {
     type = map['type_of_node'];
     uid = map['uid'];
     uploadTime = map['upload_time'];
+    print(map['shares']);
+    if (map['shares'] is List) {
+      List<dynamic> sharesJson = map['shares'] as List;
+      shares = sharesJson.map((f) {
+        print(f);
+        return f['share_id'] as int;
+      }).toList();
+    } else {
+      shares = (JsonDecoder().convert(map['shares']) as List).map((f) {
+        return f as int;
+      }).toList();
+    }
+
+    //print(shares.length);
     // Svr 返回的这个时间有时候有问题，这里check一下
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(uploadTime);
     if (dateTime.year < 2020) uploadTime *= 1000;
@@ -45,6 +65,7 @@ class CloudFileEntity extends Entity {
 
   @override
   Map<String, dynamic> toMap() {
+    print('toMap ' + shares.toString());
     return {
       'filename': fileName,
       'id': id,
@@ -53,7 +74,8 @@ class CloudFileEntity extends Entity {
       'size': size,
       'type_of_node': type,
       'uid': uid,
-      'upload_time': uploadTime
+      'upload_time': uploadTime,
+      'shares': JsonEncoder().convert(shares),
     };
   }
 

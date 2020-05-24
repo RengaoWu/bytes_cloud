@@ -202,7 +202,7 @@ class RecentRouteState extends State<RecentRoute>
   Future<List<RecentFileEntity>> getRecentFilesFromDB() async {
     // 全量数据库查询
     List<Map> maps = await DBManager.instance
-        .queryAll(RecentFileEntity.tableName, 'modifyTime desc'); // for db
+        .queryAll(RecentFileEntity.tableName, orderBy: 'modifyTime desc'); // for db
     List<RecentFileEntity> result = [];
     // 转化类型
     if (maps != null && maps.length != 0) {

@@ -17,7 +17,9 @@ class ShareEntity extends Entity {
   String shareToken;
   String shareURL;
   String qrCodeFile = '';
-  static const String ORDER_BY_BEGIN_TIME = ' share_begin_time ';
+  static const String ORDER_BY_BEGIN_TIME_DESC = ' share_begin_time desc';
+  static const String ORDER_BY_END_TIME = ' share_end_time ';
+  static const String ORDER_BY_END_TIME_DESC = ' share_end_time desc';
   static String get tableName => 'ShareEntity' + UserManager.instance().userName;
   static String get SQL_SHARE_CREATE => '''
 			      CREATE TABLE ${tableName} (

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/DBManager.dart';
+import 'package:bytes_cloud/core/manager/ShareManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/DownloadTask.dart';
@@ -22,11 +23,22 @@ class CloudFileHandle {
       }
       List maps = rsp['data']['files'];
       List<CloudFileEntity> result = [];
+      List<ShareEntity> shares = [];
       maps.forEach((json) {
         if (json['filename'] != null) {
-          result.add(CloudFileEntity.fromMap(json));
+          CloudFileEntity cloudFileEntity = CloudFileEntity.fromMap(json);
+          result.add(cloudFileEntity);
+          List sharesMap = json['shares'];
+          if(sharesMap != null) {
+            sharesMap.forEach((share){
+              ShareEntity shareEntity = ShareEntity.fromMap(share);
+              shareEntity.filename = cloudFileEntity.fileName;
+              shares.add(shareEntity);
+            });
+          }
         }
       });
+      ShareManager.instance.initShareDB(shares);
       return result;
     } catch (e) {
       print('refreshCloudFileList ${e.toString()}');

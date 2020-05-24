@@ -31,12 +31,12 @@ class TranslateManager extends Manager {
   @override
   initFromDB() async {
     List<Map> ds =
-        await DBManager.instance.queryAll(DownloadTask.tableName, null);
+        await DBManager.instance.queryAll(DownloadTask.tableName);
     if (ds != null) {
       _downloads = ds.map((d) => DownloadTask.formMap(d)).toList();
     }
     List<Map> us =
-        await DBManager.instance.queryAll(UploadTask.tableName, null);
+        await DBManager.instance.queryAll(UploadTask.tableName);
     if (us != null) {
       _uploads = us.map((u) => UploadTask.formMap(u)).toList();
     }

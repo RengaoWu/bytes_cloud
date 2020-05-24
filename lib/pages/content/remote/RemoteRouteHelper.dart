@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/core/http/http.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
+import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
+import 'package:bytes_cloud/entity/ShareEntity.dart';
+import 'package:bytes_cloud/pages/content/MoreInfoPage.dart';
 import 'package:bytes_cloud/pages/selectors/CloudFolderSelector.dart';
 import 'package:bytes_cloud/pages/widgets/ShareWindow.dart';
 import 'package:bytes_cloud/utils/FileUtil.dart';
@@ -147,52 +150,9 @@ class RemoteRouteHelper {
     return success;
   }
 
-  moreInfoAction(CloudFileEntity entity) async {
-    Widget icon;
-    if (FileUtil.isImage(entity.fileName)) {
-      icon = Hero(
-        child: Image.network(
-          getPreviewUrl(entity.id, UI.dpi2px(200), UI.dpi2px(200)),
-          height: 110,
-          width: UI.DISPLAY_WIDTH * 0.8,
-          fit: BoxFit.cover,
-        ),
-        tag: entity.id,
-      );
-    } else {
-      icon = UI.selectIcon(entity.fileName, true, size: 110);
-    }
-
-    String downloadInfo = FileUtil.haveDownloaded(entity)
-        ? FileUtil.getDownloadFilePath(entity)
-        : '未下载';
-
-    UI.bottomSheet(
-        context: context,
-        height: 700,
-        content: Column(
-          children: <Widget>[
-            Padding(
-                padding: EdgeInsets.all(4),
-                child: boldText('${entity.fileName}')),
-            Padding(
-              child: icon,
-              padding: EdgeInsets.only(top: 8),
-            ),
-            titleAndContent(
-                '上传日期',
-                UI.convertTimeToString(
-                    DateTime.fromMillisecondsSinceEpoch(entity.uploadTime))),
-            titleAndContent('云盘中的位置：', entity.pathRoot),
-            titleAndContent('下载的位置：', downloadInfo),
-          ],
-        ));
-  }
-
-  Widget titleAndContent(String title, String content) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Text(content, maxLines: 2, style: TextStyle(fontSize: 11),),
-    );
+  moreInfoAction(CloudFileEntity entity) {
+    Future.delayed(Duration(milliseconds: 100)).whenComplete(() {
+      UI.newPage(context, MoreInfoPage(entity));
+    });
   }
 }

@@ -35,7 +35,7 @@ class DBManager {
   }
 
   Future<Database> _open(String path) async {
-    return await openDatabase(path, version: 2,
+    return await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       print(RecentFileEntity.getSQL());
       await db.execute(RecentFileEntity.getSQL()); // 账号无关
@@ -93,9 +93,9 @@ class DBManager {
   }
 
   // 查
-  Future<List<Map>> queryAll(String tableName, String orderBy) async {
+  Future<List<Map>> queryAll(String tableName, {String orderBy, String where, List<dynamic> args}) async {
     await init();
-    List<Map> maps = await _db.query(tableName, orderBy: orderBy);
+    List<Map> maps = await _db.query(tableName, orderBy: orderBy, where: where, whereArgs: args);
     if (maps == null) {
       return null;
     }

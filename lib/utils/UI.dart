@@ -205,43 +205,44 @@ class UI {
         barrierDismissible: dismiss,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: boldText(title, fontSize: 18),
-            contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            title: title == null ? SizedBox() : boldText(title, fontSize: 16, ),
+            titlePadding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(left: 16, top: 8, right: 16),
-                  child: content),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                      child: Padding(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          child: FlatButton(
-                            child: Text(
-                              left,
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                            onPressed: () => leftCall(),
-                          ))),
-                  Container(
-                    height: 20,
-                    width: 1,
-                    color: Colors.grey,
-                  ),
-                  Expanded(
-                      child: Padding(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          child: FlatButton(
-                            child: Text(
-                              right,
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                            onPressed: () => rightCall(),
-                          )))
-                ],
-              )
+              content,
+              left == null && right == null
+                  ? SizedBox()
+                  : Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: FlatButton(
+                                  child: Text(
+                                    left,
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                  onPressed: () => leftCall(),
+                                ))),
+                        Container(
+                          height: 20,
+                          width: 1,
+                          color: Colors.grey,
+                        ),
+                        Expanded(
+                            child: Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: FlatButton(
+                                  child: Text(
+                                    right,
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                  onPressed: () => rightCall(),
+                                )))
+                      ],
+                    )
             ],
           );
         });
@@ -330,7 +331,11 @@ class UI {
     return InkWell(
       child: Card(
         child: ListTile(
-            leading: SizedBox(child: selectIcon(file.path,  true), width: 50, height: 50,),
+            leading: SizedBox(
+              child: selectIcon(file.path, true),
+              width: 50,
+              height: 50,
+            ),
             title: Text(FileUtil.getFileName(file.path)),
             subtitle: Text(
                 '$modifiedTime  ${FileUtil.getFileSize(file.statSync().size)}',
@@ -597,6 +602,7 @@ class UI {
       path = getPreviewUrl(id, dpi2px(size), dpi2px(size));
       image = Image.network(
         path,
+        fit: BoxFit.cover,
         alignment: Alignment.center,
         height: size,
         cacheHeight: dpi2px(size).toInt(),

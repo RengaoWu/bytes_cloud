@@ -34,7 +34,7 @@ class CloudFileManager {
   // 查询所有
   Future initDataFromDB() async {
     List<Map> es =
-        await DBManager.instance.queryAll(CloudFileEntity.tableName, null);
+        await DBManager.instance.queryAll(CloudFileEntity.tableName);
     print('CloudFileManager initDataFromDB es.length = ${es.length}');
     if (es == null) return;
     _cloudFileModel.list = es.map((f) => CloudFileEntity.fromMap(f)).toList();

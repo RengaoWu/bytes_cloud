@@ -8,10 +8,22 @@ import 'package:flutter/cupertino.dart';
 import 'FileUtil.dart';
 
 getThumbWidget(String path, {double width = 200, double height = 200}) {
+  print('getThumbWidget path = ${path}');
   // from cache
   var thumb = _getThumbFromCache(path);
   if (thumb != null) {
     return _getImage(thumb, width, height);
+  }
+
+  // 检查文件是否存在
+  if(!File(path).existsSync()) {
+    return ClipRRect(
+        child: Image.asset(
+          Constants.VIDEO,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ));
   }
   // generate
   return FutureBuilder(

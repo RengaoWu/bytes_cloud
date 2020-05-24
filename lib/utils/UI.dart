@@ -526,7 +526,7 @@ class UI {
       case '.jpg':
       case '.jpeg':
       case '.png':
-        iconImg = preview ? path : Constants.IMAGE;
+        iconImg = Constants.IMAGE;
         resFlag = preview ? 1 : resFlag;
         break;
       case '.txt':
@@ -546,15 +546,19 @@ class UI {
         break;
       case '.mp4':
         iconImg = Constants.MP4;
+        resFlag = preview ? 2 : 0;
         break;
       case '.avi':
         iconImg = Constants.AVI;
+        resFlag = preview ? 2 : 0;
         break;
       case '.flv':
         iconImg = Constants.FLV;
+        resFlag = preview ? 2 : 0;
         break;
       case '3gp':
         iconImg = Constants.GP3;
+        resFlag = preview ? 2 : 0;
         break;
       case '.rar':
         iconImg = Constants.RAR;

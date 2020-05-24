@@ -138,11 +138,11 @@ class _SearchFilePageState extends State<SearchFilePage> {
                 ),
                 isDeepSearch
                     ? Text(
-                        '点击尝试深度搜索',
+                        '空空如也',
                         style: TextStyle(fontSize: 18),
                       )
                     : Text(
-                        '空空如也',
+                        '点击尝试深度搜索',
                         style: TextStyle(fontSize: 18),
                       )
               ],

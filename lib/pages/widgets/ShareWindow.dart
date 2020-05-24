@@ -51,7 +51,7 @@ class ShareWindowState extends State<ShareWindow> {
       icon = Hero(
         child: Image.network(
           getPreviewUrl(entity.id, UI.dpi2px(200), UI.dpi2px(200)),
-          height: 130,
+          height: 110,
           fit: BoxFit.cover,
         ),
         tag: entity.id,
@@ -212,10 +212,6 @@ class ShareWindowState extends State<ShareWindow> {
       shareEntity.qrCodeFile = await FileUtil.saveUI2Image(qrCodeKey);
     }
     print(shareEntity.qrCodeFile);
-    shareToWeChat(WeChatShareImageModel(
-      WeChatImage.file(File(shareEntity.qrCodeFile), suffix: '.png'),
-      title: '来自ByteCloud',
-      description: 'image',
-    ));
+    UI.openFile(context, File(shareEntity.qrCodeFile), useOtherApp: true);
   }
 }

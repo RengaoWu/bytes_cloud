@@ -285,6 +285,9 @@ class RecentRouteState extends State<RecentRoute>
   }
 
   showMoreWindow(GlobalKey key, List<RecentFileEntity> entities) {
+    List<String> paths = entities.map((f) {
+      return f.path;
+    }).toList();
     PopupWindow.showPopWindow(
       context,
       '',
@@ -297,16 +300,16 @@ class RecentRouteState extends State<RecentRoute>
               FlatButton(
                 child: Text("上传到云"),
                 onPressed: () {
-                  List<String> paths = entities.map((f) {
-                    return f.path;
-                  }).toList();
                   Navigator.pop(context);
                   UI.newPage(context, CloudFolderSelector(paths));
                 },
               ),
               FlatButton(
                 child: Text("分享"),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                  UI.openFile(context, File(paths[0]), useOtherApp: true);
+                },
               ),
             ],
           )),

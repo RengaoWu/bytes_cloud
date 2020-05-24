@@ -35,6 +35,7 @@ class CloudFileManager {
   Future initDataFromDB() async {
     List<Map> es =
         await DBManager.instance.queryAll(CloudFileEntity.tableName, null);
+    print('CloudFileManager initDataFromDB es.length = ${es.length}');
     if (es == null) return;
     _cloudFileModel.list = es.map((f) => CloudFileEntity.fromMap(f)).toList();
   }

@@ -15,6 +15,7 @@ class SP {
   static const KEY_SYNC_IMAGE = 'KEY_SYNC_IMAGE';
   static const KEY_TRANSLATE_ONLY_IN_GPRS = 'KEY_TRANSLATE_ONLY_IN_GPRS';
   static const KEY_SHOW_HIDDEN_FILE = 'KEY_SHOW_HIDDEN_FILE';
+  static const KEY_NICK_NAME = 'KEY_NICK_NAME';
 
   static String downloadedKey(String id) => '$KEY_DOWNLOADED $id';
 

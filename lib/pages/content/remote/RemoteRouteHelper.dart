@@ -32,30 +32,32 @@ class RemoteRouteHelper {
     List<Widget> content = [];
     Widget downloadActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.DOWNLOADED, '下载', () async {
-      await downloadAction(entity);
       Navigator.pop(context);
+      await downloadAction(entity);
     }, fontWeight: FontWeight.normal));
     Widget shareActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.SHARE2, '分享', () async {
+      Navigator.pop(context);
       await shareAction(entity);
-//      Navigator.pop(context);
     }, fontWeight: FontWeight.normal));
     Widget moveActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.MOVE, '移动', () async {
+      Navigator.pop(context);
       await moveAction(entity);
     }, fontWeight: FontWeight.normal));
     Widget deleteActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.DELETE, '删除', () async {
-      await deleteAction(entity);
       Navigator.pop(context);
+      await deleteAction(entity);
     }, fontWeight: FontWeight.normal));
     Widget renameActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.MODIFY, '重命名', () async {
-      await reNameAction(entity);
       Navigator.pop(context);
+      await reNameAction(entity);
     }, fontWeight: FontWeight.normal));
     Widget moreActionWidget = Expanded(
         child: UI.iconTxtBtn(Constants.MORE, '详情', () async {
+      Navigator.pop(context);
       await moreInfoAction(entity);
     }, fontWeight: FontWeight.normal));
 
@@ -102,7 +104,6 @@ class RemoteRouteHelper {
 
   // 分享 ACTION
   shareAction(CloudFileEntity entity) async {
-    Navigator.pop(context);
     await UI.bottomSheet(
         context: context, content: ShareWindow(entity), height: 700);
   }
@@ -147,7 +148,6 @@ class RemoteRouteHelper {
   }
 
   moreInfoAction(CloudFileEntity entity) async {
-    Navigator.pop(context);
     Widget icon;
     if (FileUtil.isImage(entity.fileName)) {
       icon = Hero(
@@ -192,7 +192,7 @@ class RemoteRouteHelper {
   Widget titleAndContent(String title, String content) {
     return ListTile(
       title: Text(title),
-      subtitle: Text(content),
+      subtitle: Text(content, maxLines: 2, style: TextStyle(fontSize: 11),),
     );
   }
 }

@@ -79,7 +79,6 @@ void main() async {
     SP.getSp(), // 初始化 sp
   ]).then((result) {
     initHttp(); // init http, 添加cookie
-    DBManager.instance.init(); // 初始化DB
     SP.sp = result[2] as SharedPreferences;
     runApp(MyApp());
   });

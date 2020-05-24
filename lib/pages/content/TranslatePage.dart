@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/entity/DownloadTask.dart';
 import 'package:bytes_cloud/entity/TranslateTask.dart';
@@ -124,11 +126,15 @@ class TaskItemState extends State<TaskItem> {
       );
     } else {
       trailing = Text(
-        '${FileUtil.getFileSize(task.v?.toInt())} / s',
+        '''${FileUtil.getFileSize(task.v?.toInt())} 
+        / s''',
         style: TextStyle(fontSize: 12),
       );
-      subTitle = LinearProgressIndicator(
-        value: task.progress,
+      subTitle = Container(
+        child: LinearProgressIndicator(
+          value: task.progress,
+        ),
+        width: 100,
       );
     }
     if (leading == null) {
@@ -142,6 +148,11 @@ class TaskItemState extends State<TaskItem> {
       ),
       subtitle: subTitle,
       trailing: trailing,
+      onTap: (){
+        if(task.progress == 1 && File(task.filePath).existsSync()){
+          UI.openFile(context, File(task.filePath));
+        }
+      },
     );
   }
 }

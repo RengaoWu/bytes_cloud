@@ -9,6 +9,7 @@ import 'package:bytes_cloud/pages/LoginPage.dart';
 import 'package:bytes_cloud/utils/UI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SelfRoute extends StatefulWidget {
@@ -42,24 +43,24 @@ class SelfRouteState extends State<SelfRoute>
       child: Card(
         child: Column(
           children: <Widget>[
-            UI.iconTxtListItem(
-                Constants.NIGHT,
-                '夜间模式',
-                Switch(
-                  value: false,
-                  onChanged: (value) {},
-                ),
-                null,
-                left: 8,
-                top: 4,
-                right: 8),
-            Divider(
-              indent: 8,
-              endIndent: 8,
-            ),
+//            UI.iconTxtListItem(
+//                Constants.NIGHT,
+//                '夜间模式',
+//                Switch(
+//                  value: false,
+//                  onChanged: (value) {},
+//                ),
+//                null,
+//                left: 8,
+//                top: 4,
+//                right: 8),
+//            Divider(
+//              indent: 8,
+//              endIndent: 8,
+//            ),
             UI.iconTxtListItem(Constants.SETTING, '设置', null,
                 () => UI.newPage(context, SettingPage()),
-                left: 8, right: 8, top: 8, bottom: 8),
+                left: 8, right: 8, top: 16, bottom: 8),
             Divider(
               indent: 8,
               endIndent: 8,
@@ -107,7 +108,7 @@ class SelfRouteState extends State<SelfRoute>
 
   Widget headerView() {
     return Container(
-      height: 220,
+      height: 210,
       padding: EdgeInsets.only(bottom: 16),
       alignment: Alignment.center,
       child: Stack(
@@ -115,10 +116,11 @@ class SelfRouteState extends State<SelfRoute>
           Image.network(
             'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584635196741&di=bbc124b387b8cc030e2c4a7ed3510c9a&imgtype=0&src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201401%2F23%2F095609lsejfi4thjrrwydj.jpg',
             fit: BoxFit.cover,
-            height: 240,
+            height: 216,
+            width: UI.DISPLAY_WIDTH,
           ),
           Positioned(
-              top: 40,
+              top: 50,
               left: 0,
               right: 0,
               child: UnconstrainedBox(
@@ -133,10 +135,18 @@ class SelfRouteState extends State<SelfRoute>
           Positioned(
             left: 0,
             right: 0,
-            top: 120,
+            top: 130,
             child: UnconstrainedBox(
-                child: Text('白茶清欢',
-                    style: TextStyle(fontSize: 18, color: Colors.white))),
+                child: InkWell(
+                    onTap: () async {
+                      String nickName =
+                          await UI.showInputDialog(context, '输入新昵称');
+                      if(nickName == null || nickName.trim() == '') return;
+                      UserManager.instance().modifyNickName(nickName);
+                      setState(() {});
+                    },
+                    child: Text(UserManager.instance().nickName,
+                        style: TextStyle(fontSize: 18, color: Colors.white)))),
           ),
           Positioned(
             right: 16,

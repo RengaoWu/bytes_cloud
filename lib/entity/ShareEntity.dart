@@ -1,4 +1,5 @@
 import 'package:bytes_cloud/core/http/http.dart';
+import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 
 //"file_id": 4,
@@ -17,8 +18,8 @@ class ShareEntity extends Entity {
   String shareURL;
   String qrCodeFile = '';
   static const String ORDER_BY_BEGIN_TIME = ' share_begin_time ';
-  static const String tableName = 'ShareEntity';
-  static const String SQL_SHARE_CREATE = '''
+  static String get tableName => 'ShareEntity' + UserManager.instance().userName;
+  static String get SQL_SHARE_CREATE => '''
 			      CREATE TABLE ${tableName} (
             file_id INTEGER, 
             share_id INTEGER PRIMARY KEY, 

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:bytes_cloud/core/Constants.dart';
 import 'package:bytes_cloud/core/manager/CloudFileManager.dart';
+import 'package:bytes_cloud/core/manager/DBManager.dart';
 import 'package:bytes_cloud/core/manager/TranslateManager.dart';
 import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/pages/HomeRout.dart';
@@ -313,6 +314,7 @@ class LoginRouteState extends State<LoginRoute> {
     print('_onLogin ${success}');
     if (success) {
       // 保存账号密码，方便起见暂时保存在SP中
+      await DBManager.instance.init(force: true); // 初始化DB
       saveProfile(_loginUserController.text, _loginPasswordController.text);
       //print('token = ${getToken()}');
       // 请求云盘所有文件

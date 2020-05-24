@@ -1,9 +1,10 @@
+import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/entity/entitys.dart';
 import 'package:flutter/cupertino.dart';
 
 // ID = 0 表示根目录
 class CloudFileEntity extends Entity {
-  static const String tableName = 'CloudFileEntity';
+  static String get tableName => 'CloudFileEntity' + UserManager.instance().userName;
   static getSQL() => '''
             CREATE TABLE $tableName(
             filename TEXT, 

@@ -1,3 +1,4 @@
+import 'package:bytes_cloud/core/manager/UserManager.dart';
 import 'package:bytes_cloud/entity/CloudFileEntity.dart';
 import 'package:bytes_cloud/entity/ShareEntity.dart';
 import 'package:bytes_cloud/entity/TranslateTask.dart';
@@ -5,7 +6,7 @@ import 'package:bytes_cloud/utils/FileUtil.dart';
 import 'package:flutter/material.dart';
 
 class DownloadTask extends TranslateTask {
-  static const String tableName = 'DownloadTask';
+  static String get tableName => 'DownloadTask' + UserManager.instance().userName;
   static getSQL() => '''
             CREATE TABLE $tableName(
             uuid INTEGER PRIMARY KEY,

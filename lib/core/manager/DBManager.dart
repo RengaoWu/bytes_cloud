@@ -24,7 +24,11 @@ class DBManager {
     return _instance;
   }
 
-  Future init() async {
+  Future init({bool force = false}) async {
+    if (force) {
+      if (_db != null) await _db.close();
+      _db = await _open(await getDatabasesPath() + _dbName);
+    }
     if (_db == null) {
       _db = await _open(await getDatabasesPath() + _dbName);
     }
@@ -33,13 +37,29 @@ class DBManager {
   Future<Database> _open(String path) async {
     return await openDatabase(path, version: 2,
         onCreate: (Database db, int version) async {
-      await db.execute(RecentFileEntity.getSQL());
-      await db.execute(CloudFileEntity.getSQL());
-      await db.execute(DownloadTask.getSQL());
-      await db.execute(UploadTask.getSQL());
-      await db.execute(ShareEntity.SQL_SHARE_CREATE);
-      print('DBManager _open finished');
+      print(RecentFileEntity.getSQL());
+      await db.execute(RecentFileEntity.getSQL()); // 账号无关
+    }, onOpen: (Database db) async {
+      print(CloudFileEntity.getSQL());
+      await createTable(db, CloudFileEntity.getSQL());
+
+      print(DownloadTask.getSQL());
+      await createTable(db, DownloadTask.getSQL());
+
+      print(UploadTask.getSQL());
+      await createTable(db, UploadTask.getSQL());
+
+      print(ShareEntity.SQL_SHARE_CREATE);
+      await createTable(db, ShareEntity.SQL_SHARE_CREATE);
     });
+  }
+
+  createTable(Database db, String sql) async {
+    try {
+      await db.execute(sql);
+    } catch (e) {
+      print(e);
+    }
   }
 
   // 增
@@ -76,7 +96,7 @@ class DBManager {
   Future<List<Map>> queryAll(String tableName, String orderBy) async {
     await init();
     List<Map> maps = await _db.query(tableName, orderBy: orderBy);
-    if (maps == null || maps.length == 0) {
+    if (maps == null) {
       return null;
     }
     print('queryAll ${maps.length}');

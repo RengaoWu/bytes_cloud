@@ -24,8 +24,8 @@ abstract class TranslateTask extends Entity {
   _generateUUid(int time) => (time - Random(time).nextInt(2000)).hashCode;
 
   String get name;
-  String get pathMsg;
-  String get filePath;
+  String get pathMsg; // 路径信息
+  String get filePath; // 本地全路径 用于打开文件
 
   @override
   bool operator ==(Object other) =>

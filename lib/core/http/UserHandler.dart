@@ -12,7 +12,7 @@ class UserHandler {
     var rsp = await httpPost(HTTP_POST_LOGIN,
         form: {'email': userName, 'password': password});
     print('login rsp ${rsp.toString()}');
-    return rsp['code'] == 0;
+    return rsp['code'] == 0 || rsp['code'] == 32; // code = 32已经登录
   }
 
   static Future logout() async {

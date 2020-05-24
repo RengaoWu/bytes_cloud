@@ -114,14 +114,15 @@ class StaticConfig {
   }
 
   static List<String> getPaths(String arg) {
-    if (arg == ARG_VIDEO) {
-      return [
-        Common.instance.DCIM,
-        Common.instance.WxRoot,
-        Common.instance.TencentRoot
-      ]; // or so
-    }
-    return [Common.sd];
+    return Common.instance.recentDir;
+//    if (arg == ARG_VIDEO) {
+//      return [
+//        Common.instance.DCIM,
+//        Common.instance.WxRoot,
+//        Common.instance.TencentRoot
+//      ]; // or so
+//    }
+//    return [Common.sd];
   }
 
   // 最近文件列表筛选的文件类型

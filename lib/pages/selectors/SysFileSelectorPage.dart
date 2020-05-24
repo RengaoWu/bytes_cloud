@@ -100,7 +100,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
                 return IconButton(
                   icon: Icon(Icons.file_upload),
                   onPressed: () {
-                    if(selectedFiles.length == 0) {
+                    if (selectedFiles.length == 0) {
                       Fluttertoast.showToast(msg: '请先选择文件');
                       return;
                     }
@@ -115,7 +115,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(child: files.length == 0 ? _emptyView() : _bodyView()),
+            Expanded(child: _bodyView()),
             Padding(
                 padding: EdgeInsets.all(4),
                 child: Center(
@@ -141,11 +141,14 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
         }));
   }
 
-  _emptyView() =>
-      Center(child: SizedBox(width: 160, child: Image.asset(Constants.NULL)));
+  _emptyView() {
+    return Container(
+      padding: EdgeInsets.all(100),
+        child: SizedBox(width: 160, child: Image.asset(Constants.NULL)));
+  }
 
   Widget bodyView;
-  bool notifyListView = true; // 是否刷新列表
+  bool notifyListView = true; // onChanged 置为false 是否刷新列表
   _bodyView() {
     if (bodyView != null && !notifyListView)
       return bodyView;
@@ -158,10 +161,14 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
 
   Widget imageGridView() {
     return GridView.builder(
-        itemCount: files.length,
+        itemCount: files.length == 0 ? 1 : files.length,
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemBuilder: (context, index) {
+          // 如果没有图片显示，‘空内容提示’
+          if(files.length == 0){
+            return _emptyView();
+          }
           FileSystemEntity entity = files[index];
           Widget image;
           if (FileUtil.isVideo(entity.path)) {
@@ -206,9 +213,13 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
   Widget fileListView() => ListView.builder(
         physics: BouncingScrollPhysics(),
         controller: controller,
-        itemCount: files.length,
+        itemCount: files.length == 0 ? 1 : files.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
+          // 如果列表中没有数据，显示NULL
+          if (files.length == 0) {
+            return _emptyView();
+          }
           if (FileSystemEntity.isFileSync(files[index].path))
             //return _buildFileItem(files[index]);
             return UI.buildFileItem(
@@ -247,7 +258,7 @@ class _FilesFragmentState extends State<SysFileSelectorPage> {
       controller.jumpTo(0.0);
     else {
       try {
-        print(position);
+        print('jumpToPosition ${position}');
         await Future.delayed(Duration(milliseconds: 10)); // 不添加这个下面代码无法生效
         controller?.jumpTo(position[position.length - 1]);
       } catch (e) {

@@ -136,7 +136,7 @@ class RemoteRouteState extends State<RemoteRoute>
     var listView = ListView.separated(
         itemCount: currentFiles.length,
         separatorBuilder: (BuildContext context, int index) {
-          return UI.divider2(left: 80, right: 32);
+          return UI.divider2(left: 70, right: 32);
         },
         itemBuilder: (BuildContext context, int index) {
           CloudFileEntity entity = currentFiles[index];
@@ -187,7 +187,7 @@ class RemoteRouteState extends State<RemoteRoute>
             );
           });
           return Padding(
-            padding: EdgeInsets.only(left: 8, right: 8),
+            padding: EdgeInsets.only(left: 0, right: 0),
             child: inkItem,
           );
         });

@@ -330,7 +330,7 @@ class UI {
     return InkWell(
       child: Card(
         child: ListTile(
-            leading: selectIcon(file.path, true),
+            leading: SizedBox(child: selectIcon(file.path,  true), width: 50, height: 50,),
             title: Text(FileUtil.getFileName(file.path)),
             subtitle: Text(
                 '$modifiedTime  ${FileUtil.getFileSize(file.statSync().size)}',
@@ -505,7 +505,7 @@ class UI {
   }
 
   static Widget selectIcon(String path, bool preview,
-      {bool isUrl = false, int id, double size = 40}) {
+      {bool isUrl = false, int id, double size = 50}) {
     int resFlag = 0; // 图片 1, 视频 2
     String ext = p.extension(path);
     String iconImg = Constants.UNKNOW;

@@ -118,18 +118,21 @@ class FileUtil {
     return StaticConfig.videoExtension2Type.keys.contains(ext);
   }
 
-  static String getFileSize(int fileSize) {
-    String str = '';
-
+  static String getFileSize(int fileSize, {int fractionDigits = 2}) {
+    double value;
+    String end = '';
     if (fileSize < 1024) {
-      str = '${fileSize.toStringAsFixed(2)}B';
+      value = fileSize.toDouble();
+      end = 'B';
     } else if (1024 <= fileSize && fileSize < 1048576) {
-      str = '${(fileSize / 1024).toStringAsFixed(2)}KB';
+      value = (fileSize / 1024);
+      end = 'KB';
     } else if (1048576 <= fileSize && fileSize < 1073741824) {
-      str = '${(fileSize / 1024 / 1024).toStringAsFixed(2)}MB';
+      value = (fileSize / 1024 / 1024);
+      end = 'MB';
     }
 
-    return str;
+    return value.toStringAsFixed(0) + end;
   }
 
   static String getDownloadFilePath(CloudFileEntity entity) {

@@ -126,9 +126,8 @@ class TaskItemState extends State<TaskItem> {
       );
     } else {
       trailing = Text(
-        '''${FileUtil.getFileSize(task.v?.toInt())} 
-        / s''',
-        style: TextStyle(fontSize: 12),
+        '${FileUtil.getFileSize(task.v?.toInt(), fractionDigits: 0)}/s',
+        style: TextStyle(fontSize: 12, ), textAlign: TextAlign.center,
       );
       subTitle = Container(
         child: LinearProgressIndicator(
@@ -138,18 +137,21 @@ class TaskItemState extends State<TaskItem> {
       );
     }
     if (leading == null) {
-      leading = UI.selectIcon(task.filePath, true, size: 40);
+      leading = UI.selectIcon(task.filePath, task.progress == 1, size: 40);
     }
     return ListTile(
-      leading: leading,
+      leading: SizedBox(child: leading, width: 50, height: 50,),
       title: Text(
         task.name,
-        style: TextStyle(fontSize: 12),
+        style: TextStyle(fontSize: 14),
       ),
       subtitle: subTitle,
-      trailing: trailing,
-      onTap: (){
-        if(task.progress == 1 && File(task.filePath).existsSync()){
+      trailing: SizedBox(
+        child: trailing,
+        width: 60,
+      ),
+      onTap: () {
+        if (task.progress == 1 && File(task.filePath).existsSync()) {
           UI.openFile(context, File(task.filePath));
         }
       },

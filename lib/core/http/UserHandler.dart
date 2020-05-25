@@ -4,6 +4,7 @@ class UserHandler {
   static Future<bool> register(String userName, String password) async {
     var rsp = await httpPost(HTTP_POST_REGISTER,
         form: {'email': userName, 'password': password});
+    print('UserHandler#register rsp = $rsp');
     return rsp['code'] == 0;
   }
 

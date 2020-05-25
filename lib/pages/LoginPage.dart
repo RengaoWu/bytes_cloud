@@ -16,7 +16,7 @@ import 'package:flutter/widgets.dart';
 
 class LoginRoute extends StatefulWidget {
   final bool isAutologin;
-  LoginRoute({this.isAutologin = true});
+  LoginRoute({this.isAutologin = false});
   @override
   State<StatefulWidget> createState() {
     return LoginRouteState();

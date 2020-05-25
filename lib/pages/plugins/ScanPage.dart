@@ -128,14 +128,14 @@ class _ScanPageState extends State<ScanPage> {
     print("handleScanSuccess $data");
 
     if (isShareURL(data)) {
-      Fluttertoast.showToast(msg: '开始下载');
       Uri uri = Uri.parse(data);
       bool success = await ShareManager.instance.downloadShareFile(uri);
       if(!success){
-        String token = await UI.showInputDialog(context, '请输入token');
+        String token = await UI.showInputDialog(context, '请输入提取码');
         if(token == null || token.isEmpty) {
           return;
         }
+        Fluttertoast.showToast(msg: '开始下载');
         Map<String, String> args = {};
         args.addAll(uri.queryParameters);
         args.addAll({'share_token': token});

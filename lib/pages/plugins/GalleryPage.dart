@@ -77,16 +77,18 @@ class PhotoGalleryPageState extends State<PhotoGalleryPage> {
       body: Column(
         children: <Widget>[
           Expanded(
-              child: GestureDetector(
             child: _isNative ? nativeGalleryView() : networkGalleryView(),
-            onVerticalDragEnd: (DragEndDetails details) {
-              if (details.velocity.pixelsPerSecond.dy >
-                  details.velocity.pixelsPerSecond.dx) {
-                Navigator.pop(context);
-                return;
-              }
-            },
-          )),
+//              child: GestureDetector(
+//            child: _isNative ? nativeGalleryView() : networkGalleryView(),
+//            onVerticalDragEnd: (DragEndDetails details) {
+//              if (details.velocity.pixelsPerSecond.dy >
+//                  details.velocity.pixelsPerSecond.dx) {
+//                Navigator.pop(context);
+//                return;
+//              }
+//            },
+//          )
+          ),
           Align(
             alignment: Alignment.center,
             child: boldText('${currentIndex + 1}/${totalSize}'),

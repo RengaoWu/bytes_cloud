@@ -45,7 +45,7 @@ class Common {
   String get sQQFileCollRecDir => TencentRoot + '/QQfile_colleaction'; //收藏
   String get sQQFavDir => TencentRoot + '/QQ_Favorite'; //表情
 
-  String get DCIM => sd + 'DCIM';
+  String get DCIM => sd + '/DCIM';
   String get screamShot {
     if (Directory(sd + '/Pictures/Screenshots').existsSync()) {
       return sd + '/Pictures/Screenshots';

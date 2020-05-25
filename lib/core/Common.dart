@@ -45,24 +45,27 @@ class Common {
   String get sQQFileCollRecDir => TencentRoot + '/QQfile_colleaction'; //收藏
   String get sQQFavDir => TencentRoot + '/QQ_Favorite'; //表情
 
-  String get DCIM => sd + '/DCIM';
+  String get DCIM => sd + 'DCIM';
   String get screamShot {
-    if(File(sd + '/Pictures/Screenshots').existsSync()) {
+    if (Directory(sd + '/Pictures/Screenshots').existsSync()) {
       return sd + '/Pictures/Screenshots';
     } else {
       return sd + '/DCIM/Screenshots';
     }
   } // 华为手机[截图] /DCIM/Screenshots
+
   String get camera => sd + '/DCIM/Camera'; // 相机
 
   // 最近的文件：来源：微信、QQ、下载管理器、相机、QQ邮箱、浏览器、百度网盘、音乐、
   List<String> get recentDir {
     List<String> result = [];
-    if(File(sQQFileRecDir).existsSync()) result.add(sQQFileRecDir);
-    if(File(sWxDirDownload).existsSync()) result.add(sWxDirDownload);
-    if(File(sWxMsg).existsSync()) result.add(sWxMsg);
-    if(File(DCIM).existsSync()) result.add(DCIM);
-    if(File(screamShot).existsSync()) result.add(screamShot);
+    print('sQQFileRecDir ' + sQQFileRecDir);
+    if (Directory(sQQFileRecDir).existsSync()) result.add(sQQFileRecDir);
+    if (Directory(sWxDirDownload).existsSync()) result.add(sWxDirDownload);
+    if (Directory(sWxMsg).existsSync()) result.add(sWxMsg);
+    if (Directory(DCIM).existsSync()) result.add(DCIM);
+    if (Directory(screamShot).existsSync()) result.add(screamShot);
+    print(result.length);
     return result;
   } // wx 和 qq的文件有重合，先判断是否是wx
 

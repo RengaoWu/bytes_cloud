@@ -130,6 +130,9 @@ class FileUtil {
     } else if (1048576 <= fileSize && fileSize < 1073741824) {
       value = (fileSize / 1024 / 1024);
       end = 'MB';
+    } else {
+      value = fileSize / 1024 / 1024 / 1024;
+      end = 'GB';
     }
 
     return value.toStringAsFixed(0) + end;
